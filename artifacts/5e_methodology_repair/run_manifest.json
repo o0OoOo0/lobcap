@@ -1,0 +1,98 @@
+{
+  "completed_at": "2026-09-07T19:09:10Z",
+  "date_window": {
+    "date": "2025-10-01",
+    "windows": [
+      "00:00-00:10",
+      "04:00-04:10",
+      "08:00-08:10",
+      "12:00-12:10",
+      "16:00-16:10",
+      "20:00-20:10"
+    ]
+  },
+  "experiment_name": "5e_bounded_methodology_repair",
+  "experiment_version": "prompt5e-v13",
+  "full_12_date_run_executed": false,
+  "generated_at": "2026-09-07T19:13:52Z",
+  "input_artifacts": [
+    {
+      "path": "artifacts/5e_methodology_repair/one_window_run1.json",
+      "sha256": "889b3842153d681ce044782ed4671967af5fea30888faff5b570a85db8172681",
+      "tracked": true
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/one_window_run2.json",
+      "sha256": "889b3842153d681ce044782ed4671967af5fea30888faff5b570a85db8172681",
+      "tracked": true
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/six_window_gate_2025-10-01_summary.json",
+      "sha256": "b6c52d30c8d4f5e721bd2aa6378a2e7a076faa43507d6c4d4f7d065926b1d308",
+      "tracked": true
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/six_window_gate_2025-10-01.json.gz",
+      "sha256": "4af208a7000fe57d4a84971f651b4bae3eeecaba9cfc9c29af8106d8abb4baf7",
+      "tracked": false
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/snapshot_sequence_audit.json",
+      "sha256": "f5f3a0832869ef99bf991d3cf0f7f50579c8c2e4615fbc1cc947c5af16f1dcb1",
+      "tracked": true
+    }
+  ],
+  "manifest_version": 1,
+  "output_artifacts": [
+    {
+      "path": "artifacts/5e_methodology_repair/original_failure_reproduction.json",
+      "sha256": "4503443690f987121848193c84e9a6811c1ca9d35a72485ee7b99281d30c72be"
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/structural_decomposition.json",
+      "sha256": "976f1d9905409b2f9943258b0f97aa814e33f41e08dfbd55f93d9c50d6211d5f"
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/snapshot_sequence_audit.json",
+      "sha256": "f5f3a0832869ef99bf991d3cf0f7f50579c8c2e4615fbc1cc947c5af16f1dcb1"
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/one_window_report.json",
+      "sha256": "f6be0014fc9195f269f08f7b22a50b0de5e60a2ca96a319ab08bd80fdbb3426f"
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/six_window_report.json",
+      "sha256": "3ca22262012556c53c60a14f11355eef97f7eb923c5d47db952fd205abf3c177"
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/deterministic_report.json",
+      "sha256": "4252edbf8b016864b2d9b2219aac07e6459c3d6444ceaaa50b3d186daea937d6"
+    },
+    {
+      "path": "artifacts/5e_methodology_repair/methodology_summary.md",
+      "sha256": "59008610ce7362e8dd2f3ad8d05d43bbdfbac5f0ce057252a7de3cf0ca7cabb9"
+    }
+  ],
+  "provenance": {
+    "bounded_payload_sha256": "4af208a7000fe57d4a84971f651b4bae3eeecaba9cfc9c29af8106d8abb4baf7",
+    "bounded_payload_tracked": false,
+    "canonical_config_sha256": "274f5c4bf9a160dd6ddf6b5cd8fe23d4bb5dcf4a2ab0f2bb333580b1ede9d62a",
+    "code_version": "ecf23494c958996feefff3fcdf0ef0bfc8ddd0e9+dirty",
+    "config_path": "configs/experiments/5e_multidate.yaml",
+    "experiment_name": "5e_multidate",
+    "experiment_version": "bounded-v13",
+    "git_commit": "ecf23494c958996feefff3fcdf0ef0bfc8ddd0e9",
+    "git_dirty": true,
+    "input_checksum": {
+      "algorithm": "sha256",
+      "note": "digest covers ordered minute offsets and raw HTTP response bytes",
+      "persisted": false,
+      "value": "58e6150860e1d48d67e72e3ac7c9f8939b9f383685342d87820e3077190507df"
+    },
+    "raw_file_sha256": "8a31740c02d63420dfd452799db8382e18742f28e978a3798a7dda6e15299e3b",
+    "tardis_date": "2025-10-01",
+    "tardis_window": "six configured windows"
+  },
+  "started_at": "2026-09-07T18:02:31Z",
+  "status": "PASS"
+}

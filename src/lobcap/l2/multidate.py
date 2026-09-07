@@ -375,6 +375,16 @@ class MultiDateReconstructor(L3Reconstructor):
                 "time": frame.exchange_time,
                 "side": order.side,
                 "price": decimal_text(order.price),
+                "l2_quantity_before": (
+                    decimal_text(update.quantity_before)
+                    if update is not None
+                    else None
+                ),
+                "l2_quantity_after": (
+                    decimal_text(update.quantity_after)
+                    if update is not None
+                    else None
+                ),
                 "C": decimal_text(nontrade),
                 **{name: decimal_text(value) for name, value in decomposition.items()},
             }
@@ -1042,8 +1052,13 @@ def validate_result(result: dict[str, Any]) -> list[str]:
             failures.append(f"{result['date']} {window['window']}: fill-model invariant")
         if any(diagnostics["projection_invariants"].values()):
             failures.append(f"{result['date']} {window['window']}: L2 projection invariant")
-        if any(not bool(row["A_le_C"]) for row in window["structural_rows"]):
-            failures.append(f"{result['date']} {window['window']}: structural A > C")
+        if any(
+            not bool(row["A_visible_le_C"])
+            for row in window["structural_rows"]
+        ):
+            failures.append(
+                f"{result['date']} {window['window']}: structural A_visible > C"
+            )
         for sample in diagnostics["l2_samples"]:
             try:
                 assert_blinded_mapping(sample)

@@ -2,17 +2,25 @@
 
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
-from lobcap.l2.multidate import TardisHTTPClient, fetch_minute, write_json
+from lobcap.config import config_provenance, load_five_e_config
+from lobcap.l2.multidate import (
+    TardisHTTPClient,
+    configure_runtime,
+    fetch_minute,
+    write_json,
+)
 from lobcap.l3.schema import NativeMessage, parse_tardis_line
 
 
 ROOT = Path(__file__).parents[1]
-OUTPUT = ROOT / "artifacts/multidate_calibration/bounded/sequence_snapshot_audit.json"
-DATE = "2025-10-01"
+OUTPUT = ROOT / "artifacts/5e_methodology_repair/snapshot_sequence_audit.json"
+DATE = ""
 OFFSETS = (0, 1107, 1108, 1109)
 
 
@@ -44,6 +52,14 @@ def message_evidence(message: NativeMessage) -> dict[str, Any]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", required=True)
+    args = parser.parse_args()
+    config = load_five_e_config(args.config)
+    configure_runtime(config)
+    global DATE
+    DATE = config.calibration_dates[0]
+
     client = TardisHTTPClient()
     responses: dict[int, dict[str, Any]] = {}
     parsed: dict[int, list[NativeMessage | None]] = {}
@@ -62,6 +78,7 @@ def main() -> None:
             lifecycle = [item for item in messages if item.type != "full_snapshot"]
             responses[offset] = {
                 **report,
+                "response_sha256": hashlib.sha256(raw).hexdigest(),
                 "line_count": len(items),
                 "blank_disconnect_markers": sum(item is None for item in items),
                 "first_message": message_evidence(messages[0]) if messages else None,
@@ -148,6 +165,16 @@ def main() -> None:
             "Adjacent minute responses are ordered by lifecycle sequence except for the in-response "
             "reconnect gap; the gap is not created by the HTTP minute boundary."
         ),
+        "provenance": {
+            **config_provenance(config),
+            "tardis_date": DATE,
+            "tardis_offsets_minutes": list(OFFSETS),
+            "input_checksums": {
+                str(offset): responses[offset]["response_sha256"]
+                for offset in OFFSETS
+            },
+            "raw_input_persisted": False,
+        },
     }
     write_json(OUTPUT, report)
     print(json.dumps(report, indent=2))

@@ -115,3 +115,14 @@ sequence of past commits. After review, create one baseline commit containing
 the current code, tests, specs, configs, manifests, prompt summaries, and small
 evidence. Subsequent methodology/code changes receive normal commits and
 annotated experiment tags.
+
+## D013 — Preserve visible-depletion reconciliation evidence
+
+Status: accepted
+Date: 2026-09-07
+
+Each bounded 5E structural event retains aggregate L2 quantity before and after
+the lifecycle event alongside `C`, `A_visible`, and `H_hidden`. This makes the
+semantic classification independently auditable. A missing old-level update or
+`A_visible > C` is blocking; numerical clipping is prohibited. Bounded runners
+must load the versioned 5E config explicitly and record config/Git provenance.

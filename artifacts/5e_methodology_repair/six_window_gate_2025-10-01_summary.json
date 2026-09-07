@@ -1,0 +1,368 @@
+{
+  "methodology_version": "prompt5e-v13",
+  "date": "2025-10-01",
+  "windows": 6,
+  "placements": 3840,
+  "aggregate": {
+    "observations": 3840,
+    "C_positive_observations": 3250,
+    "C_zero_observations": 590,
+    "sum_A": "637.96680544",
+    "sum_A_visible": "637.96680544",
+    "sum_C": "1535.13005204",
+    "sum_H_hidden": "0.00644298",
+    "sum_total_observed_L3_ahead_reduction": "721.84381646",
+    "alpha": "0.4155783443834091954996550561",
+    "alpha_visible": "0.4155783443834091954996550561",
+    "hidden_priority_loss_share": "0.000008925725833043870139354106119",
+    "A_le_C_violations": 0,
+    "A_visible_le_C_violations": 0
+  },
+  "original_A_gt_C_cases": 68,
+  "caused_by_hidden_priority_loss": 68,
+  "caused_by_implementation_or_alignment_bug": 0,
+  "other_unexplained": 0,
+  "hidden_priority_loss_event_count_unique": 39,
+  "per_window": [
+    {
+      "window": "00:00-00:10",
+      "observations": 640,
+      "C_positive_observations": 554,
+      "C_zero_observations": 86,
+      "sum_A": "156.18557586",
+      "sum_A_visible": "156.18557586",
+      "sum_C": "372.18816072",
+      "sum_H_hidden": "0.00136396",
+      "sum_total_observed_L3_ahead_reduction": "177.46540348",
+      "alpha": "0.4196414403882653411662771711",
+      "alpha_visible": "0.4196414403882653411662771711",
+      "hidden_priority_loss_share": "0.000007685779725250592826139275403",
+      "A_le_C_violations": 0,
+      "A_visible_le_C_violations": 0
+    },
+    {
+      "window": "04:00-04:10",
+      "observations": 640,
+      "C_positive_observations": 540,
+      "C_zero_observations": 100,
+      "sum_A": "95.50824912",
+      "sum_A_visible": "95.50824912",
+      "sum_C": "198.42300184",
+      "sum_H_hidden": "0.00054422",
+      "sum_total_observed_L3_ahead_reduction": "114.31224290",
+      "alpha": "0.4813365801058379956217680816",
+      "alpha_visible": "0.4813365801058379956217680816",
+      "hidden_priority_loss_share": "0.000004760819892897053811547599334",
+      "A_le_C_violations": 0,
+      "A_visible_le_C_violations": 0
+    },
+    {
+      "window": "08:00-08:10",
+      "observations": 640,
+      "C_positive_observations": 546,
+      "C_zero_observations": 94,
+      "sum_A": "117.96219254",
+      "sum_A_visible": "117.96219254",
+      "sum_C": "273.70552933",
+      "sum_H_hidden": "0.00107872",
+      "sum_total_observed_L3_ahead_reduction": "129.44494768",
+      "alpha": "0.4309821318873536401128867907",
+      "alpha_visible": "0.4309821318873536401128867907",
+      "hidden_priority_loss_share": "0.000008333426829965558683595583651",
+      "A_le_C_violations": 0,
+      "A_visible_le_C_violations": 0
+    },
+    {
+      "window": "12:00-12:10",
+      "observations": 640,
+      "C_positive_observations": 505,
+      "C_zero_observations": 135,
+      "sum_A": "68.09378518",
+      "sum_A_visible": "68.09378518",
+      "sum_C": "211.60757300",
+      "sum_H_hidden": "0.00154392",
+      "sum_total_observed_L3_ahead_reduction": "71.43435824",
+      "alpha": "0.3217927610747655047298330859",
+      "alpha_visible": "0.3217927610747655047298330859",
+      "hidden_priority_loss_share": "0.00002161312900457296807934478337",
+      "A_le_C_violations": 0,
+      "A_visible_le_C_violations": 0
+    },
+    {
+      "window": "16:00-16:10",
+      "observations": 640,
+      "C_positive_observations": 547,
+      "C_zero_observations": 93,
+      "sum_A": "99.00529426",
+      "sum_A_visible": "99.00529426",
+      "sum_C": "264.60798862",
+      "sum_H_hidden": "0.00046638",
+      "sum_total_observed_L3_ahead_reduction": "123.80181338",
+      "alpha": "0.3741583720746246304315375737",
+      "alpha_visible": "0.3741583720746246304315375737",
+      "hidden_priority_loss_share": "0.000003767149989705586976435288140",
+      "A_le_C_violations": 0,
+      "A_visible_le_C_violations": 0
+    },
+    {
+      "window": "20:00-20:10",
+      "observations": 640,
+      "C_positive_observations": 558,
+      "C_zero_observations": 82,
+      "sum_A": "101.21170848",
+      "sum_A_visible": "101.21170848",
+      "sum_C": "214.59779853",
+      "sum_H_hidden": "0.00144578",
+      "sum_total_observed_L3_ahead_reduction": "105.38505078",
+      "alpha": "0.4716344211045155123847392807",
+      "alpha_visible": "0.4716344211045155123847392807",
+      "hidden_priority_loss_share": "0.00001371902361197495833289003042",
+      "A_le_C_violations": 0,
+      "A_visible_le_C_violations": 0
+    }
+  ],
+  "sequence": {
+    "capture_order": {
+      "last_sequence": 112618745217,
+      "comparable_pairs": 48404894,
+      "plus_one_pairs": 48404893,
+      "gaps": 1,
+      "duplicates": 0,
+      "reversals": 0,
+      "examples": [
+        {
+          "kind": "gap",
+          "previous": 112615562186,
+          "current": 112615562913,
+          "source_line": 45222592
+        }
+      ]
+    },
+    "applied_after_snapshot": {
+      "last_sequence": 112618745217,
+      "comparable_pairs": 48396714,
+      "plus_one_pairs": 48396714,
+      "gaps": 0,
+      "duplicates": 0,
+      "reversals": 0,
+      "examples": []
+    },
+    "first_applied_lifecycle_sequence": 112570345204
+  },
+  "acquisition_segments": {
+    "count": 2,
+    "recovered_boundaries": [
+      {
+        "reason": "capture_sequence_gap",
+        "gap_source_line": 45222592,
+        "gap_sequence": 112615562913,
+        "prior_applied_sequence": 112615562186,
+        "prior_book": {
+          "active_order_count": 104291,
+          "pending_taker_reconciliations": 0,
+          "pending_taker_match_size": "0",
+          "snapshot_internal_fifo_assumed": false,
+          "crossed_book": false,
+          "internal_consistency": {
+            "membership_errors": 0,
+            "aggregate_errors": 0
+          },
+          "sides": {
+            "buy": {
+              "price_level_count": 29565,
+              "active_order_count": 66402,
+              "aggregate_size": "840125.90873821",
+              "best_price": "117093.03"
+            },
+            "sell": {
+              "price_level_count": 16754,
+              "active_order_count": 37889,
+              "aggregate_size": "4632.58221145",
+              "best_price": "117093.04"
+            }
+          },
+          "audit_counts": {
+            "filled_residual_removed_at_done": 301,
+            "resting_order_seen_as_taker": 691,
+            "taker_matches_reconciled_at_change": 68,
+            "taker_matches_reconciled_at_done": 293,
+            "unknown_change_order": 19,
+            "unknown_done_order": 281868
+          },
+          "audit_examples": {
+            "unknown_done_order": {
+              "order_id": "256f2cb0-47ba-45e6-b36e-cc5ecebaea41",
+              "sequence": 112570345400,
+              "reason": "filled"
+            },
+            "resting_order_seen_as_taker": {
+              "order_id": "9cbf92f9-e97b-41da-a016-08bb01bc83d8",
+              "sequence": 112570685739,
+              "old_side": "buy",
+              "old_price": "114234.36",
+              "old_remaining_size": "0.00008732",
+              "match_price": "114260.49"
+            },
+            "filled_residual_removed_at_done": {
+              "order_id": "9cbf92f9-e97b-41da-a016-08bb01bc83d8",
+              "sequence": 112570685740,
+              "book": "0.00008732",
+              "pending_taker_match_size": "0.00008737",
+              "reported": "0"
+            },
+            "taker_matches_reconciled_at_done": {
+              "order_id": "9cbf92f9-e97b-41da-a016-08bb01bc83d8",
+              "sequence": 112570685740,
+              "old_level_removed": "0.00008732",
+              "taker_match_size": "0.00008737",
+              "reported_remaining": "0"
+            },
+            "taker_matches_reconciled_at_change": {
+              "order_id": "4d0d61fa-51d8-4ac4-bd2d-0b5f2dfbb5e5",
+              "sequence": 112571712166,
+              "old_level_removed": "3.17801489",
+              "taker_match_size": "1.04072442",
+              "new_remaining": "2.13729047"
+            },
+            "unknown_change_order": {
+              "order_id": "0f0df239-c241-4cb3-ae2e-4f5bac12987b",
+              "sequence": 112575186598
+            }
+          }
+        },
+        "snapshot_sequence": 112615565486,
+        "snapshot_local_timestamp": "2025-10-01T18:28:07.2598901Z",
+        "buffered_events_replayed": 1876,
+        "buffered_events_discarded_at_or_before_snapshot": 2574
+      }
+    ]
+  },
+  "reconstruction_valid": true,
+  "reconstruction_errors": [],
+  "book": {
+    "active_order_count": 104774,
+    "pending_taker_reconciliations": 0,
+    "pending_taker_match_size": "0",
+    "snapshot_internal_fifo_assumed": false,
+    "crossed_book": false,
+    "internal_consistency": {
+      "membership_errors": 0,
+      "aggregate_errors": 0
+    },
+    "sides": {
+      "buy": {
+        "price_level_count": 29699,
+        "active_order_count": 66576,
+        "aggregate_size": "840107.67376137",
+        "best_price": "117277.95"
+      },
+      "sell": {
+        "price_level_count": 16757,
+        "active_order_count": 38198,
+        "aggregate_size": "4613.31622005",
+        "best_price": "117277.96"
+      }
+    },
+    "audit_counts": {
+      "filled_residual_removed_at_done": 29,
+      "resting_order_seen_as_taker": 55,
+      "taker_matches_reconciled_at_change": 13,
+      "taker_matches_reconciled_at_done": 25,
+      "unknown_done_order": 33543
+    },
+    "audit_examples": {
+      "unknown_done_order": {
+        "order_id": "53927e55-39ff-4313-a8be-e1d41ad25573",
+        "sequence": 112615565747,
+        "reason": "filled"
+      },
+      "resting_order_seen_as_taker": {
+        "order_id": "bfbd6766-e665-4204-9ac8-7df42968b86e",
+        "sequence": 112615744246,
+        "old_side": "buy",
+        "old_price": "116341.8",
+        "old_remaining_size": "0.10288913",
+        "match_price": "117162.04"
+      },
+      "taker_matches_reconciled_at_change": {
+        "order_id": "bfbd6766-e665-4204-9ac8-7df42968b86e",
+        "sequence": 112615744250,
+        "old_level_removed": "0.10288913",
+        "taker_match_size": "0.04371722",
+        "new_remaining": "0.07477105"
+      },
+      "filled_residual_removed_at_done": {
+        "order_id": "e79cf127-7791-4aa7-a258-012daffe4db7",
+        "sequence": 112615849423,
+        "book": "0.02751152",
+        "pending_taker_match_size": "0.02751152",
+        "reported": "0"
+      },
+      "taker_matches_reconciled_at_done": {
+        "order_id": "e79cf127-7791-4aa7-a258-012daffe4db7",
+        "sequence": 112615849423,
+        "old_level_removed": "0.02751152",
+        "taker_match_size": "0.02751152",
+        "reported_remaining": "0"
+      }
+    }
+  },
+  "events": {
+    "observed": {
+      "change": 2986141,
+      "done": 15107977,
+      "full_snapshot": 2,
+      "match": 414946,
+      "open": 14790181,
+      "received": 15105650
+    },
+    "applied": {
+      "change": 2985705,
+      "change_book_applied": 2985686,
+      "change_book_ignored": 19,
+      "done": 15105369,
+      "done_book_applied": 14789958,
+      "done_book_ignored": 315411,
+      "done_canceled_book_applied": 14592114,
+      "done_canceled_observed": 14675182,
+      "done_filled_after_taker_match": 305,
+      "done_filled_book_applied": 197844,
+      "done_filled_observed": 430187,
+      "match": 414885,
+      "match_book_applied": 414885,
+      "open": 14787672,
+      "open_book_applied": 14787672,
+      "received": 15103083,
+      "received_non_book": 15103083
+    },
+    "received_but_never_opened": 315411,
+    "unknown_done_orders": 33543,
+    "unknown_done_received_never_opened": 315408,
+    "unknown_done_boundary_or_unclassified": 3,
+    "unknown_change_received_never_opened": 19,
+    "maker_orders_with_multiple_matches": 47559,
+    "maximum_matches_for_one_maker_order": 317,
+    "maker_orders_filled_after_match": 197539,
+    "active_filled_without_prior_maker_match": 0
+  },
+  "validation_failures": [],
+  "result": "PASS",
+  "provenance": {
+    "config_path": "configs/experiments/5e_multidate.yaml",
+    "raw_file_sha256": "8a31740c02d63420dfd452799db8382e18742f28e978a3798a7dda6e15299e3b",
+    "canonical_config_sha256": "274f5c4bf9a160dd6ddf6b5cd8fe23d4bb5dcf4a2ab0f2bb333580b1ede9d62a",
+    "git_commit": "ecf23494c958996feefff3fcdf0ef0bfc8ddd0e9",
+    "git_dirty": true,
+    "experiment_name": "5e_multidate",
+    "experiment_version": "bounded-v13",
+    "code_version": "ecf23494c958996feefff3fcdf0ef0bfc8ddd0e9+dirty",
+    "tardis_date": "2025-10-01",
+    "tardis_window": "six configured windows",
+    "input_checksum": {
+      "algorithm": "sha256",
+      "value": "58e6150860e1d48d67e72e3ac7c9f8939b9f383685342d87820e3077190507df",
+      "persisted": false,
+      "note": "digest covers ordered minute offsets and raw HTTP response bytes"
+    }
+  }
+}

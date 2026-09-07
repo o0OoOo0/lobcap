@@ -120,6 +120,7 @@ def test_streaming_multidate_adapter_reproduces_frozen_first_minute_truth():
     assert not any(result["diagnostics"]["fill_model_invariants"].values())
     assert not any(result["diagnostics"]["projection_invariants"].values())
     assert all(row["A_le_C"] for row in result["structural_rows"])
+    assert all(row["A_visible_le_C"] for row in result["structural_rows"])
     assert all(
         Decimal(row["total_observed_L3_ahead_reduction"])
         == Decimal(row["A_raw_queue_depletion"])
@@ -139,3 +140,21 @@ def test_streaming_multidate_adapter_reproduces_frozen_first_minute_truth():
         for row in frozen
     ]
     assert actual_rows == frozen_rows
+
+    structural_events = [
+        event
+        for events in result["structural_events"].values()
+        for event in events
+    ]
+    assert structural_events
+    assert all(
+        "l2_quantity_before" in event and "l2_quantity_after" in event
+        for event in structural_events
+    )
+    for event in structural_events:
+        visible = Decimal(event["A_visible"])
+        c_value = Decimal(event["C"])
+        if visible:
+            assert event["l2_quantity_before"] is not None
+            assert event["l2_quantity_after"] is not None
+            assert visible <= c_value

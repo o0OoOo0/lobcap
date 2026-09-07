@@ -30,6 +30,7 @@ artifacts/validation/tardis_coinbase/raw_http_slice.txt
 artifacts/validation/tardis_coinbase/raw_sample.jsonl
 artifacts/fill_model_comparison/l2_projection.jsonl
 artifacts/multidate_calibration/**/*.json.gz
+artifacts/5e_methodology_repair/*.json.gz
 *.jsonl.gz
 *.csv.gz
 

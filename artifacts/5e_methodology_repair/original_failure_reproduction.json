@@ -1,0 +1,40 @@
+{
+  "current_one_window_replay": {
+    "conclusion": "Legacy failure reproduced. Revised failure does not reproduce because the baseline already contains the semantic A_visible/H_hidden repair.",
+    "date": "2025-10-01",
+    "legacy_A_raw_gt_C_cases": 12,
+    "revised_A_visible_gt_C_event_violations": 0,
+    "revised_A_visible_gt_C_window_violations": 0,
+    "window": "00:00-00:10"
+  },
+  "generated_at": "2026-09-07T19:13:52Z",
+  "historical_v7": {
+    "at_utc": "2026-09-07T04:38:24Z",
+    "error": "reconstruction invalid date=2025-10-01 offset=1108: [{'kind': 'capture_sequence_gap', 'source_line': 45222592, 'sequence': 112615562913}, {'kind': 'duplicate_full_snapshot', 'source_line': 45227042, 'sequence': 112615565486}]",
+    "error_type": "RuntimeError"
+  },
+  "historical_v8": {
+    "at_utc": "2026-09-07T06:46:39Z",
+    "error": "date validation failed 2025-10-01: ['2025-10-01: reconstruction invalid', '2025-10-01 00:00-00:10: structural A > C', '2025-10-01 04:00-04:10: structural A > C', '2025-10-01 08:00-08:10: structural A > C', '2025-10-01 12:00-12:10: structural A > C', '2025-10-01 20:00-20:10: structural A > C']",
+    "error_type": "RuntimeError"
+  },
+  "provenance": {
+    "canonical_config_sha256": "274f5c4bf9a160dd6ddf6b5cd8fe23d4bb5dcf4a2ab0f2bb333580b1ede9d62a",
+    "code_version": "ecf23494c958996feefff3fcdf0ef0bfc8ddd0e9+dirty",
+    "config_path": "configs/experiments/5e_multidate.yaml",
+    "experiment_name": "5e_multidate",
+    "experiment_version": "bounded-v13",
+    "git_commit": "ecf23494c958996feefff3fcdf0ef0bfc8ddd0e9",
+    "git_dirty": true,
+    "input_checksum": {
+      "algorithm": "sha256",
+      "note": "digest covers ordered minute offsets and raw HTTP response bytes",
+      "persisted": false,
+      "value": "df4074db925dbee834b5ab6c5020c42da323ea6c40e424c6d879e7c2e1c20799"
+    },
+    "raw_file_sha256": "8a31740c02d63420dfd452799db8382e18742f28e978a3798a7dda6e15299e3b",
+    "tardis_date": "2025-10-01",
+    "tardis_window": "00:00-00:10"
+  },
+  "schema_version": 1
+}

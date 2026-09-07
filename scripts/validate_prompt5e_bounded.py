@@ -11,10 +11,12 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+from lobcap.config import config_provenance, load_five_e_config
 from lobcap.l2.multidate import (
     MultiDateReconstructor,
     TardisHTTPClient,
     aggregate_alpha,
+    configure_runtime,
     fetch_minute,
     model_specs,
     process_date,
@@ -28,8 +30,27 @@ from lobcap.l3.schema import parse_tardis_line
 
 
 ROOT = Path(__file__).parents[1]
-OUTPUT = ROOT / "artifacts/multidate_calibration/bounded"
-DATE = "2025-10-01"
+OUTPUT = ROOT / "artifacts/5e_methodology_repair"
+DATE = ""
+PROVENANCE: dict[str, Any] = {}
+
+
+def run_provenance(*, window: str, input_sha256: str | None) -> dict[str, Any]:
+    return {
+        **PROVENANCE,
+        "tardis_date": DATE,
+        "tardis_window": window,
+        "input_checksum": (
+            {
+                "algorithm": "sha256",
+                "value": input_sha256,
+                "persisted": False,
+                "note": "digest covers ordered minute offsets and raw HTTP response bytes",
+            }
+            if input_sha256 is not None
+            else "NOT_PERSISTED"
+        ),
+    }
 
 
 def fetch_offsets_ordered(offsets: range):
@@ -199,6 +220,9 @@ def one_window(label: str) -> None:
         "messages": sum(item["messages"] for item in reports),
         "retries": sum(item["attempts"] - 1 for item in reports),
     }
+    summary["provenance"] = run_provenance(
+        window=window["window"], input_sha256=digest.hexdigest()
+    )
     write_json(OUTPUT / f"one_window_{label}.json", summary)
     print(json.dumps(summary, indent=2))
 
@@ -270,6 +294,9 @@ def recovery_segment() -> None:
         and summary["revised"]["A_visible_gt_C_window_violations"] == 0
         else "FAIL"
     )
+    summary["provenance"] = run_provenance(
+        window="18:28-20:10 recovery segment", input_sha256=None
+    )
     write_json(OUTPUT / "recovery_segment_18-28_to_20-10.json", summary)
     print(json.dumps(summary, indent=2))
 
@@ -331,6 +358,10 @@ def six_window() -> None:
         "events": result["reconstruction"]["events"],
         "validation_failures": failures,
         "result": "PASS" if not failures else "FAIL",
+        "provenance": run_provenance(
+            window="six configured windows",
+            input_sha256=str(result["response_sha256"]),
+        ),
     }
     write_json_gz(OUTPUT / f"six_window_gate_{DATE}.json.gz", result)
     write_json(OUTPUT / f"six_window_gate_{DATE}_summary.json", summary)
@@ -422,7 +453,13 @@ def main() -> None:
         "mode", choices=("one-window", "recovery-segment", "six-window", "postprocess-v13")
     )
     parser.add_argument("--label", default="run1")
+    parser.add_argument("--config", required=True)
     args = parser.parse_args()
+    config = load_five_e_config(args.config)
+    configure_runtime(config)
+    global DATE, PROVENANCE
+    DATE = config.calibration_dates[0]
+    PROVENANCE = config_provenance(config)
     if args.mode == "one-window":
         one_window(args.label)
     elif args.mode == "recovery-segment":

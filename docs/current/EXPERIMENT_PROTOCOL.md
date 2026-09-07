@@ -123,8 +123,12 @@ byte-for-byte in `/tmp`.
 ### 5E bounded gates
 
 ```bash
-python scripts/validate_prompt5e_bounded.py one-window --label run1
-python scripts/validate_prompt5e_bounded.py six-window
+python scripts/validate_prompt5e_bounded.py one-window \
+  --config configs/experiments/5e_multidate.yaml --label run1
+python scripts/validate_prompt5e_bounded.py six-window \
+  --config configs/experiments/5e_multidate.yaml
+python scripts/build_prompt5e_repair_reports.py \
+  --output artifacts/5e_methodology_repair
 ```
 
 The full command exists but is not authorized by the current experiment state:
@@ -154,6 +158,11 @@ Every L2 comparison must additionally check:
 
 An unexplained sequence gap or methodology/config mismatch blocks promotion of
 an output to an accepted experiment.
+
+Bounded 5E artifacts record the Git state, explicit config path, raw and
+canonical config SHA-256 values, requested Tardis date/window, and the ordered
+HTTP-response checksum when the input bytes are not persisted. The raw full-day
+stream remains excluded from Git.
 
 ## 7. Current config/code parity audit
 

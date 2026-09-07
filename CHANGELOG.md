@@ -4,6 +4,8 @@ This changelog records project milestones from retained runtime evidence. It
 does not imply historical Git commits existed.
 
 ## Unreleased — Reproducibility baseline
+- Added auditable L2 before/after quantities to bounded 5E structural events,
+  explicit config provenance, and a dedicated methodology-repair evidence set.
 - Refactored 5C, 5D, and 5E runners to load versioned YAML through one typed, fail-fast configuration layer.
 - Added raw and canonical config fingerprints plus automatic new-run manifest provenance.
 - Added explicit config CLI paths and a network-free 5E dry-run plan; the full 12-date experiment remains unexecuted.

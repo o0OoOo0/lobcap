@@ -155,7 +155,9 @@ For structural calibration:
 - `C` is aggregate L2 non-trade depletion at the placement price.
 - `A_visible` includes actual ahead cancellation, same-price size decrease,
   and old-level depletion caused by price change. Each is visible as a
-  decrease at the L2 old level.
+  decrease at the L2 old level. Structural event records retain the actual
+  aggregate `l2_quantity_before`, `l2_quantity_after`, and non-trade `C` used
+  for this reconciliation.
 - `H_hidden` includes same-price size-increase priority reset and other L3-only
   priority effects that reduce virtual ahead quantity without aggregate old
   level depletion.
@@ -172,6 +174,8 @@ share is:
 where the denominator also includes trade depletion. The implementation uses
 semantic event classification, not `min(A,C)` clipping. Exact Decimal checks
 require `0 <= A_visible <= C` per event and virtual-order window.
+An event with visible depletion but no matching old-level update, or with
+`A_visible > C`, is an implementation/alignment failure; it is never clipped.
 
 ## 8. Known limits
 

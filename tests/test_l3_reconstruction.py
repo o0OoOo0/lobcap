@@ -144,6 +144,54 @@ def test_sequence_tracker_reports_gap_duplicate_and_reversal():
     ]
 
 
+def test_generated_snapshots_are_not_lifecycle_sequence_increments():
+    reconstructor = L3Reconstructor(allow_recovery_snapshots=True)
+    reconstructor.consume(
+        _native(
+            "full_snapshot",
+            100,
+            generated=True,
+            bids=[["100", "1", "bid"]],
+            asks=[["102", "1", "ask"]],
+        )
+    )
+    reconstructor.consume(
+        _native(
+            "open",
+            101,
+            order_id="post-snapshot",
+            side="buy",
+            price="99",
+            remaining_size="1",
+        )
+    )
+    reconstructor.consume(
+        _native(
+            "full_snapshot",
+            101,
+            generated=True,
+            bids=[["101", "2", "replacement-bid"]],
+            asks=[["103", "1", "replacement-ask"]],
+        )
+    )
+    reconstructor.consume(
+        _native(
+            "open",
+            102,
+            order_id="next-segment",
+            side="buy",
+            price="100",
+            remaining_size="0.5",
+        )
+    )
+
+    report = reconstructor.finish()
+    assert report["valid"] is True
+    assert report["sequence"]["capture_order"]["comparable_pairs"] == 1
+    assert report["sequence"]["capture_order"]["plus_one_pairs"] == 1
+    assert report["sequence"]["capture_order"]["duplicates"] == 0
+
+
 def test_reconstruction_segment_becomes_invalid_on_sequence_gap():
     messages = _messages("overlap.jsonl")
     changed_payload = dict(messages[3].payload)

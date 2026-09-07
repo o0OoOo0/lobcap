@@ -1,0 +1,31 @@
+{
+  "date": "2025-10-01",
+  "deterministic_output_match": true,
+  "generated_at": "2026-09-07T19:13:52Z",
+  "provenance": {
+    "canonical_config_sha256": "274f5c4bf9a160dd6ddf6b5cd8fe23d4bb5dcf4a2ab0f2bb333580b1ede9d62a",
+    "code_version": "ecf23494c958996feefff3fcdf0ef0bfc8ddd0e9+dirty",
+    "config_path": "configs/experiments/5e_multidate.yaml",
+    "experiment_name": "5e_multidate",
+    "experiment_version": "bounded-v13",
+    "git_commit": "ecf23494c958996feefff3fcdf0ef0bfc8ddd0e9",
+    "git_dirty": true,
+    "input_checksum": {
+      "algorithm": "sha256",
+      "note": "digest covers ordered minute offsets and raw HTTP response bytes",
+      "persisted": false,
+      "value": "df4074db925dbee834b5ab6c5020c42da323ea6c40e424c6d879e7c2e1c20799"
+    },
+    "raw_file_sha256": "8a31740c02d63420dfd452799db8382e18742f28e978a3798a7dda6e15299e3b",
+    "tardis_date": "2025-10-01",
+    "tardis_window": "00:00-00:10"
+  },
+  "response_match": true,
+  "result": "PASS",
+  "run1_deterministic_sha256": "36bd9b23c5a3d761e7f986a49d114a2db265236d78aff0846ba4192ca08f696d",
+  "run1_response_sha256": "df4074db925dbee834b5ab6c5020c42da323ea6c40e424c6d879e7c2e1c20799",
+  "run2_deterministic_sha256": "36bd9b23c5a3d761e7f986a49d114a2db265236d78aff0846ba4192ca08f696d",
+  "run2_response_sha256": "df4074db925dbee834b5ab6c5020c42da323ea6c40e424c6d879e7c2e1c20799",
+  "schema_version": 1,
+  "window": "00:00-00:10"
+}
