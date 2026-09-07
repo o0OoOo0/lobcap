@@ -41,27 +41,28 @@ class ModelSpec:
             raise ValueError("alpha must be in [0,1]")
 
 
-MODEL_SPECS = (
-    ModelSpec("alpha=0.00", Decimal("0.00"), interpretation="pessimistic"),
-    ModelSpec("alpha=0.25", Decimal("0.25")),
-    ModelSpec(
-        "alpha=0.50",
-        Decimal("0.50"),
-        interpretation="uncalibrated midpoint diagnostic",
-    ),
-    ModelSpec("alpha=0.75", Decimal("0.75")),
-    ModelSpec(
-        "alpha=1.00",
-        Decimal("1.00"),
-        interpretation="queue-optimistic depletion assumption",
-    ),
-    ModelSpec(
-        "TOUCH_FILL",
-        None,
-        touch_fill=True,
-        interpretation="queue-position-ignoring upper bound",
-    ),
-)
+def build_model_specs(
+    alpha_grid: Iterable[Decimal],
+    *,
+    touch_fill_enabled: bool,
+) -> tuple[ModelSpec, ...]:
+    """Build model specs from a validated experiment config."""
+    models = []
+    for alpha in alpha_grid:
+        interpretation = {
+            Decimal("0"): "pessimistic",
+            Decimal("0.5"): "uncalibrated midpoint diagnostic",
+            Decimal("1"): "queue-optimistic depletion assumption",
+        }.get(alpha, "")
+        models.append(ModelSpec(f"alpha={alpha:.2f}", alpha, interpretation=interpretation))
+    if touch_fill_enabled:
+        models.append(
+            ModelSpec(
+                "TOUCH_FILL", None, touch_fill=True,
+                interpretation="queue-position-ignoring upper bound",
+            )
+        )
+    return tuple(models)
 
 
 @dataclass(frozen=True, slots=True)
@@ -273,7 +274,7 @@ def predict_one(
 def evaluate_models(
     projection: L2Projection,
     placements: Iterable[BlindedPlacement],
-    models: Iterable[ModelSpec] = MODEL_SPECS,
+    models: Iterable[ModelSpec],
 ) -> tuple[list[Prediction], dict[str, int]]:
     placements = tuple(placements)
     predictions: list[Prediction] = []
@@ -327,7 +328,7 @@ class StreamingFillEngine:
     not require storing raw messages or a full window of L2 frames.
     """
 
-    def __init__(self, models: Iterable[ModelSpec] = MODEL_SPECS) -> None:
+    def __init__(self, models: Iterable[ModelSpec]) -> None:
         self.models = tuple(models)
         self.active: list[_StreamingState] = []
         self.predictions: list[Prediction] = []

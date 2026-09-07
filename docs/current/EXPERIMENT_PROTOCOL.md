@@ -1,6 +1,6 @@
 # Experiment Protocol and Reproducibility
 
-Status: baseline protocol before first Git commit
+Status: config-driven protocol after reproducible baseline
 
 ## 1. Sources of truth
 
@@ -20,11 +20,9 @@ historical hashes must not be fabricated.
 
 ## 2. Configuration rule
 
-Files under `configs/experiments/` are a frozen description of current active
-code. The code does not yet load these YAML files. Constants remain duplicated
-in Python, so every experiment must compare config values with code before
-execution. A future refactor may make configs executable inputs, but that is
-not claimed here.
+Files under `configs/experiments/` are executable inputs and the sole source of
+truth for parameterized experiment settings. Runners require an explicit config
+path, validate it centrally, and record raw and canonical fingerprints.
 
 No current experiment uses randomness. `random_seed: null` means not
 applicable, not an uncontrolled seed.
@@ -84,8 +82,7 @@ pytest -q
 
 ```bash
 python -m lobcap.l3.virtual \
-  --input artifacts/validation/tardis_coinbase/raw_http_slice.txt \
-  --out /tmp/lobcap-5c \
+  --config configs/experiments/5c_virtual_truth.yaml \
   --verify-determinism
 ```
 
@@ -99,9 +96,7 @@ Expected `virtual_orders.jsonl` SHA-256:
 
 ```bash
 python -m lobcap.l2.compare \
-  --raw artifacts/validation/tardis_coinbase/raw_http_slice.txt \
-  --truth artifacts/virtual_truth/virtual_orders.jsonl \
-  --out /tmp/lobcap-5d \
+  --config configs/experiments/5d_fill_comparison.yaml \
   --verify-determinism
 ```
 
@@ -135,7 +130,9 @@ python scripts/validate_prompt5e_bounded.py six-window
 The full command exists but is not authorized by the current experiment state:
 
 ```bash
-python -m lobcap.l2.multidate --run-all
+python -m lobcap.l2.multidate \
+  --config configs/experiments/5e_multidate.yaml \
+  --run-all
 ```
 
 Do not run it until explicit approval and a baseline Git commit identify the
@@ -175,9 +172,23 @@ The following values were read from active Python and compared with the YAML:
 | split | oldest 6 / next 3 / newest 3 dates | same | MATCH |
 | random seed | no RNG | null/not applicable | MATCH |
 
-There is no value mismatch. The architectural mismatch is that Python remains
-the executable source and does not parse the YAML. The machine-readable audit
-is `artifacts/reproducibility/config_code_audit.json`.
+There is no value mismatch. From the config-driven refactor onward, experiment
+configuration files are the executable source of truth for parameterized
+experiment settings. CLI execution requires an explicit `--config`; invalid or
+unknown critical fields fail before processing. The machine-readable mapping is
+`artifacts/reproducibility/config_refactor_audit.json`.
+
+Both raw YAML bytes and the canonical parsed representation receive SHA-256
+fingerprints. New-run manifests record both hashes, config path, Git state,
+experiment name, and version. Whitespace/comments affect only the raw hash.
+
+The network-free 5E planning command is:
+
+```bash
+python -m lobcap.l2.multidate \
+  --config configs/experiments/5e_multidate.yaml \
+  --dry-run
+```
 
 Repository-only unit reproduction uses the small fixtures in
 `tests/fixtures/tardis_coinbase/`. Full 5C/5D metric reproduction additionally

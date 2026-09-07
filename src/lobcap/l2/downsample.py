@@ -32,8 +32,8 @@ LevelKey = tuple[str, Decimal]
 class L2ProjectingReconstructor(L3Reconstructor):
     """Verified L3 mutation engine with a one-way, ID-stripping L2 adapter."""
 
-    def __init__(self, placements: Iterable[BlindedPlacement]) -> None:
-        super().__init__("BTC-USD")
+    def __init__(self, placements: Iterable[BlindedPlacement], product_id: str) -> None:
+        super().__init__(product_id)
         self.placements = tuple(placements)
         self.by_sequence: dict[int, list[BlindedPlacement]] = defaultdict(list)
         for placement in self.placements:
@@ -173,8 +173,9 @@ class L2ProjectingReconstructor(L3Reconstructor):
 def downsample_file(
     input_path: str | Path,
     placements: Iterable[BlindedPlacement],
+    product_id: str = "BTC-USD",
 ) -> tuple[L2Projection, dict]:
-    reconstructor = L2ProjectingReconstructor(placements)
+    reconstructor = L2ProjectingReconstructor(placements, product_id)
     for message in iter_tardis_lines(input_path):
         reconstructor.consume(message)
     reconstruction = reconstructor.finish()

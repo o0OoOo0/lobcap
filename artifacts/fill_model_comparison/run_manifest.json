@@ -1,0 +1,88 @@
+{
+  "code_version": "2eb924a86252d5e6e2d31465360a71253d68fe7f+dirty",
+  "completed_at": "2026-09-07T17:02:47Z",
+  "config_path": "configs/experiments/5d_fill_comparison.yaml",
+  "config_provenance": {
+    "canonical_config_sha256": "d68395224085bb0eafd5b58fa14291557c5582eaca637468be93b7b4c307e3e0",
+    "code_version": "2eb924a86252d5e6e2d31465360a71253d68fe7f+dirty",
+    "config_path": "configs/experiments/5d_fill_comparison.yaml",
+    "experiment_name": "5d_fill_comparison",
+    "experiment_version": "1",
+    "git_commit": "2eb924a86252d5e6e2d31465360a71253d68fe7f",
+    "git_dirty": true,
+    "raw_file_sha256": "328b89235016e1e266fa34043b22fde5f74ed40a2bfd7d277224a929571eb0df"
+  },
+  "data_source": {
+    "input_artifacts": [
+      {
+        "path": "artifacts/validation/tardis_coinbase/raw_http_slice.txt",
+        "sha256": "16792f94e6c30be4b8985aa96beec5c2b92ceedce28efc1b97d5c2d0041eb8af"
+      },
+      {
+        "path": "artifacts/virtual_truth/virtual_orders.jsonl",
+        "sha256": "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca"
+      }
+    ]
+  },
+  "date_window": "defined by versioned config",
+  "evaluation_metrics": [
+    "any_fill_confusion_matrix",
+    "full_fill_confusion_matrix",
+    "fill_quantity_mae_btc",
+    "fill_quantity_bias_btc",
+    "any_fill_precision_recall",
+    "full_fill_precision_recall",
+    "first_fill_timing_error",
+    "full_fill_timing_error",
+    "early_late_on_time_rates",
+    "leakage_check",
+    "projection_invariants",
+    "fill_model_invariants"
+  ],
+  "experiment_name": "5d_fill_comparison",
+  "experiment_version": "1",
+  "git_commit": "2eb924a86252d5e6e2d31465360a71253d68fe7f",
+  "input_artifacts": [
+    {
+      "path": "artifacts/validation/tardis_coinbase/raw_http_slice.txt",
+      "sha256": "16792f94e6c30be4b8985aa96beec5c2b92ceedce28efc1b97d5c2d0041eb8af"
+    },
+    {
+      "path": "artifacts/virtual_truth/virtual_orders.jsonl",
+      "sha256": "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca"
+    }
+  ],
+  "manifest_version": 2,
+  "output_artifact_paths": [
+    {
+      "path": "artifacts/fill_model_comparison/predictions.jsonl",
+      "sha256": "9ebe413f69b6c1d6294562ae9553e4df0115acca1517c86e652cec3aa9205d86"
+    },
+    {
+      "path": "artifacts/fill_model_comparison/model_metrics.json",
+      "sha256": "9403e52c1bd768d9275a94e7a4292f7c4707acf1dcf5881e085a4374102ace5d"
+    },
+    {
+      "path": "artifacts/fill_model_comparison/confusion_matrices.json",
+      "sha256": "483b643fbc6dcc5f93380dfeeb797924a42d3e4f2641a8518e4469c3e8c04dd9"
+    },
+    {
+      "path": "artifacts/fill_model_comparison/timing_metrics.json",
+      "sha256": "42482ba6ea2d382eccb6cf8c9aaff20c6d487c2f3c500e62e6832d18d1054f2e"
+    },
+    {
+      "path": "artifacts/fill_model_comparison/leakage_check.json",
+      "sha256": "d1a722e018f20a86f9c4a27c00dbe1d3a73e5a7ad937ea70c5952ddcd18889f3"
+    },
+    {
+      "path": "artifacts/fill_model_comparison/invariant_report.json",
+      "sha256": "e0c2e12053cfb5f9dadffca44c7aef821ea40e7210158844e91ad3374e0170a1"
+    },
+    {
+      "path": "artifacts/fill_model_comparison/comparison_summary.md",
+      "sha256": "c355f4bc2ff03f84e91bf7d4bd85693319837d5361c749b70cfe27efca7ee931"
+    }
+  ],
+  "started_at": "2026-09-07T17:02:30Z",
+  "status": "PASS"
+}

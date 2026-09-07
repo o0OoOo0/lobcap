@@ -1,0 +1,66 @@
+{
+  "code_version": "2eb924a86252d5e6e2d31465360a71253d68fe7f+dirty",
+  "completed_at": "2026-09-07T17:02:47Z",
+  "config_path": "configs/experiments/5e_multidate.yaml",
+  "config_provenance": {
+    "canonical_config_sha256": "274f5c4bf9a160dd6ddf6b5cd8fe23d4bb5dcf4a2ab0f2bb333580b1ede9d62a",
+    "code_version": "2eb924a86252d5e6e2d31465360a71253d68fe7f+dirty",
+    "config_path": "configs/experiments/5e_multidate.yaml",
+    "experiment_name": "5e_multidate",
+    "experiment_version": "bounded-v13",
+    "git_commit": "2eb924a86252d5e6e2d31465360a71253d68fe7f",
+    "git_dirty": true,
+    "raw_file_sha256": "8a31740c02d63420dfd452799db8382e18742f28e978a3798a7dda6e15299e3b"
+  },
+  "data_source": {
+    "input_artifacts": [
+      {
+        "path": "configs/experiments/5e_multidate.yaml",
+        "sha256": "8a31740c02d63420dfd452799db8382e18742f28e978a3798a7dda6e15299e3b"
+      }
+    ]
+  },
+  "date_window": "defined by versioned config",
+  "evaluation_metrics": [
+    "any_fill_false_positive_rate",
+    "any_fill_false_negative_rate",
+    "normalized_fill_quantity_mae",
+    "any_fill_precision_recall",
+    "full_fill_precision_recall",
+    "fill_rate_bias",
+    "first_fill_mae",
+    "full_fill_mae",
+    "early_fill_rate",
+    "late_fill_rate",
+    "alpha_visible",
+    "hidden_priority_loss_share",
+    "A_visible_le_C_violations",
+    "window",
+    "date",
+    "ttl",
+    "elapsed_age",
+    "initial_queue",
+    "side",
+    "spread",
+    "realized_short_window_volatility",
+    "time_of_day"
+  ],
+  "experiment_name": "5e_multidate",
+  "experiment_version": "bounded-v13",
+  "git_commit": "2eb924a86252d5e6e2d31465360a71253d68fe7f",
+  "input_artifacts": [
+    {
+      "path": "configs/experiments/5e_multidate.yaml",
+      "sha256": "8a31740c02d63420dfd452799db8382e18742f28e978a3798a7dda6e15299e3b"
+    }
+  ],
+  "manifest_version": 2,
+  "output_artifact_paths": [
+    {
+      "path": "artifacts/multidate_calibration/config_dry_run_plan.json",
+      "sha256": "15557ca1d479ec6d0e63644dcc9be6ee96b0ac2da6c8932375dcc76bb0f75e0a"
+    }
+  ],
+  "started_at": "2026-09-07T17:02:47Z",
+  "status": "DRY_RUN_PASS"
+}

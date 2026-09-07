@@ -15,6 +15,8 @@ source:
   format: exchange-native raw L3 projected to blinded L2
   raw_input: artifacts/validation/tardis_coinbase/raw_http_slice.txt
   truth_input: artifacts/virtual_truth/virtual_orders.jsonl
+  truth_sha256: 593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca
+output_location: artifacts/fill_model_comparison
 dates:
   - "2026-09-01"
 windows_utc:
@@ -27,6 +29,7 @@ placement_rule:
 virtual_sizes_btc: ["0.001", "0.01"]
 ttls_seconds: [1, 5, 10, 30]
 alpha_grid: ["0.00", "0.25", "0.50", "0.75", "1.00"]
+touch_fill_enabled: true
 model_names:
   - alpha=0.00
   - alpha=0.25

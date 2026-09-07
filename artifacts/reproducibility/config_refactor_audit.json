@@ -1,0 +1,42 @@
+{
+  "baseline_commit": "2eb924a86252d5e6e2d31465360a71253d68fe7f",
+  "branch": "refactor/config-driven-experiments",
+  "result": "PASS",
+  "policy": "Versioned experiment YAML is the executable source of truth; unknown critical fields fail fast.",
+  "config_fingerprints": {
+    "5c_virtual_truth": {
+      "raw_file_sha256": "2de47721271132440d0a2cd88829fdc78274e89bc4c974923bb6612fbfaa62ed",
+      "canonical_config_sha256": "992d5c6a1c2854274a627b36cd7250d732e6d5cdf0e786136b73a68f5f49c69d"
+    },
+    "5d_fill_comparison": {
+      "raw_file_sha256": "328b89235016e1e266fa34043b22fde5f74ed40a2bfd7d277224a929571eb0df",
+      "canonical_config_sha256": "d68395224085bb0eafd5b58fa14291557c5582eaca637468be93b7b4c307e3e0"
+    },
+    "5e_multidate": {
+      "raw_file_sha256": "8a31740c02d63420dfd452799db8382e18742f28e978a3798a7dda6e15299e3b",
+      "canonical_config_sha256": "274f5c4bf9a160dd6ddf6b5cd8fe23d4bb5dcf4a2ab0f2bb333580b1ede9d62a"
+    }
+  },
+  "hard_coded_before": [
+    {"setting": "5C placement schedule/sides/sizes/TTLs", "baseline_location": "src/lobcap/l3/virtual.py:default_intents", "config": "configs/experiments/5c_virtual_truth.yaml", "consumer_after": "intents_from_config"},
+    {"setting": "5C input/output", "baseline_location": "5C CLI required --input/--out", "config": "source.input_artifact/output_location", "consumer_after": "5C --config CLI"},
+    {"setting": "5D alpha grid and TOUCH_FILL", "baseline_location": "src/lobcap/l2/fill_models.py:MODEL_SPECS", "config": "alpha_grid/touch_fill_enabled/model_names", "consumer_after": "build_model_specs"},
+    {"setting": "5D raw/truth/output", "baseline_location": "5D CLI required --raw/--truth/--out", "config": "source.raw_input/source.truth_input/output_location", "consumer_after": "5D --config CLI"},
+    {"setting": "5E dates and chronological split", "baseline_location": "src/lobcap/l2/multidate.py:DATES/CALIBRATION_DATES/VALIDATION_DATES/TEST_DATES", "config": "dates", "consumer_after": "configure_runtime"},
+    {"setting": "5E windows and placement grid", "baseline_location": "WINDOW_STARTS/WINDOW_MINUTES/placement_intents", "config": "windows_utc/placement_rule/virtual_sizes_btc/ttls_seconds", "consumer_after": "configure_runtime/placement_intents"},
+    {"setting": "5E alpha baselines and models", "baseline_location": "BASE_MODELS and fixed alpha-name lists", "config": "alpha_grid/touch_fill_enabled/structural_alpha_enabled/model_names", "consumer_after": "build_model_specs/model_specs"},
+    {"setting": "venue/source", "baseline_location": "Coinbase/BTC-USD literals in projection and Tardis URL", "config": "venue/source", "consumer_after": "typed config metadata and primary CLI paths"},
+    {"setting": "random seed", "baseline_location": "no RNG", "config": "random_seed: null/randomness: none", "consumer_after": "validated no-randomness contract"},
+    {"setting": "evaluation metrics", "baseline_location": "metrics functions", "config": "evaluation_metrics", "consumer_after": "validated and fingerprinted run contract"},
+    {"setting": "output locations", "baseline_location": "CLI parameters or module OUTPUT", "config": "output_location", "consumer_after": "all three runners"}
+  ],
+  "hard_coded_remaining": [
+    {"setting": "methodology equations, fill/censoring outcomes, and invariant definitions", "reason": "algorithm semantics, deliberately not experiment parameters"},
+    {"setting": "default BTC-USD arguments on low-level compatibility APIs", "reason": "legacy direct-call compatibility; all primary config CLI paths pass the configured symbol"},
+    {"setting": "HTTP retry/prefetch and resource diagnostics", "reason": "operational implementation controls outside the frozen experiment grid"},
+    {"setting": "default config file path constants", "reason": "compatibility routing only; CLI execution requires explicit --config"}
+  ],
+  "config_code_mismatches": [],
+  "methodology_changed": false,
+  "full_5e_executed": false
+}

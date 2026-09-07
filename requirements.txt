@@ -1,3 +1,4 @@
 aiohttp>=3.10,<4
 websockets>=13,<17
 pytest>=8,<9
+PyYAML>=6,<7

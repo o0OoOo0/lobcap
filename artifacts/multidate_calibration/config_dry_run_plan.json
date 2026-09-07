@@ -1,0 +1,31 @@
+{
+  "experiment_name": "5e_multidate",
+  "experiment_version": "bounded-v13",
+  "dates": 12,
+  "windows": 72,
+  "split": {
+    "calibration": 6,
+    "validation": 3,
+    "test": 3
+  },
+  "windows_per_date": 6,
+  "placements_per_window": 640,
+  "expected_total_placements": 46080,
+  "alpha_grid": [
+    "0.00",
+    "0.25",
+    "0.50",
+    "0.75",
+    "1.00"
+  ],
+  "model_names": [
+    "alpha=0.00",
+    "alpha=0.25",
+    "alpha=0.50",
+    "alpha=0.75",
+    "alpha=1.00",
+    "STRUCTURAL_ALPHA",
+    "TOUCH_FILL"
+  ],
+  "full_run_executed": false
+}

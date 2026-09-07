@@ -11,6 +11,7 @@ source:
   provider: tardis.dev
   format: exchange-native raw L3
   input_artifact: artifacts/validation/tardis_coinbase/raw_http_slice.txt
+output_location: artifacts/virtual_truth
 dates:
   - "2026-09-01"
 windows_utc:

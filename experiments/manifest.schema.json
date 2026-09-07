@@ -18,6 +18,22 @@
     "completed_at"
   ],
   "properties": {
+    "manifest_version": {"type": "integer"},
+    "evaluation_metrics": {"type": "array", "items": {"type": "string"}},
+    "config_provenance": {
+      "type": "object",
+      "required": ["config_path", "raw_file_sha256", "canonical_config_sha256", "git_commit", "experiment_name", "experiment_version"],
+      "properties": {
+        "config_path": {"type": "string"},
+        "raw_file_sha256": {"type": "string"},
+        "canonical_config_sha256": {"type": "string"},
+        "git_commit": {"type": "string"},
+        "git_dirty": {"type": "boolean"},
+        "experiment_name": {"type": "string"},
+        "experiment_version": {"type": "string"},
+        "code_version": {"type": "string"}
+      }
+    },
     "experiment_name": {"type": "string"},
     "experiment_version": {"type": "string"},
     "git_commit": {"type": "string"},

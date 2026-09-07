@@ -91,15 +91,19 @@ The one-window and same-date six-window gates passed. The 12-date/72-window
 runner still requires explicit user approval and must begin from a versioned
 code/config baseline.
 
-## D011 — Configs currently mirror hard-coded Python
+## D011 — Versioned configs are executable experiment settings
 
-Status: accepted transitional state  
+Status: accepted
 Date: 2026-09-07
 
-Experiment YAML captures active constants but is not loaded by runtime code.
-This duplication is explicitly reported as a reproducibility risk. A later
-change should make config parsing authoritative and add code/config parity
-tests.
+From this version onward, experiment configuration files are the executable
+source of truth for parameterized experiment settings. The shared loader uses
+strict typed validation and runners require an explicit config path. Python
+keeps methodology algorithms and compatibility routing, but not an independent
+experiment parameter grid.
+
+Canonical parsed-config SHA-256 is the primary semantic fingerprint. Raw-file
+SHA-256 is retained to detect textual edits. New-run manifests store both.
 
 ## D012 — Start honest Git history with one baseline
 

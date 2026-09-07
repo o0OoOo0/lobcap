@@ -10,7 +10,8 @@ from lobcap.l2.compare import (
     load_frozen_truth,
     sha256_file,
 )
-from lobcap.l2.fill_models import MODEL_SPECS, StreamingFillEngine, predict_one
+from lobcap.config import load_five_d_config
+from lobcap.l2.fill_models import StreamingFillEngine, build_model_specs, predict_one
 from lobcap.l2.schema import (
     BlindedPlacement,
     L2Frame,
@@ -23,6 +24,8 @@ from lobcap.l2.schema import (
 
 
 ROOT = Path(__file__).parents[1]
+CONFIG = load_five_d_config(ROOT / "configs/experiments/5d_fill_comparison.yaml")
+MODEL_SPECS = build_model_specs(CONFIG.alpha_grid, touch_fill_enabled=CONFIG.touch_fill_enabled)
 RAW = ROOT / "artifacts/validation/tardis_coinbase/raw_http_slice.txt"
 TRUTH = ROOT / "artifacts/virtual_truth/virtual_orders.jsonl"
 MODELS = {model.name: model for model in MODEL_SPECS}
@@ -218,7 +221,7 @@ def test_streaming_engine_matches_batch_models_on_frozen_real_sample(
     projection = real_comparison["projection"]
     placements, _ = load_frozen_truth(TRUTH)
     pending = sorted(placements, key=lambda item: item.placement_sequence)
-    engine = StreamingFillEngine()
+    engine = StreamingFillEngine(MODEL_SPECS)
     cursor = 0
     for frame in projection.frames:
         while cursor < len(pending) and pending[cursor].placement_sequence < frame.sequence:

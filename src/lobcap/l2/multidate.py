@@ -20,8 +20,9 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Iterable
+from lobcap.config import FiveEConfig, config_provenance, load_five_e_config, write_run_manifest
 
-from lobcap.l2.fill_models import MODEL_SPECS, ModelSpec, Prediction, StreamingFillEngine
+from lobcap.l2.fill_models import ModelSpec, Prediction, StreamingFillEngine, build_model_specs
 from lobcap.l2.schema import (
     ZERO,
     BlindedPlacement,
@@ -43,21 +44,39 @@ from lobcap.l3.virtual import (
 
 
 ROOT = Path(__file__).parents[3]
-OUTPUT = ROOT / "artifacts/multidate_calibration"
-DATES = (
-    "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01",
-    "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01",
-    "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01",
-)
-CALIBRATION_DATES = DATES[:6]
-VALIDATION_DATES = DATES[6:9]
-TEST_DATES = DATES[9:]
-WINDOW_STARTS = (0, 240, 480, 720, 960, 1200)
-WINDOW_MINUTES = 10
-LAST_OFFSET = 1209
-CHANNELS = ("received", "open", "done", "match", "change", "full_snapshot")
-FILTERS = [{"channel": name, "symbols": ["BTC-USD"]} for name in CHANNELS]
-BASE_MODELS = MODEL_SPECS
+DEFAULT_CONFIG_PATH = ROOT / "configs/experiments/5e_multidate.yaml"
+ACTIVE_CONFIG = load_five_e_config(DEFAULT_CONFIG_PATH)
+OUTPUT = ACTIVE_CONFIG.output_path
+DATES = ACTIVE_CONFIG.dates
+CALIBRATION_DATES = ACTIVE_CONFIG.calibration_dates
+VALIDATION_DATES = ACTIVE_CONFIG.validation_dates
+TEST_DATES = ACTIVE_CONFIG.test_dates
+WINDOW_STARTS = tuple(window.start_minute for window in ACTIVE_CONFIG.windows)
+WINDOW_MINUTES = ACTIVE_CONFIG.windows[0].duration_minutes
+LAST_OFFSET = max(window.start_minute + window.duration_minutes - 1 for window in ACTIVE_CONFIG.windows)
+CHANNELS = ACTIVE_CONFIG.channels
+FILTERS = [{"channel": name, "symbols": [ACTIVE_CONFIG.symbol]} for name in CHANNELS]
+BASE_MODELS = build_model_specs(ACTIVE_CONFIG.alpha_grid, touch_fill_enabled=ACTIVE_CONFIG.touch_fill_enabled)
+
+
+def configure_runtime(config: FiveEConfig) -> None:
+    """Install a validated config as the sole parameter source for a run."""
+    global ACTIVE_CONFIG, OUTPUT, DATES, CALIBRATION_DATES, VALIDATION_DATES
+    global TEST_DATES, WINDOW_STARTS, WINDOW_MINUTES, LAST_OFFSET
+    global CHANNELS, FILTERS, BASE_MODELS
+    ACTIVE_CONFIG = config
+    OUTPUT = config.output_path
+    DATES = config.dates
+    CALIBRATION_DATES = config.calibration_dates
+    VALIDATION_DATES = config.validation_dates
+    TEST_DATES = config.test_dates
+    WINDOW_STARTS = tuple(window.start_minute for window in config.windows)
+    WINDOW_MINUTES = config.windows[0].duration_minutes
+    LAST_OFFSET = max(window.start_minute + window.duration_minutes - 1 for window in config.windows)
+    CHANNELS = config.channels
+    FILTERS = [{"channel": name, "symbols": [ACTIVE_CONFIG.symbol]} for name in CHANNELS]
+    BASE_MODELS = build_model_specs(config.alpha_grid, touch_fill_enabled=config.touch_fill_enabled)
+
 UUID_RE = re.compile(
     r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b",
     re.IGNORECASE,
@@ -105,27 +124,25 @@ def split_for_date(date: str) -> str:
 def model_specs(structural_alpha: Decimal | None) -> tuple[ModelSpec, ...]:
     if structural_alpha is None:
         return BASE_MODELS
-    return (
-        *BASE_MODELS[:-1],
-        ModelSpec(
-            "STRUCTURAL_ALPHA",
-            structural_alpha,
-            interpretation="calibration-date aggregate ahead-share",
-        ),
-        BASE_MODELS[-1],
-    )
+    fixed = tuple(model for model in BASE_MODELS if not model.touch_fill)
+    touch = tuple(model for model in BASE_MODELS if model.touch_fill)
+    return fixed + (ModelSpec(
+        "STRUCTURAL_ALPHA", structural_alpha,
+        interpretation="calibration-date aggregate ahead-share",
+    ),) + touch
 
 
 def placement_intents(date: str, start_offset: int) -> list[PlacementIntent]:
     day = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
     intents: list[PlacementIntent] = []
     for minute in range(start_offset, start_offset + WINDOW_MINUTES):
-        for second in (5, 20, 35, 50):
+        for second in ACTIVE_CONFIG.placement.trigger_seconds:
             trigger = day + timedelta(minutes=minute, seconds=second)
             trigger_ns = int(trigger.timestamp()) * 1_000_000_000
-            for side in ("buy", "sell"):
-                for size_text in ("0.001", "0.01"):
-                    for ttl in (1, 5, 10, 30):
+            for side in ACTIVE_CONFIG.placement.sides:
+                for size in ACTIVE_CONFIG.virtual_sizes:
+                    size_text = decimal_text(size)
+                    for ttl in ACTIVE_CONFIG.ttls_seconds:
                         virtual_id = (
                             f"{date}T{minute // 60:02d}:{minute % 60:02d}:{second:02d}Z"
                             f"-{side}-{size_text}-{ttl}s"
@@ -134,7 +151,7 @@ def placement_intents(date: str, start_offset: int) -> list[PlacementIntent]:
                             PlacementIntent(
                                 virtual_order_id=virtual_id,
                                 side=side,
-                                size=Decimal(size_text),
+                                size=size,
                                 ttl_seconds=ttl,
                                 at_or_after_time_ns=trigger_ns,
                             )
@@ -192,7 +209,7 @@ class MultiDateReconstructor(L3Reconstructor):
     """Continuous L3 book plus an identity-stripping active-window adapter."""
 
     def __init__(self) -> None:
-        super().__init__("BTC-USD", allow_recovery_snapshots=True)
+        super().__init__(ACTIVE_CONFIG.symbol, allow_recovery_snapshots=True)
         self.virtual_engine: VirtualOrderEngine | None = None
         self.fill_engine: StreamingFillEngine | None = None
         self.window_label: str | None = None
@@ -547,7 +564,7 @@ def minute_url(date: str, offset: int) -> str:
             "filters": json.dumps(FILTERS, separators=(",", ":")),
         }
     )
-    return f"https://api.tardis.dev/v1/data-feeds/coinbase?{query}"
+    return f"https://api.tardis.dev/v1/data-feeds/{ACTIVE_CONFIG.venue_name}?{query}"
 
 
 class TardisHTTPClient:
@@ -996,6 +1013,8 @@ def save_date_result(result: dict[str, Any]) -> None:
             "processing_seconds", "response_sha256", "raw_retained", "download", "peak_rss_mib",
         )
     }
+    manifest["config_path"] = str(ACTIVE_CONFIG.config_path.relative_to(ROOT))
+    manifest["config_provenance"] = config_provenance(ACTIVE_CONFIG)
     manifest["date_artifact"] = str(path.relative_to(ROOT))
     manifest["date_artifact_sha256"] = sha256_file(path)
     manifest["reconstruction_valid"] = result["reconstruction"]["valid"]
@@ -1011,11 +1030,11 @@ def validate_result(result: dict[str, Any]) -> list[str]:
     failures: list[str] = []
     if not result["reconstruction"]["valid"]:
         failures.append(f"{result['date']}: reconstruction invalid")
-    if len(result["windows"]) != 6:
-        failures.append(f"{result['date']}: expected 6 windows")
+    if len(result["windows"]) != len(WINDOW_STARTS):
+        failures.append(f"{result['date']}: expected configured window count")
     for window in result["windows"]:
         diagnostics = window["diagnostics"]
-        if diagnostics["placements"] != 640 or diagnostics["pending_unplaced"]:
+        if diagnostics["placements"] != ACTIVE_CONFIG.placements_per_window or diagnostics["pending_unplaced"]:
             failures.append(f"{result['date']} {window['window']}: placement cardinality")
         if not diagnostics["virtual_invariants"]["valid"]:
             failures.append(f"{result['date']} {window['window']}: virtual invariant")
@@ -1131,7 +1150,7 @@ def update_alpha_after_validation(
 
 def _oracle_references(test: list[dict[str, Any]]) -> dict[str, Any]:
     per_date = per_date_metrics(test)
-    alpha_names = [f"alpha={value:.2f}" for value in (0, 0.25, 0.5, 0.75, 1)]
+    alpha_names = [model.name for model in BASE_MODELS if model.alpha is not None]
     date_best = {}
     for date, metrics in per_date.items():
         available = metrics["aggregate"]
@@ -1240,9 +1259,9 @@ def finalize_outputs(all_results: list[dict[str, Any]], alpha: Decimal) -> dict[
         "finished_utc": max(item["finished_utc"] for item in manifests),
         "dates": manifests,
         "totals": {
-            "dates": 12,
-            "windows": 72,
-            "evaluation_minutes": 720,
+            "dates": len(DATES),
+            "windows": len(DATES) * len(WINDOW_STARTS),
+            "evaluation_minutes": len(DATES) * len(WINDOW_STARTS) * WINDOW_MINUTES,
             "streamed_reconstruction_minutes": sum(item["download"]["minute_responses"] for item in manifests),
             "messages": total_messages,
             "compressed_bytes": total_compressed,
@@ -1259,8 +1278,8 @@ def finalize_outputs(all_results: list[dict[str, Any]], alpha: Decimal) -> dict[
     sampling.update(
         {
             "status": "COMPLETE" if not failures else "FAILED",
-            "actual_windows": 72,
-            "actual_evaluation_minutes": 720,
+            "actual_windows": len(DATES) * len(WINDOW_STARTS),
+            "actual_evaluation_minutes": len(DATES) * len(WINDOW_STARTS) * WINDOW_MINUTES,
             "actual_streamed_reconstruction_minutes": processing_report["totals"]["streamed_reconstruction_minutes"],
             "response_sha256_by_date": {item["date"]: item["response_sha256"] for item in manifests},
             "split_manifest_sha256": sha256_file(OUTPUT / "split_manifest.json"),
@@ -1271,7 +1290,7 @@ def finalize_outputs(all_results: list[dict[str, Any]], alpha: Decimal) -> dict[
     heterogeneity = _heterogeneity(all_results)
     write_json(OUTPUT / "heterogeneity.json", heterogeneity)
     test_models = test_report["models"]
-    fixed_names = ["alpha=0.00", "alpha=0.25", "alpha=0.50", "alpha=0.75", "alpha=1.00"]
+    fixed_names = [model.name for model in BASE_MODELS if model.alpha is not None]
     best_fixed = min(
         fixed_names,
         key=lambda name: Decimal(test_models[name]["normalized_fill_quantity_mae"]),
@@ -1360,7 +1379,7 @@ def finalize_outputs(all_results: list[dict[str, Any]], alpha: Decimal) -> dict[
         "",
         f"RESULT: {summary['result']}",
         "",
-        f"- Dates/windows/placements: 12 / 72 / {test_report['placements'] * 4}",
+        f"- Dates/windows/placements: {len(DATES)} / {len(DATES) * len(WINDOW_STARTS)} / {test_report['placements'] * 4}",
         f"- Calibration / validation / test: {', '.join(CALIBRATION_DATES)} / {', '.join(VALIDATION_DATES)} / {', '.join(TEST_DATES)}",
         f"- Structural alpha: {decimal_text(alpha)}",
         f"- Test truth any-fill rate: {test_report['truth_any_fill_rate']}",
@@ -1384,12 +1403,12 @@ def checkpoint_valid(date: str, alpha: Decimal | None) -> bool:
     if not path.exists():
         return False
     result = read_json_gz(path)
-    expected_models = 6 if alpha is None else 7
+    expected_models = len(BASE_MODELS) if alpha is None else len(model_specs(alpha))
     return (
         result.get("methodology_version") == "prompt5e-v13"
-        and len(result.get("windows", [])) == 6
+        and len(result.get("windows", [])) == len(WINDOW_STARTS)
         and all(
-            len(window.get("predictions", [])) == 640 * expected_models
+            len(window.get("predictions", [])) == ACTIVE_CONFIG.placements_per_window * expected_models
             for window in result.get("windows", [])
         )
     )
@@ -1427,19 +1446,56 @@ def run_all() -> dict[str, Any]:
     return finalize_outputs(calibration + validation + test, alpha)
 
 
+def dry_run_plan(config: FiveEConfig) -> dict[str, Any]:
+    """Generate the complete plan without opening Tardis or processing data."""
+    return {
+        "experiment_name": config.experiment_name,
+        "experiment_version": config.experiment_version,
+        "dates": len(config.dates),
+        "windows": len(config.dates) * len(config.windows),
+        "split": {
+            "calibration": len(config.calibration_dates),
+            "validation": len(config.validation_dates),
+            "test": len(config.test_dates),
+        },
+        "windows_per_date": len(config.windows),
+        "placements_per_window": config.placements_per_window,
+        "expected_total_placements": len(config.dates) * len(config.windows) * config.placements_per_window,
+        "alpha_grid": [decimal_text(value) for value in config.alpha_grid],
+        "model_names": list(config.model_names),
+        "full_run_executed": False,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run-all", action="store_true")
+    parser.add_argument("--config", required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--dry-run", action="store_true")
+    mode.add_argument("--run-all", action="store_true")
     args = parser.parse_args()
-    if not args.run_all:
-        parser.error("--run-all is required")
+    config = load_five_e_config(args.config)
+    configure_runtime(config)
+    if args.dry_run:
+        started = utc_now()
+        plan = dry_run_plan(config)
+        OUTPUT.mkdir(parents=True, exist_ok=True)
+        target = OUTPUT / "config_dry_run_plan.json"
+        write_json(target, plan)
+        write_run_manifest(
+            config, output_dir=OUTPUT, status="DRY_RUN_PASS",
+            started_at=started, completed_at=utc_now(),
+            input_paths=(config.config_path,), output_paths=(target,),
+            filename="config_dry_run_manifest.json",
+        )
+        print(json.dumps(plan, indent=2), flush=True)
+        return
     try:
         summary = run_all()
     except Exception as exc:
-        write_json(
-            OUTPUT / "run_failure.json",
-            {"at_utc": utc_now(), "error_type": type(exc).__name__, "error": str(exc)},
-        )
+        write_json(OUTPUT / "run_failure.json", {
+            "at_utc": utc_now(), "error_type": type(exc).__name__, "error": str(exc)
+        })
         raise
     print(json.dumps(summary, indent=2), flush=True)
     raise SystemExit(0 if summary["result"] == "PASS" else 1)

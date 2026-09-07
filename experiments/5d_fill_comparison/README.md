@@ -8,9 +8,7 @@ Reproduce:
 
 ```bash
 python -m lobcap.l2.compare \
-  --raw artifacts/validation/tardis_coinbase/raw_http_slice.txt \
-  --truth artifacts/virtual_truth/virtual_orders.jsonl \
-  --out /tmp/lobcap-5d \
+  --config configs/experiments/5d_fill_comparison.yaml \
   --verify-determinism
 ```
 

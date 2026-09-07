@@ -29,5 +29,15 @@ The full command is documented for provenance but must not be run without
 explicit approval:
 
 ```bash
-python -m lobcap.l2.multidate --run-all
+python -m lobcap.l2.multidate \
+  --config configs/experiments/5e_multidate.yaml \
+  --run-all
+```
+
+The safe plan-only command is:
+
+```bash
+python -m lobcap.l2.multidate \
+  --config configs/experiments/5e_multidate.yaml \
+  --dry-run
 ```

@@ -7,13 +7,15 @@ import ast
 import hashlib
 import json
 from collections import defaultdict
+from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 from statistics import median
 from typing import Any, Iterable
+from lobcap.config import FiveDConfig, load_five_d_config, write_run_manifest
 
 from lobcap.l2.downsample import downsample_file
-from lobcap.l2.fill_models import MODEL_SPECS, Prediction, evaluate_models
+from lobcap.l2.fill_models import Prediction, build_model_specs, evaluate_models
 from lobcap.l2.schema import (
     ZERO,
     BlindedPlacement,
@@ -25,8 +27,8 @@ from lobcap.l2.schema import (
 
 
 TRUTH_LABEL = "L3-derived shadow-fill label"
-FROZEN_TRUTH_SHA256 = "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca"
-ALPHA_MODEL_NAMES = tuple(spec.name for spec in MODEL_SPECS if spec.alpha is not None)
+DEFAULT_CONFIG_PATH = Path(__file__).parents[3] / "configs/experiments/5d_fill_comparison.yaml"
+FROZEN_TRUTH_SHA256 = load_five_d_config(DEFAULT_CONFIG_PATH).truth_sha256
 
 
 def _read_jsonl(path: str | Path) -> list[dict[str, Any]]:
@@ -283,7 +285,7 @@ def _leakage_report(
     return {
         "valid": violations == 0,
         "violations": violations,
-        "truth_artifact": str(Path(truth_path)),
+        "truth_artifact": str(Path(truth_path).resolve().relative_to(Path(__file__).parents[3])),
         "truth_artifact_sha256": sha256_file(truth_path),
         "expected_frozen_truth_sha256": FROZEN_TRUTH_SHA256,
         "l2_records_checked": len(serialized_frames),
@@ -305,16 +307,22 @@ def _leakage_report(
 def build_comparison(
     raw_path: str | Path,
     truth_path: str | Path,
+    config: FiveDConfig | None = None,
 ) -> dict[str, Any]:
+    config = config or load_five_d_config(DEFAULT_CONFIG_PATH)
+    models = build_model_specs(
+        config.alpha_grid, touch_fill_enabled=config.touch_fill_enabled
+    )
+    alpha_model_names = tuple(model.name for model in models if model.alpha is not None)
     actual_truth_sha256 = sha256_file(truth_path)
-    if actual_truth_sha256 != FROZEN_TRUTH_SHA256:
+    if actual_truth_sha256 != config.truth_sha256:
         raise ValueError(
             "Prompt 5C truth artifact changed: "
-            f"expected {FROZEN_TRUTH_SHA256}, got {actual_truth_sha256}"
+            f"expected {config.truth_sha256}, got {actual_truth_sha256}"
         )
     placements, truth_rows = load_frozen_truth(truth_path)
-    projection, reconstruction = downsample_file(raw_path, placements)
-    predictions, model_invariants = evaluate_models(projection, placements)
+    projection, reconstruction = downsample_file(raw_path, placements, config.symbol)
+    predictions, model_invariants = evaluate_models(projection, placements, models)
     truth_by_id = {str(row["virtual_order_id"]): row for row in truth_rows}
     grouped: dict[str, list[Prediction]] = defaultdict(list)
     for prediction in predictions:
@@ -404,11 +412,11 @@ def build_comparison(
             any_disagreement += 1
         if len({grouped[name][index].full_fill for name in grouped}) > 1:
             full_disagreement += 1
-        if len({grouped[name][index].any_fill for name in ALPHA_MODEL_NAMES}) > 1:
+        if len({grouped[name][index].any_fill for name in alpha_model_names}) > 1:
             alpha_any_disagreement += 1
 
     alpha_rank = sorted(
-        ALPHA_MODEL_NAMES,
+        alpha_model_names,
         key=lambda name: (
             Decimal(model_metrics[name]["fill_quantity"]["mae"]),
             confusions[name]["any_fill"]["FP"] + confusions[name]["any_fill"]["FN"],
@@ -492,8 +500,11 @@ def _comparison_markdown(result: dict[str, Any]) -> str:
     metrics = result["model_metrics"]["models"]
     confusions = result["confusion_matrices"]
     posthoc = result["model_metrics"]["posthoc"]
-    touch = confusions["TOUCH_FILL"]["any_fill"]
-    pessimistic = confusions["alpha=0.00"]["any_fill"]
+    pessimistic = confusions.get("alpha=0.00", {}).get("any_fill")
+    touch = confusions.get("TOUCH_FILL", {}).get("any_fill")
+    alpha_zero_cancel = posthoc.get("alpha=0.00", {}).get("false_negatives", {}).get("ahead_cancel_depletion", {}).get("total", "NOT_CONFIGURED")
+    pessimistic_text = "alpha=0 was not configured for this run." if pessimistic is None else ("It produced no any-fill false positives in this minute, so it was empirically conservative here. This is not a theorem or an out-of-sample result." if pessimistic["FP"] == 0 else f"Not even in this minute: alpha=0 produced {pessimistic['FP']} backtest-only fills.")
+    touch_text = "TOUCH_FILL was disabled by config for this run." if touch is None else (f"TOUCH_FILL predicts any fill at rate {metrics['TOUCH_FILL']['predicted_any_fill_rate']} versus truth {summary['truth_any_fill_rate']}, with {touch['FP']} backtest-only fills. Whether that is materially stable across dates is insufficiently sampled here.")
     lines = [
         "# Prompt 5D — Blinded L2 fill-assumption comparison",
         "",
@@ -536,18 +547,11 @@ def _comparison_markdown(result: dict[str, Any]) -> str:
             "The post-hoc section in `model_metrics.json` reports cancellation/priority regimes, and those L3 fields were not model inputs.",
             "3. **Which assumptions miss L3-derived fills?** "
             f"The highest-FN model is `{summary['highest_fn_model']}` with {confusions[summary['highest_fn_model']]['any_fill']['FN']} misses. "
-            f"For alpha=0, missed-order post-hoc cancel depletion totals {posthoc['alpha=0.00']['false_negatives']['ahead_cancel_depletion']['total']} BTC.",
-            "4. **Is pessimistic always conservative?** "
-            + (
-                "It produced no any-fill false positives in this minute, so it was empirically conservative here. This is not a theorem or an out-of-sample result."
-                if pessimistic["FP"] == 0
-                else f"Not even in this minute: alpha=0 produced {pessimistic['FP']} backtest-only fills."
-            ),
+            f"For alpha=0, missed-order post-hoc cancel depletion totals {alpha_zero_cancel} BTC.",
+            "4. **Is pessimistic always conservative?** " + pessimistic_text,
             "5. **Under which queue/cancellation regimes do errors occur?** "
             "The post-hoc aggregates show the regimes for FP/FN sets, but 64 placements in one minute are insufficient for stable conditioning by queue size or market regime.",
-            "6. **Does touch-fill materially exaggerate fills?** "
-            f"TOUCH_FILL predicts any fill at rate {metrics['TOUCH_FILL']['predicted_any_fill_rate']} versus truth {summary['truth_any_fill_rate']}, with {touch['FP']} backtest-only fills. "
-            "Whether that is materially stable across dates is insufficiently sampled here.",
+            "6. **Does touch-fill materially exaggerate fills?** " + touch_text,
             "",
             "## Method boundary",
             "",
@@ -589,28 +593,36 @@ def write_outputs(result: dict[str, Any], output_dir: str | Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--raw", required=True)
-    parser.add_argument("--truth", required=True)
-    parser.add_argument("--out", required=True)
+    parser.add_argument("--config", required=True)
     parser.add_argument("--verify-determinism", action="store_true")
     args = parser.parse_args()
 
-    result = build_comparison(args.raw, args.truth)
+    started = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    config = load_five_d_config(args.config)
+    result = build_comparison(config.raw_input_path, config.truth_input_path, config)
     if args.verify_determinism:
-        second = build_comparison(args.raw, args.truth)
+        second = build_comparison(config.raw_input_path, config.truth_input_path, config)
         deterministic = result_digest(result) == result_digest(second)
         result["model_metrics"]["summary"]["deterministic_replay"] = deterministic
         if not deterministic:
             result["model_metrics"]["summary"]["result"] = "FAIL"
             result["invariant_report"]["valid"] = False
-    write_outputs(result, args.out)
-    print(json.dumps(result["model_metrics"]["summary"], indent=2))
-    raise SystemExit(
-        0
-        if result["model_metrics"]["summary"]["result"] == "PASS"
-        and result["model_metrics"]["summary"]["deterministic_replay"] is not False
-        else 1
+    write_outputs(result, config.output_path)
+    output_paths = tuple(config.output_path / name for name in (
+        "predictions.jsonl", "model_metrics.json", "confusion_matrices.json",
+        "timing_metrics.json", "leakage_check.json", "invariant_report.json",
+        "comparison_summary.md",
+    ))
+    write_run_manifest(
+        config, output_dir=config.output_path,
+        status=result["model_metrics"]["summary"]["result"],
+        started_at=started,
+        completed_at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        input_paths=(config.raw_input_path, config.truth_input_path),
+        output_paths=output_paths,
     )
+    print(json.dumps(result["model_metrics"]["summary"], indent=2))
+    raise SystemExit(0 if result["model_metrics"]["summary"]["result"] == "PASS" and result["model_metrics"]["summary"]["deterministic_replay"] is not False else 1)
 
 
 if __name__ == "__main__":

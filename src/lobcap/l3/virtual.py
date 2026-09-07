@@ -15,10 +15,11 @@ import json
 import re
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Iterable
+from lobcap.config import FiveCConfig, load_five_c_config, write_run_manifest
 
 from lobcap.l3.book import L3Book, ZERO, decimal_value
 from lobcap.l3.reconstruct import L3Reconstructor
@@ -32,7 +33,7 @@ FULL_FILL = "FULL_FILL"
 PARTIAL_ONLY = "PARTIAL_ONLY"
 NO_FILL = "NO_FILL"
 CENSORED = "CENSORED"
-SUPPORTED_TTLS = frozenset({1, 5, 10, 30})
+DEFAULT_CONFIG_PATH = Path(__file__).parents[3] / "configs/experiments/5c_virtual_truth.yaml"
 
 _ISO_RE = re.compile(
     r"^(?P<base>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})"
@@ -623,35 +624,41 @@ class VirtualL3Reconstructor(L3Reconstructor):
             self.virtual_engine.after_event(message, self.book)
 
 
-def default_intents() -> list[PlacementIntent]:
-    """Small deterministic BBO grid for the verified one-minute sample."""
+def intents_from_config(config: FiveCConfig) -> list[PlacementIntent]:
+    """Construct the deterministic placement grid from versioned config."""
+    if len(config.dates) != 1 or len(config.windows) != 1:
+        raise ValueError("5C currently requires exactly one date and one window")
+    day = datetime.fromisoformat(config.dates[0]).replace(tzinfo=timezone.utc)
+    window = config.windows[0]
     intents: list[PlacementIntent] = []
-    # Four exact exchange-time triggers x both sides x two diagnostic sizes x
-    # four supported horizons = 64 independent counterfactual branches.
-    for second in (5, 20, 35, 50):
-        target = timestamp_ns(f"2026-09-01T00:00:{second:02d}Z")
-        for side in ("buy", "sell"):
-            for size_text in ("0.001", "0.01"):
-                for ttl in (1, 5, 10, 30):
-                    order_id = f"v-{second:02d}-{side}-{size_text}-{ttl}s"
-                    intents.append(
-                        PlacementIntent(
-                            virtual_order_id=order_id,
-                            side=side,
-                            size=Decimal(size_text),
-                            ttl_seconds=ttl,
-                            at_or_after_time_ns=target,
-                        )
-                    )
+    for second in config.placement.trigger_seconds:
+        trigger = day + timedelta(minutes=window.start_minute, seconds=second)
+        target = int(trigger.timestamp()) * 1_000_000_000
+        for side in config.placement.sides:
+            for size in config.virtual_sizes:
+                size_text = decimal_text(size)
+                for ttl in config.ttls_seconds:
+                    intents.append(PlacementIntent(
+                        virtual_order_id=f"v-{second:02d}-{side}-{size_text}-{ttl}s",
+                        side=side, size=size, ttl_seconds=ttl,
+                        at_or_after_time_ns=target,
+                    ))
     return intents
+
+
+def default_intents() -> list[PlacementIntent]:
+    """Compatibility helper backed by the versioned production config."""
+    return intents_from_config(load_five_c_config(DEFAULT_CONFIG_PATH))
 
 
 def run_virtual_file(
     input_path: str | Path,
     intents: Iterable[PlacementIntent] | None = None,
+    product_id: str | None = None,
 ) -> tuple[VirtualOrderEngine, dict[str, Any]]:
+    default_config = load_five_c_config(DEFAULT_CONFIG_PATH)
     engine = VirtualOrderEngine(default_intents() if intents is None else intents)
-    reconstructor = VirtualL3Reconstructor(engine)
+    reconstructor = VirtualL3Reconstructor(engine, product_id or default_config.symbol)
     for message in iter_tardis_lines(input_path):
         reconstructor.consume(message)
     reconstruction = reconstructor.finish()
@@ -668,7 +675,9 @@ def build_outputs(
     reconstruction: dict[str, Any],
     *,
     deterministic: bool | None = None,
+    config: FiveCConfig | None = None,
 ) -> dict[str, Any]:
+    config = config or load_five_c_config(DEFAULT_CONFIG_PATH)
     orders = [order.as_dict() for order in engine.orders]
     invariant_report = engine.invariant_report()
     outcome_counts = Counter(order["outcome"] for order in orders)
@@ -713,9 +722,9 @@ def build_outputs(
         "snapshot_internal_fifo_assumed": False,
         "scope": {
             "placement": "BBO only",
-            "sizes_btc": ["0.001", "0.01"],
-            "ttls_seconds": [1, 5, 10, 30],
-            "sample": str(Path("artifacts/validation/tardis_coinbase/raw_http_slice.txt")),
+            "sizes_btc": [decimal_text(value) for value in config.virtual_sizes],
+            "ttls_seconds": list(config.ttls_seconds),
+            "sample": str(config.input_path.relative_to(Path(__file__).parents[3])),
         },
         "placements": {
             "total": len(orders),
@@ -776,21 +785,34 @@ def write_outputs(outputs: dict[str, Any], output_dir: str | Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=True)
-    parser.add_argument("--out", required=True)
+    parser.add_argument("--config", required=True)
     parser.add_argument("--verify-determinism", action="store_true")
     args = parser.parse_args()
 
-    engine, reconstruction = run_virtual_file(args.input)
-    outputs = build_outputs(engine, reconstruction)
+    started = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    config = load_five_c_config(args.config)
+    engine, reconstruction = run_virtual_file(config.input_path, intents_from_config(config), config.symbol)
+    outputs = build_outputs(engine, reconstruction, config=config)
     if args.verify_determinism:
-        second_engine, second_reconstruction = run_virtual_file(args.input)
-        second = build_outputs(second_engine, second_reconstruction)
+        second_engine, second_reconstruction = run_virtual_file(
+            config.input_path, intents_from_config(config), config.symbol
+        )
+        second = build_outputs(second_engine, second_reconstruction, config=config)
         deterministic = output_digest(outputs) == output_digest(second)
         outputs["summary"]["deterministic_replay"] = deterministic
         if not deterministic:
             outputs["summary"]["result"] = "FAIL"
-    write_outputs(outputs, args.out)
+    write_outputs(outputs, config.output_path)
+    output_paths = tuple(config.output_path / name for name in (
+        "virtual_orders.jsonl", "queue_ledger.jsonl",
+        "truth_summary.json", "invariant_report.json",
+    ))
+    write_run_manifest(
+        config, output_dir=config.output_path, status=outputs["summary"]["result"],
+        started_at=started,
+        completed_at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        input_paths=(config.input_path,), output_paths=output_paths,
+    )
     print(json.dumps(outputs["summary"], indent=2))
     raise SystemExit(0 if outputs["summary"]["result"] == "PASS" else 1)
 

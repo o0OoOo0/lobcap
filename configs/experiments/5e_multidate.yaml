@@ -12,6 +12,7 @@ source:
   provider: tardis.dev
   format: exchange-native raw L3 HTTP minute responses
   channels: [received, open, done, match, change, full_snapshot]
+output_location: artifacts/multidate_calibration
 dates:
   calibration:
     - "2025-10-01"
@@ -45,6 +46,8 @@ virtual_sizes_btc: ["0.001", "0.01"]
 ttls_seconds: [1, 5, 10, 30]
 placements_per_window: 640
 alpha_grid: ["0.00", "0.25", "0.50", "0.75", "1.00"]
+touch_fill_enabled: true
+structural_alpha_enabled: true
 model_names:
   - alpha=0.00
   - alpha=0.25

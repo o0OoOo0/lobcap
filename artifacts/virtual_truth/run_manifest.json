@@ -1,0 +1,63 @@
+{
+  "code_version": "2eb924a86252d5e6e2d31465360a71253d68fe7f+dirty",
+  "completed_at": "2026-09-07T17:02:30Z",
+  "config_path": "configs/experiments/5c_virtual_truth.yaml",
+  "config_provenance": {
+    "canonical_config_sha256": "992d5c6a1c2854274a627b36cd7250d732e6d5cdf0e786136b73a68f5f49c69d",
+    "code_version": "2eb924a86252d5e6e2d31465360a71253d68fe7f+dirty",
+    "config_path": "configs/experiments/5c_virtual_truth.yaml",
+    "experiment_name": "5c_virtual_truth",
+    "experiment_version": "1",
+    "git_commit": "2eb924a86252d5e6e2d31465360a71253d68fe7f",
+    "git_dirty": true,
+    "raw_file_sha256": "2de47721271132440d0a2cd88829fdc78274e89bc4c974923bb6612fbfaa62ed"
+  },
+  "data_source": {
+    "input_artifacts": [
+      {
+        "path": "artifacts/validation/tardis_coinbase/raw_http_slice.txt",
+        "sha256": "16792f94e6c30be4b8985aa96beec5c2b92ceedce28efc1b97d5c2d0041eb8af"
+      }
+    ]
+  },
+  "date_window": "defined by versioned config",
+  "evaluation_metrics": [
+    "outcome_counts",
+    "fill_evidence_order_counts",
+    "fill_evidence_event_counts",
+    "initial_ahead_volume_distribution",
+    "ahead_depletion_totals",
+    "reconstruction_invariants",
+    "virtual_order_invariants"
+  ],
+  "experiment_name": "5c_virtual_truth",
+  "experiment_version": "1",
+  "git_commit": "2eb924a86252d5e6e2d31465360a71253d68fe7f",
+  "input_artifacts": [
+    {
+      "path": "artifacts/validation/tardis_coinbase/raw_http_slice.txt",
+      "sha256": "16792f94e6c30be4b8985aa96beec5c2b92ceedce28efc1b97d5c2d0041eb8af"
+    }
+  ],
+  "manifest_version": 2,
+  "output_artifact_paths": [
+    {
+      "path": "artifacts/virtual_truth/virtual_orders.jsonl",
+      "sha256": "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca"
+    },
+    {
+      "path": "artifacts/virtual_truth/queue_ledger.jsonl",
+      "sha256": "fd9faaa589b7e312d44156fd9e74f9fb941383530d4600f5791fb47055a8b0f6"
+    },
+    {
+      "path": "artifacts/virtual_truth/truth_summary.json",
+      "sha256": "125993e8ebd288e1d78871ae05a7a07cc33e95abbfd749ef33905bc07fd27acb"
+    },
+    {
+      "path": "artifacts/virtual_truth/invariant_report.json",
+      "sha256": "d27231704862c9ebe786ab125d2b5770d37afaadbca21f865e444d1834d5ef5d"
+    }
+  ],
+  "started_at": "2026-09-07T17:02:20Z",
+  "status": "PASS"
+}

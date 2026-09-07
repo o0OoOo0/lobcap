@@ -8,8 +8,7 @@ Reproduce:
 
 ```bash
 python -m lobcap.l3.virtual \
-  --input artifacts/validation/tardis_coinbase/raw_http_slice.txt \
-  --out /tmp/lobcap-5c \
+  --config configs/experiments/5c_virtual_truth.yaml \
   --verify-determinism
 ```
 
