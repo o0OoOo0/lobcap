@@ -1,0 +1,64 @@
+# Python environments and generated interpreter state
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Local/editor/OS state
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.tmp
+*.log
+
+# Runtime market data. /data is mounted outside the repository in production.
+/data/
+market=futures/
+*.parquet
+*.feather
+
+# Raw or bulky Tardis/market-data captures
+artifacts/validation/binance_depth_samples.jsonl
+artifacts/validation/binance_aggtrade_samples.jsonl
+artifacts/validation/tardis_coinbase/raw_http_slice.txt
+artifacts/validation/tardis_coinbase/raw_sample.jsonl
+artifacts/fill_model_comparison/l2_projection.jsonl
+artifacts/multidate_calibration/**/*.json.gz
+*.jsonl.gz
+*.csv.gz
+
+# Local credentials and authentication material
+.env
+.env.*
+!.env.example
+.codex/
+.config/gcloud/
+.aws/
+.ssh/
+.secrets/
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.token
+*.secret
+credentials*.json
+*credentials*.json
+client_secret*.json
+service-account*.json
+*service-account*.json
+application_default_credentials.json
+auth*.json
+*auth*.json
+openai*.json
+.netrc
+
+# Redundant bootstrap bundle; the extracted text sources are authoritative.
+/lobcap_codex_v2.zip

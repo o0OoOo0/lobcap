@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "counts": {
+    "negative_ahead_volume": 0,
+    "negative_virtual_remaining": 0,
+    "virtual_overfill": 0,
+    "double_counted_observed_volume": 0,
+    "behind_match_while_ahead_nonzero": 0,
+    "unknown_maker_in_virtual_decision": 0,
+    "invalid_side_or_price_fill": 0,
+    "ahead_state_mismatch": 0,
+    "ahead_filled_done_nonzero": 0
+  },
+  "examples": {}
+}

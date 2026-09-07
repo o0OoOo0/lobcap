@@ -1,0 +1,73 @@
+{
+  "verified_utc": "2026-09-06T15:24:16Z",
+  "boot": {
+    "reboot_requested_utc": "2026-09-06T15:19:15Z",
+    "old_boot_id": "5ee85ccb-ad35-427b-b493-338730283f31",
+    "new_boot_id": "5d8ce5e5-b8d2-427f-a2f5-63b396e3c2ad",
+    "system_state": "running"
+  },
+  "data_mount": {
+    "source": "/dev/sdb",
+    "filesystem": "ext4",
+    "options_include_rw": true,
+    "owner_group": "0woo:0woo",
+    "mode": "0755",
+    "available": "93G"
+  },
+  "service": {
+    "unit": "lobcap@btcusdt.service",
+    "enabled": true,
+    "active": true,
+    "active_since_utc": "2026-09-06T15:21:02Z",
+    "main_pid": 608,
+    "restart_count": 0,
+    "only_lobcap_instance": true
+  },
+  "shutdown_and_start_lifecycle_after_pre_reboot_baseline": {
+    "disconnect": 2,
+    "process_stop": 1,
+    "process_start": 1,
+    "connect_attempt": 2,
+    "connected": 2,
+    "snapshot_ok": 1
+  },
+  "reboot_boundary": {
+    "pre_reboot_last_u": 11489846916290,
+    "post_reboot_first_U": 11489858147992,
+    "post_reboot_first_u": 11489858154838,
+    "post_reboot_first_pu": 11489858147933,
+    "pre_reboot_connection_id": "518df0eb898c492aa3fbbacfe3a67518",
+    "post_reboot_connection_id": "7b0dc4f0db8a40f693ff7850979c996e",
+    "interpretation": "new acquisition segment; reboot interval is not continuous feed coverage"
+  },
+  "post_reboot_depth_continuity": {
+    "rule": "current.pu == previous.u",
+    "messages": 1500,
+    "comparable_pairs": 1499,
+    "mismatches": 0,
+    "first_mismatch": null
+  },
+  "growth_observation": {
+    "first_total_counts": {
+      "depth": 48903,
+      "trade": 69160,
+      "snapshot": 18
+    },
+    "later_total_counts": {
+      "depth": 49303,
+      "trade": 69560,
+      "snapshot": 18
+    },
+    "growth_between_observations": {
+      "depth": 400,
+      "trade": 400
+    }
+  },
+  "validation": {
+    "gzip_integrity": "PASS",
+    "diagnostic_quality": "PASS",
+    "ntp_synchronized": true,
+    "collector_left_running": true,
+    "result": "PASS"
+  }
+}

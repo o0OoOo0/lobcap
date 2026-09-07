@@ -1,0 +1,11 @@
+{
+  "methodology_version": "prompt5e-v13",
+  "date": "2025-10-01",
+  "window": "00:00-00:10",
+  "run1_response_sha256": "df4074db925dbee834b5ab6c5020c42da323ea6c40e424c6d879e7c2e1c20799",
+  "run2_response_sha256": "df4074db925dbee834b5ab6c5020c42da323ea6c40e424c6d879e7c2e1c20799",
+  "run1_deterministic_sha256": "49f84b91915a12cce8538a57257b54a93ed928d7d820a0413d4841df051911e9",
+  "run2_deterministic_sha256": "49f84b91915a12cce8538a57257b54a93ed928d7d820a0413d4841df051911e9",
+  "match": true,
+  "result": "PASS"
+}

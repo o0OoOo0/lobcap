@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "experiments/manifest.schema.json",
+  "title": "lobcap experiment manifest",
+  "type": "object",
+  "required": [
+    "experiment_name",
+    "experiment_version",
+    "git_commit",
+    "config_path",
+    "data_source",
+    "date_window",
+    "input_artifacts",
+    "output_artifact_paths",
+    "code_version",
+    "status",
+    "started_at",
+    "completed_at"
+  ],
+  "properties": {
+    "experiment_name": {"type": "string"},
+    "experiment_version": {"type": "string"},
+    "git_commit": {"type": "string"},
+    "config_path": {"type": "string"},
+    "data_source": {"type": ["object", "string"]},
+    "date_window": {"type": ["object", "array", "string"]},
+    "input_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string"}
+        }
+      }
+    },
+    "output_artifact_paths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string"},
+          "tracked_in_git": {"type": ["boolean", "string"]}
+        }
+      }
+    },
+    "code_version": {"type": ["object", "string"]},
+    "status": {"type": "string"},
+    "started_at": {"type": "string"},
+    "completed_at": {"type": "string"}
+  },
+  "additionalProperties": true
+}

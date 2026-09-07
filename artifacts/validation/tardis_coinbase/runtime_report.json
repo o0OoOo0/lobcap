@@ -1,0 +1,258 @@
+{
+  "result": "RUNTIME_VERIFIED",
+  "api_key_supplied": false,
+  "paid_account_required_for_this_request": false,
+  "exchange": "coinbase",
+  "symbol": "BTC-USD",
+  "requested_interval": {
+    "from": "2026-09-01T00:00:00.000Z",
+    "to_exclusive": "2026-09-01T00:01:00.000Z",
+    "offset_minutes": 0
+  },
+  "http_status": 200,
+  "response_compressed_bytes": 4416936,
+  "response_decompressed_bytes": 17910927,
+  "messages": 43696,
+  "disconnect_markers": 0,
+  "event_type_counts": {
+    "change": 1944,
+    "done": 13870,
+    "full_snapshot": 1,
+    "match": 310,
+    "open": 13673,
+    "received": 13898
+  },
+  "done_reason_counts": {
+    "canceled": 13560,
+    "filled": 310
+  },
+  "missing_sequence_by_lifecycle_type": {},
+  "lifecycle_sequence": {
+    "messages_with_sequence": 43695,
+    "comparable_pairs": 43694,
+    "first_sequence": 135356473105,
+    "last_sequence": 135356516799,
+    "strictly_increasing_by_one_pairs": 43694,
+    "gap_pairs": 0,
+    "missing_sequence_values": 0,
+    "duplicate_pairs": 0,
+    "decreasing_pairs": 0,
+    "first_gap_examples": [],
+    "first_duplicate_examples": [],
+    "first_decrease_examples": []
+  },
+  "snapshot": [
+    {
+      "line": 3754,
+      "local_timestamp": "2026-09-01T00:00:04.4338508Z",
+      "generated": true,
+      "sequence": 135356475328,
+      "product_id": "BTC-USD",
+      "time": "2026-09-01T00:00:02.104186387Z",
+      "bid_orders": 63945,
+      "ask_orders": 46001,
+      "bid_entry_lengths": [
+        3
+      ],
+      "ask_entry_lengths": [
+        3
+      ],
+      "first_bid": [
+        "78555.86",
+        "0.00999976",
+        "7ac525c5-0dde-4d72-9eb0-7db5a6e86a12"
+      ],
+      "first_ask": [
+        "78555.87",
+        "0.00185322",
+        "e3099ae3-6ebd-483e-8eca-61b9a0725eed"
+      ]
+    }
+  ],
+  "snapshot_alignment": [
+    {
+      "snapshot_line": 3754,
+      "snapshot_sequence": 135356475328,
+      "previous_lifecycle": {
+        "line": 3753,
+        "type": "received",
+        "sequence": 135356476857,
+        "local_timestamp": "2026-09-01T00:00:04.4338499Z"
+      },
+      "next_lifecycle": {
+        "line": 3755,
+        "type": "open",
+        "sequence": 135356476858,
+        "local_timestamp": "2026-09-01T00:00:04.4338515Z"
+      },
+      "buffered_events_before_snapshot_above_snapshot_sequence": 1529,
+      "first_buffered_event_to_replay": {
+        "line": 2225,
+        "type": "received",
+        "sequence": 135356475329,
+        "local_timestamp": "2026-09-01T00:00:02.1439602Z"
+      },
+      "last_buffered_event_before_snapshot": {
+        "line": 3753,
+        "type": "received",
+        "sequence": 135356476857,
+        "local_timestamp": "2026-09-01T00:00:04.4338499Z"
+      }
+    }
+  ],
+  "order_lifecycle_evidence": {
+    "received_then_open_order_ids": 13673,
+    "example_received_then_open": [
+      {
+        "order_id": "50469868-2e0f-4afb-b9db-5bcde8b46e1e",
+        "events": [
+          {
+            "line": 2,
+            "type": "received",
+            "sequence": 135356473106,
+            "reason": null,
+            "size": "0.17318433",
+            "remaining_size": null
+          },
+          {
+            "line": 3,
+            "type": "open",
+            "sequence": 135356473107,
+            "reason": null,
+            "size": null,
+            "remaining_size": "0.17318433"
+          },
+          {
+            "line": 81,
+            "type": "done",
+            "sequence": 135356473185,
+            "reason": "canceled",
+            "size": null,
+            "remaining_size": "0.17318433"
+          }
+        ]
+      }
+    ],
+    "open_then_done_canceled_order_ids": 12749,
+    "example_open_then_done_canceled": [
+      {
+        "order_id": "50469868-2e0f-4afb-b9db-5bcde8b46e1e",
+        "events": [
+          {
+            "line": 2,
+            "type": "received",
+            "sequence": 135356473106,
+            "reason": null,
+            "size": "0.17318433",
+            "remaining_size": null
+          },
+          {
+            "line": 3,
+            "type": "open",
+            "sequence": 135356473107,
+            "reason": null,
+            "size": null,
+            "remaining_size": "0.17318433"
+          },
+          {
+            "line": 81,
+            "type": "done",
+            "sequence": 135356473185,
+            "reason": "canceled",
+            "size": null,
+            "remaining_size": "0.17318433"
+          }
+        ]
+      }
+    ],
+    "maker_match_then_done_filled_order_ids": 113,
+    "example_maker_match_then_done_filled": [
+      {
+        "order_id": "bcd2b2cb-9b17-494c-bc93-7441b90c1edf",
+        "matches": [
+          {
+            "line": 5764,
+            "type": "match",
+            "sequence": 135356478867,
+            "reason": null,
+            "size": "0.02127993",
+            "remaining_size": null
+          },
+          {
+            "line": 10896,
+            "type": "match",
+            "sequence": 135356483999,
+            "reason": null,
+            "size": "0.00042255",
+            "remaining_size": null
+          },
+          {
+            "line": 20951,
+            "type": "match",
+            "sequence": 135356494054,
+            "reason": null,
+            "size": "0.00001260",
+            "remaining_size": null
+          },
+          {
+            "line": 21813,
+            "type": "match",
+            "sequence": 135356494916,
+            "reason": null,
+            "size": "0.02500000",
+            "remaining_size": null
+          }
+        ],
+        "filled_done_events": [
+          {
+            "line": 21814,
+            "type": "done",
+            "sequence": 135356494917,
+            "reason": "filled",
+            "size": null,
+            "remaining_size": "0"
+          }
+        ]
+      }
+    ],
+    "maker_order_ids_with_multiple_matches": 50,
+    "maximum_matches_for_one_maker_order": 6,
+    "example_multiple_matches_same_maker": [
+      {
+        "order_id": "ae9fa553-15b0-4984-9a06-8c10c4b246bd",
+        "matches": [
+          {
+            "line": 226,
+            "type": "match",
+            "sequence": 135356473330,
+            "reason": null,
+            "size": "0.00031504",
+            "remaining_size": null
+          },
+          {
+            "line": 731,
+            "type": "match",
+            "sequence": 135356473835,
+            "reason": null,
+            "size": "0.00176597",
+            "remaining_size": null
+          }
+        ]
+      }
+    ],
+    "distinct_match_maker_order_ids": 218,
+    "match_maker_ids_traceable_to_snapshot_or_lifecycle": 218,
+    "distinct_match_taker_order_ids": 210,
+    "match_taker_ids_traceable_to_received_lifecycle": 210
+  },
+  "capability_assessment": {
+    "free_raw_l3_access": "RUNTIME_VERIFIED",
+    "can_reconstruct_individual_order_book": "YES",
+    "can_distinguish_fill_vs_cancel": "YES",
+    "can_track_partial_fills": "YES",
+    "can_infer_fifo_queue_truth": "UNCERTAIN",
+    "fifo_caveat": "Open sequence establishes arrival order after the snapshot, but orders already present in full_snapshot have price, size, and order_id without a per-order arrival timestamp or sequence; the official REST L3 page does not explicitly guarantee same-price array ordering.",
+    "snapshot_replay_rule_observed": "Initialize at full_snapshot.sequence, then replay already-buffered lifecycle events with sequence greater than the snapshot sequence before continuing with later capture-order events."
+  },
+  "raw_sample": "/home/0woo/lobcap/artifacts/validation/tardis_coinbase/raw_sample.jsonl"
+}

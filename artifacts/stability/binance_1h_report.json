@@ -1,0 +1,324 @@
+{
+  "kinds": {
+    "depth": {
+      "baseline_count": 5878,
+      "total_count": 41151,
+      "one_hour_count": 35273,
+      "schema_v2": true,
+      "raw_required_fields": true,
+      "first_ts_recv_ns": 1788703464698581962,
+      "last_ts_recv_ns": 1788707064189142254,
+      "files": [
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T130000Z.jsonl.gz",
+          "bytes": 1387712
+        },
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T140000Z.jsonl.gz",
+          "bytes": 15133103
+        },
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T150000Z.jsonl.gz",
+          "bytes": 1779829
+        }
+      ]
+    },
+    "trade": {
+      "baseline_count": 2003,
+      "total_count": 62453,
+      "one_hour_count": 60450,
+      "schema_v2": true,
+      "raw_required_fields": true,
+      "first_ts_recv_ns": 1788703464933053151,
+      "last_ts_recv_ns": 1788707064167304612,
+      "files": [
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T130000Z.jsonl.gz",
+          "bytes": 60212
+        },
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T140000Z.jsonl.gz",
+          "bytes": 1571793
+        },
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T150000Z.jsonl.gz",
+          "bytes": 184377
+        }
+      ]
+    },
+    "snapshot": {
+      "baseline_count": 2,
+      "total_count": 14,
+      "one_hour_count": 12,
+      "schema_v2": true,
+      "raw_required_fields": true,
+      "first_ts_recv_ns": 1788703464651503315,
+      "last_ts_recv_ns": 1788706765107639858,
+      "files": [
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=snapshot/date=2026-09-06/20260906T000000Z.jsonl.gz",
+          "bytes": 120708
+        }
+      ]
+    }
+  },
+  "sequence": {
+    "rule": "current.pu == previous.u",
+    "messages": 35273,
+    "comparable_pairs": 35272,
+    "mismatches": 0,
+    "first_mismatch": null,
+    "spot_style_U_check_performed": false,
+    "prior_test_boundary": {
+      "previous_test_last_u": 11489289621248,
+      "one_hour_first_U": 11489329611211,
+      "one_hour_first_u": 11489329617800,
+      "one_hour_first_pu": 11489329610910,
+      "continuous": false,
+      "interpretation": "separate acquisition segments; downtime was intentional"
+    }
+  },
+  "lifecycle": {
+    "one_hour_event_count": 20,
+    "counts": {
+      "connect_attempt": 2,
+      "connected": 2,
+      "disconnect": 2,
+      "process_start": 1,
+      "process_stop": 1,
+      "snapshot_ok": 12
+    },
+    "process_start_utc": "2026-09-06T14:04:24.517310Z",
+    "process_stop_utc": "2026-09-06T15:04:30.446520Z",
+    "process_stop_details": {
+      "stats": {
+        "depth": 35273,
+        "trade": 60450,
+        "snapshot": 12,
+        "sequence_gap": 0
+      }
+    }
+  },
+  "coverage": {
+    "five_minute_bins_expected": 13,
+    "five_minute_bins_empty": 0
+  },
+  "storage": {
+    "baseline_gzip_bytes": 1465228,
+    "end_gzip_bytes": 20237734,
+    "one_hour_gzip_bytes": 18772506,
+    "baseline_event_bytes": 2561,
+    "end_event_bytes": 7165,
+    "one_hour_event_bytes": 4604,
+    "one_hour_total_bytes": 18777110
+  },
+  "monitor": {
+    "samples": [
+      {
+        "label": "10m",
+        "utc": "2026-09-06T14:14:55Z",
+        "pid": 29392,
+        "ps": "29392     631  1.0  1.0 41904 273324 Sl",
+        "files": [
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 1387712
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 1761643
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=event/date=2026-09-06/events.jsonl",
+            "bytes": 4572
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=snapshot/date=2026-09-06/20260906T000000Z.jsonl.gz",
+            "bytes": 43086
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 60212
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 118381
+          }
+        ]
+      },
+      {
+        "label": "20m",
+        "utc": "2026-09-06T14:25:15Z",
+        "pid": 29392,
+        "ps": "29392    1251  1.3  1.0 42720 274200 Sl",
+        "files": [
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 1387712
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 5112113
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=event/date=2026-09-06/events.jsonl",
+            "bytes": 4980
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=snapshot/date=2026-09-06/20260906T000000Z.jsonl.gz",
+            "bytes": 60302
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 60212
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 443701
+          }
+        ]
+      },
+      {
+        "label": "30m",
+        "utc": "2026-09-06T14:35:19Z",
+        "pid": 29392,
+        "ps": "29392    1855  1.4  1.1 45012 276676 Rl",
+        "files": [
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 1387712
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 8947480
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=event/date=2026-09-06/events.jsonl",
+            "bytes": 5388
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=snapshot/date=2026-09-06/20260906T000000Z.jsonl.gz",
+            "bytes": 77456
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 60212
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 1021505
+          }
+        ]
+      },
+      {
+        "label": "40m",
+        "utc": "2026-09-06T14:45:19Z",
+        "pid": 29392,
+        "ps": "29392    2455  1.4  1.1 45012 276676 Sl",
+        "files": [
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 1387712
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 11773657
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=event/date=2026-09-06/events.jsonl",
+            "bytes": 5796
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=snapshot/date=2026-09-06/20260906T000000Z.jsonl.gz",
+            "bytes": 94786
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 60212
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 1290752
+          }
+        ]
+      },
+      {
+        "label": "50m",
+        "utc": "2026-09-06T14:55:21Z",
+        "pid": 29392,
+        "ps": "29392    3057  1.4  1.1 45140 276676 Sl",
+        "files": [
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 1387712
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 13990659
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=event/date=2026-09-06/events.jsonl",
+            "bytes": 6204
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=snapshot/date=2026-09-06/20260906T000000Z.jsonl.gz",
+            "bytes": 112088
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T130000Z.jsonl.gz",
+            "bytes": 60212
+          },
+          {
+            "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T140000Z.jsonl.gz",
+            "bytes": 1472862
+          }
+        ]
+      }
+    ],
+    "sample_cpu_percent": [
+      1.0,
+      1.3,
+      1.4,
+      1.4,
+      1.4
+    ],
+    "sample_rss_kib": [
+      41904,
+      42720,
+      45012,
+      45012,
+      45140
+    ],
+    "sample_rss_min_kib": 41904,
+    "sample_rss_max_kib": 45140,
+    "time_maximum_rss_kib": 46828,
+    "time_average_cpu_percent": 1
+  },
+  "hour_rolling": {
+    "depth_hour_files": [
+      "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T130000Z.jsonl.gz",
+      "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T140000Z.jsonl.gz",
+      "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T150000Z.jsonl.gz"
+    ],
+    "trade_hour_files": [
+      "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T130000Z.jsonl.gz",
+      "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T140000Z.jsonl.gz",
+      "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T150000Z.jsonl.gz"
+    ],
+    "crossed_utc_hour": true,
+    "gzip_test": "run separately for every file"
+  },
+  "one_hour_pass": true,
+  "capacity": {
+    "basis": "one-hour foreground gzip byte delta; decimal MB/GB; provisional",
+    "compressed_mb_per_hour": 18.773,
+    "estimated_gb_per_day": 0.451,
+    "estimated_gb_30d": 13.516,
+    "estimated_gb_90d": 40.549,
+    "estimated_days_at_93gb_free": 206.4
+  },
+  "quality": {
+    "exit_code": 0,
+    "artifact": "/home/0woo/lobcap/artifacts/stability/binance_1h_quality.txt"
+  }
+}

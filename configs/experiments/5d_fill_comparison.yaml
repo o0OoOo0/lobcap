@@ -1,0 +1,61 @@
+schema_version: 1
+experiment_name: 5d_fill_comparison
+experiment_version: "1"
+provenance: extracted_from_active_code
+implementation:
+  projection: src/lobcap/l2/downsample.py
+  models: src/lobcap/l2/fill_models.py
+  comparison: src/lobcap/l2/compare.py
+venue:
+  name: coinbase
+  market: spot
+  symbol: BTC-USD
+source:
+  provider: tardis.dev
+  format: exchange-native raw L3 projected to blinded L2
+  raw_input: artifacts/validation/tardis_coinbase/raw_http_slice.txt
+  truth_input: artifacts/virtual_truth/virtual_orders.jsonl
+dates:
+  - "2026-09-01"
+windows_utc:
+  - "00:00:00-00:01:00"
+placement_rule:
+  inherited_from: configs/experiments/5c_virtual_truth.yaml
+  price: reconstructed BBO
+  sides: [buy, sell]
+  trigger_seconds: [5, 20, 35, 50]
+virtual_sizes_btc: ["0.001", "0.01"]
+ttls_seconds: [1, 5, 10, 30]
+alpha_grid: ["0.00", "0.25", "0.50", "0.75", "1.00"]
+model_names:
+  - alpha=0.00
+  - alpha=0.25
+  - alpha=0.50
+  - alpha=0.75
+  - alpha=1.00
+  - TOUCH_FILL
+split_rule: not_applicable_single_window_in_sample_diagnostic
+random_seed: null
+randomness: none
+evaluation_metrics:
+  primary:
+    - any_fill_confusion_matrix
+    - full_fill_confusion_matrix
+    - fill_quantity_mae_btc
+    - fill_quantity_bias_btc
+  secondary:
+    - any_fill_precision_recall
+    - full_fill_precision_recall
+    - first_fill_timing_error
+    - full_fill_timing_error
+    - early_late_on_time_rates
+  safety:
+    - leakage_check
+    - projection_invariants
+    - fill_model_invariants
+expected_key_metrics:
+  placements: 64
+  truth_any_fill_rate: 0.84375
+  alpha_0_any_fill_FN: 14
+  alpha_1_any_fill_FP: 2
+  touch_fill_any_fill_FP: 8

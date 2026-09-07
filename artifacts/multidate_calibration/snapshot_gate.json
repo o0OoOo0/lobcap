@@ -1,0 +1,27 @@
+{
+  "tested_at_utc": "2026-09-07T02:29:26Z",
+  "date": "2025-10-01",
+  "arbitrary_window_start_utc": "04:00:00Z",
+  "combined_lifecycle_request": {
+    "http_status": 200,
+    "response_bytes_decompressed": 13268232,
+    "lifecycle_messages": 51897,
+    "full_snapshot_messages": 0,
+    "sequence_gaps": 0
+  },
+  "full_snapshot_only_at_0400": {
+    "http_status": 200,
+    "response_bytes_decompressed": 0,
+    "full_snapshot_messages": 0
+  },
+  "full_snapshot_only_at_0000": {
+    "http_status": 200,
+    "response_bytes_decompressed": 6668707,
+    "full_snapshot_messages": 1,
+    "generated": true,
+    "snapshot_sequence": 112570345203
+  },
+  "result": "ARBITRARY_START_SNAPSHOT_NOT_AVAILABLE",
+  "design_revision": "ordered one-pass replay from each date's midnight snapshot through 20:10; derive outputs only inside selected windows; retain no full raw day",
+  "hack_around_used": false
+}

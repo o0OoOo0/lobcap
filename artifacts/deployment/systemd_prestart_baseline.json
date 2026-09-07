@@ -1,0 +1,27 @@
+{
+  "utc": "2026-09-06T15:08:26.281452Z",
+  "counts": {
+    "depth": 41151,
+    "trade": 62453,
+    "snapshot": 14
+  },
+  "bytes": {
+    "depth": 18300644,
+    "trade": 1816382,
+    "snapshot": 120708
+  },
+  "last_depth": {
+    "u": 11489755829971,
+    "connection_id": "f6efd5e9b97d420f95a94eb6ec744b3f",
+    "ts_recv_ns": 1788707064189142254
+  },
+  "event_count": 30,
+  "event_counts": {
+    "process_start": 2,
+    "connect_attempt": 4,
+    "connected": 4,
+    "snapshot_ok": 14,
+    "disconnect": 4,
+    "process_stop": 2
+  }
+}

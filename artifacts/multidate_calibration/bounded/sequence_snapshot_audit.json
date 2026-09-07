@@ -1,0 +1,228 @@
+{
+  "methodology_version": "prompt5e-v12",
+  "date": "2025-10-01",
+  "raw_retention": "bounded message metadata; full snapshot order arrays omitted",
+  "http_responses": {
+    "0": {
+      "http_status": 200,
+      "compressed_bytes": 4037116,
+      "decompressed_bytes": 15084342,
+      "content_length": 4037116,
+      "x_name": "coinbase/2025/10/01/00/00",
+      "attempts": 1,
+      "download_seconds": 2.50967,
+      "line_count": 32933,
+      "blank_disconnect_markers": 0,
+      "first_message": {
+        "local_timestamp": "2025-10-01T00:00:00.0563848Z",
+        "type": "done",
+        "sequence": 112570339597,
+        "exchange_time": "2025-10-01T00:00:00.000001Z",
+        "product_id": "BTC-USD",
+        "order_id": "dbdc58ca-97e6-464a-ab4b-f8f8a88542d9",
+        "side": "buy",
+        "reason": "canceled",
+        "price": "113993.9"
+      },
+      "last_message": {
+        "local_timestamp": "2025-10-01T00:00:59.9853997Z",
+        "type": "open",
+        "sequence": 112570372528,
+        "exchange_time": "2025-10-01T00:00:59.947401Z",
+        "product_id": "BTC-USD",
+        "order_id": "75f92044-fbe6-4287-8bb7-e6ba50e9db92",
+        "side": "buy",
+        "price": "114093.73"
+      },
+      "first_lifecycle_sequence": 112570339597,
+      "last_lifecycle_sequence": 112570372528,
+      "full_snapshots": [
+        {
+          "local_timestamp": "2025-10-01T00:00:06.4112528Z",
+          "type": "full_snapshot",
+          "sequence": 112570345203,
+          "exchange_time": "2025-10-01T00:00:04.035392838Z",
+          "product_id": "BTC-USD",
+          "generated": true,
+          "bid_orders": 64247,
+          "ask_orders": 42816
+        }
+      ]
+    },
+    "1107": {
+      "http_status": 200,
+      "compressed_bytes": 1382223,
+      "decompressed_bytes": 10333451,
+      "content_length": 1382223,
+      "x_name": "coinbase/2025/10/01/18/27",
+      "attempts": 1,
+      "download_seconds": 2.638227,
+      "line_count": 40416,
+      "blank_disconnect_markers": 0,
+      "first_message": {
+        "local_timestamp": "2025-10-01T18:27:00.0119424Z",
+        "type": "done",
+        "sequence": 112615519634,
+        "exchange_time": "2025-10-01T18:26:59.972864Z",
+        "product_id": "BTC-USD",
+        "order_id": "66f36cb6-3f65-4c86-a62d-77de33b07768",
+        "side": "sell",
+        "reason": "canceled",
+        "price": "117118.99"
+      },
+      "last_message": {
+        "local_timestamp": "2025-10-01T18:27:59.9969301Z",
+        "type": "open",
+        "sequence": 112615560049,
+        "exchange_time": "2025-10-01T18:27:59.957689Z",
+        "product_id": "BTC-USD",
+        "order_id": "4499809b-7e4d-4c9f-8f44-8158c1bb07f9",
+        "side": "buy",
+        "price": "117096.8"
+      },
+      "first_lifecycle_sequence": 112615519634,
+      "last_lifecycle_sequence": 112615560049,
+      "full_snapshots": []
+    },
+    "1108": {
+      "http_status": 200,
+      "compressed_bytes": 4207271,
+      "decompressed_bytes": 16639932,
+      "content_length": 4207271,
+      "x_name": "coinbase/2025/10/01/18/28",
+      "attempts": 1,
+      "download_seconds": 2.042064,
+      "line_count": 39607,
+      "blank_disconnect_markers": 1,
+      "first_message": {
+        "local_timestamp": "2025-10-01T18:28:00.0072129Z",
+        "type": "received",
+        "sequence": 112615560050,
+        "exchange_time": "2025-10-01T18:27:59.967989Z",
+        "product_id": "BTC-USD",
+        "order_id": "9b265dc9-6868-4e93-adbc-d7aac59d8920",
+        "side": "sell",
+        "price": "136636.52",
+        "size": "0.00002195"
+      },
+      "last_message": {
+        "local_timestamp": "2025-10-01T18:28:59.9916767Z",
+        "type": "done",
+        "sequence": 112615600380,
+        "exchange_time": "2025-10-01T18:28:59.952330Z",
+        "product_id": "BTC-USD",
+        "order_id": "912b2743-93a4-48ab-870b-fa311f221466",
+        "side": "sell",
+        "reason": "canceled",
+        "price": "117117.2"
+      },
+      "first_lifecycle_sequence": 112615560050,
+      "last_lifecycle_sequence": 112615600380,
+      "full_snapshots": [
+        {
+          "local_timestamp": "2025-10-01T18:28:07.2598901Z",
+          "type": "full_snapshot",
+          "sequence": 112615565486,
+          "exchange_time": "2025-10-01T18:28:04.599888601Z",
+          "product_id": "BTC-USD",
+          "generated": true,
+          "bid_orders": 66412,
+          "ask_orders": 37876
+        }
+      ]
+    },
+    "1109": {
+      "http_status": 200,
+      "compressed_bytes": 1030606,
+      "decompressed_bytes": 7865446,
+      "content_length": 1030606,
+      "x_name": "coinbase/2025/10/01/18/29",
+      "attempts": 1,
+      "download_seconds": 2.713097,
+      "line_count": 30635,
+      "blank_disconnect_markers": 0,
+      "first_message": {
+        "local_timestamp": "2025-10-01T18:29:00.0091060Z",
+        "type": "done",
+        "sequence": 112615600381,
+        "exchange_time": "2025-10-01T18:28:59.969900Z",
+        "product_id": "BTC-USD",
+        "order_id": "ede501a8-3916-467d-8e54-2355693ce759",
+        "side": "buy",
+        "reason": "canceled",
+        "price": "117090.56"
+      },
+      "last_message": {
+        "local_timestamp": "2025-10-01T18:29:59.9696656Z",
+        "type": "open",
+        "sequence": 112615631015,
+        "exchange_time": "2025-10-01T18:29:59.930434Z",
+        "product_id": "BTC-USD",
+        "order_id": "e736ee78-6f02-4fa0-aff2-170cabc9aed1",
+        "side": "buy",
+        "price": "117081.01"
+      },
+      "first_lifecycle_sequence": 112615600381,
+      "last_lifecycle_sequence": 112615631015,
+      "full_snapshots": []
+    }
+  },
+  "initial_snapshot": {
+    "snapshot": {
+      "local_timestamp": "2025-10-01T00:00:06.4112528Z",
+      "type": "full_snapshot",
+      "sequence": 112570345203,
+      "exchange_time": "2025-10-01T00:00:04.035392838Z",
+      "product_id": "BTC-USD",
+      "generated": true,
+      "bid_orders": 64247,
+      "ask_orders": 42816
+    },
+    "pre_snapshot_lifecycle_count": 7101,
+    "pre_snapshot_first_sequence": 112570339597,
+    "pre_snapshot_last_sequence": 112570346697,
+    "behavior": "Lifecycle events arriving before the generated day-start snapshot are buffered; events <= snapshot.sequence are discarded and later contiguous events replayed."
+  },
+  "observed_capture_gaps": [
+    {
+      "missing_sequence_count": 726,
+      "previous": {
+        "local_timestamp": "2025-10-01T18:28:02.1593612Z",
+        "type": "done",
+        "sequence": 112615562186,
+        "exchange_time": "2025-10-01T18:28:02.120274Z",
+        "product_id": "BTC-USD",
+        "order_id": "beba4acd-b0bc-429e-91fc-0fcc08e67505",
+        "side": "buy",
+        "reason": "canceled",
+        "price": "117081.7"
+      },
+      "current": {
+        "local_timestamp": "2025-10-01T18:28:03.0822720Z",
+        "type": "done",
+        "sequence": 112615562913,
+        "exchange_time": "2025-10-01T18:28:02.572597Z",
+        "product_id": "BTC-USD",
+        "order_id": "72507312-87be-431e-9d86-8ef4cb08451e",
+        "side": "buy",
+        "reason": "canceled",
+        "price": "117082.87"
+      },
+      "following_generated_snapshot": {
+        "local_timestamp": "2025-10-01T18:28:07.2598901Z",
+        "type": "full_snapshot",
+        "sequence": 112615565486,
+        "exchange_time": "2025-10-01T18:28:04.599888601Z",
+        "product_id": "BTC-USD",
+        "generated": true,
+        "bid_orders": 66412,
+        "ask_orders": 37876
+      }
+    }
+  ],
+  "gap_count": 1,
+  "unexplained_gap_count": 0,
+  "replacement_snapshot_count": 1,
+  "duplicate_snapshot_explanation": "The later generated full_snapshot is not a duplicate state update. It follows the blank disconnect marker and capture gap, replaces the stale book, and starts a new acquisition segment. Treating it as duplicate_full_snapshot was the v7 bug.",
+  "http_boundary_conclusion": "Adjacent minute responses are ordered by lifecycle sequence except for the in-response reconnect gap; the gap is not created by the HTTP minute boundary."
+}

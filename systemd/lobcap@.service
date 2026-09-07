@@ -1,0 +1,19 @@
+[Unit]
+Description=LOB collector %i
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/data
+
+[Service]
+Type=simple
+User=0woo
+WorkingDirectory=/home/0woo/lobcap
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/0woo/lobcap/.venv/bin/python -m lobcap.collectors.binance --symbol %i --out /data --snap-interval 300 --depth-speed 100ms
+Restart=always
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

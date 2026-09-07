@@ -1,0 +1,26 @@
+{
+  "audited_at": "2026-09-07T14:37:07Z",
+  "status": "PASS_WITH_ARCHITECTURAL_GAP",
+  "configs_are_runtime_inputs": false,
+  "hard_coded_sources": {
+    "5c_placement_grid": "src/lobcap/l3/virtual.py:627",
+    "5d_model_grid": "src/lobcap/l2/fill_models.py:44",
+    "5e_dates_windows_placement_grid": "src/lobcap/l2/multidate.py:47"
+  },
+  "comparisons": [
+    {"setting": "trigger_seconds", "code": [5, 20, 35, 50], "config": [5, 20, 35, 50], "match": true},
+    {"setting": "sides", "code": ["buy", "sell"], "config": ["buy", "sell"], "match": true},
+    {"setting": "virtual_sizes_btc", "code": ["0.001", "0.01"], "config": ["0.001", "0.01"], "match": true},
+    {"setting": "ttls_seconds", "code": [1, 5, 10, 30], "config": [1, 5, 10, 30], "match": true},
+    {"setting": "alpha_grid", "code": ["0.00", "0.25", "0.50", "0.75", "1.00"], "config": ["0.00", "0.25", "0.50", "0.75", "1.00"], "match": true},
+    {"setting": "5e_window_start_minutes", "code": [0, 240, 480, 720, 960, 1200], "config": [0, 240, 480, 720, 960, 1200], "match": true},
+    {"setting": "5e_window_minutes", "code": 10, "config": 10, "match": true},
+    {"setting": "date_split_counts", "code": [6, 3, 3], "config": [6, 3, 3], "match": true},
+    {"setting": "random_seed", "code": "NO_RANDOMNESS", "config": null, "match": true}
+  ],
+  "value_mismatches": [],
+  "architectural_gaps": [
+    "Runtime code does not load configs/experiments/*.yaml; values are duplicated.",
+    "Full 5C/5D reproduction requires an ignored raw input identified by SHA-256."
+  ]
+}

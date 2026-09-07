@@ -1,0 +1,39 @@
+schema_version: 1
+experiment_name: 5c_virtual_truth
+experiment_version: "1"
+provenance: extracted_from_active_code
+implementation: src/lobcap/l3/virtual.py
+venue:
+  name: coinbase
+  market: spot
+  symbol: BTC-USD
+source:
+  provider: tardis.dev
+  format: exchange-native raw L3
+  input_artifact: artifacts/validation/tardis_coinbase/raw_http_slice.txt
+dates:
+  - "2026-09-01"
+windows_utc:
+  - "00:00:00-00:01:00"
+placement_rule:
+  price: reconstructed BBO
+  sides: [buy, sell]
+  trigger_seconds: [5, 20, 35, 50]
+  ordering: first lifecycle event at or after trigger time is fully applied, then place
+  branch_model: independent_counterfactual
+virtual_sizes_btc: ["0.001", "0.01"]
+ttls_seconds: [1, 5, 10, 30]
+alpha_grid: []
+model_names: [L3_DERIVED_SHADOW_FILL]
+split_rule: not_applicable_single_window
+random_seed: null
+randomness: none
+evaluation_metrics:
+  - outcome_counts
+  - fill_evidence_order_counts
+  - fill_evidence_event_counts
+  - initial_ahead_volume_distribution
+  - ahead_depletion_totals
+  - reconstruction_invariants
+  - virtual_order_invariants
+expected_placements: 64

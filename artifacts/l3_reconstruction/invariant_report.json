@@ -1,0 +1,44 @@
+{
+  "valid": true,
+  "sequence": {
+    "capture_order": {
+      "last_sequence": 135356516799,
+      "comparable_pairs": 43694,
+      "plus_one_pairs": 43694,
+      "gaps": 0,
+      "duplicates": 0,
+      "reversals": 0,
+      "examples": []
+    },
+    "applied_after_snapshot": {
+      "last_sequence": 135356516799,
+      "comparable_pairs": 41471,
+      "plus_one_pairs": 41471,
+      "gaps": 0,
+      "duplicates": 0,
+      "reversals": 0,
+      "examples": []
+    },
+    "first_applied_lifecycle_sequence": 135356475329
+  },
+  "negative_remaining_size": 0,
+  "unknown_maker_matches": 0,
+  "unknown_done_orders": 213,
+  "duplicate_opens": 0,
+  "crossed_book": false,
+  "internal_consistency": {
+    "membership_errors": 0,
+    "aggregate_errors": 0
+  },
+  "book_audit_counts": {
+    "unknown_done_order": 213
+  },
+  "book_audit_examples": {
+    "unknown_done_order": {
+      "order_id": "c25bdbf6-d0cb-4288-9cc6-07da03558ee8",
+      "sequence": 135356475517,
+      "reason": "filled"
+    }
+  },
+  "errors": []
+}

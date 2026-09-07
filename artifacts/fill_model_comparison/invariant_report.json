@@ -1,0 +1,13 @@
+{
+  "valid": true,
+  "reconstruction_valid": true,
+  "projection": {},
+  "fill_models": {
+    "negative_queue": 0,
+    "negative_remaining": 0,
+    "overfill": 0,
+    "double_counted_trade": 0,
+    "trade_in_nontrade_depletion": 0
+  },
+  "leakage_violations": 0
+}

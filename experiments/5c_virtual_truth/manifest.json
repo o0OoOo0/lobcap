@@ -1,0 +1,50 @@
+{
+  "$schema": "../manifest.schema.json",
+  "experiment_name": "5c_virtual_truth",
+  "experiment_version": "1",
+  "git_commit": "UNKNOWN",
+  "config_path": "configs/experiments/5c_virtual_truth.yaml",
+  "data_source": {
+    "provider": "tardis.dev",
+    "exchange": "coinbase",
+    "symbol": "BTC-USD",
+    "format": "exchange-native raw L3"
+  },
+  "date_window": {
+    "date": "2026-09-01",
+    "from": "2026-09-01T00:00:00Z",
+    "to_exclusive": "2026-09-01T00:01:00Z"
+  },
+  "input_artifacts": [
+    {
+      "path": "artifacts/validation/tardis_coinbase/raw_http_slice.txt",
+      "sha256": "16792f94e6c30be4b8985aa96beec5c2b92ceedce28efc1b97d5c2d0041eb8af"
+    }
+  ],
+  "output_artifact_paths": [
+    {
+      "path": "artifacts/virtual_truth/virtual_orders.jsonl",
+      "sha256": "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca",
+      "tracked_in_git": true
+    },
+    {
+      "path": "artifacts/virtual_truth/queue_ledger.jsonl",
+      "sha256": "fd9faaa589b7e312d44156fd9e74f9fb941383530d4600f5791fb47055a8b0f6",
+      "tracked_in_git": true
+    },
+    {
+      "path": "artifacts/virtual_truth/truth_summary.json",
+      "sha256": "125993e8ebd288e1d78871ae05a7a07cc33e95abbfd749ef33905bc07fd27acb",
+      "tracked_in_git": true
+    }
+  ],
+  "code_version": {
+    "historical_commit": "UNKNOWN",
+    "entrypoint": "python -m lobcap.l3.virtual",
+    "current_code_reproduction_verified_at": "2026-09-07T14:37:07Z",
+    "reproduced_outputs_match": true
+  },
+  "status": "PASS_BACKFILLED_AND_REPRODUCED",
+  "started_at": "UNKNOWN",
+  "completed_at": "UNKNOWN"
+}

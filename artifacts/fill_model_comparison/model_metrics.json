@@ -1,0 +1,453 @@
+{
+  "summary": {
+    "result": "PASS",
+    "placements_compared": 64,
+    "l2_frames_generated": 27953,
+    "l2_level_updates_generated": 29756,
+    "l2_trades_generated": 295,
+    "truth_any_fill_rate": 0.84375,
+    "truth_full_fill_rate": 0.59375,
+    "assumption_disagreement": {
+      "any_fill_placements_all_models": 22,
+      "full_fill_placements_all_models": 8,
+      "any_fill_placements_alpha_grid_only": 16
+    },
+    "highest_fp_model": "TOUCH_FILL",
+    "highest_fn_model": "alpha=0.00",
+    "descriptive_in_sample_best_alpha": "alpha=1.00",
+    "best_alpha_selection": "minimum observed-window fill-quantity MAE; any-fill errors and lower alpha break ties",
+    "labeled_as_calibrated": false,
+    "deterministic_replay": true,
+    "full_day_downloaded": false
+  },
+  "models": {
+    "alpha=0.00": {
+      "n_placements": 64,
+      "truth_any_fill_prevalence": 0.84375,
+      "truth_full_fill_prevalence": 0.59375,
+      "predicted_any_fill_rate": 0.625,
+      "predicted_full_fill_rate": 0.53125,
+      "any_fill_precision": 1.0,
+      "any_fill_recall": 0.740741,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.259259,
+      "full_fill_precision": 1.0,
+      "full_fill_recall": 0.894737,
+      "fill_quantity": {
+        "n": 64,
+        "mae": "0.00033265421875",
+        "bias": "-0.00033265421875",
+        "mean_overfill_error": "0",
+        "mean_underfill_error": "0.00033265421875"
+      }
+    },
+    "alpha=0.25": {
+      "n_placements": 64,
+      "truth_any_fill_prevalence": 0.84375,
+      "truth_full_fill_prevalence": 0.59375,
+      "predicted_any_fill_rate": 0.78125,
+      "predicted_full_fill_rate": 0.5625,
+      "any_fill_precision": 1.0,
+      "any_fill_recall": 0.925926,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.074074,
+      "full_fill_precision": 1.0,
+      "full_fill_recall": 0.947368,
+      "fill_quantity": {
+        "n": 64,
+        "mae": "0.00015327109375",
+        "bias": "-0.00015327109375",
+        "mean_overfill_error": "0",
+        "mean_underfill_error": "0.00015327109375"
+      }
+    },
+    "alpha=0.50": {
+      "n_placements": 64,
+      "truth_any_fill_prevalence": 0.84375,
+      "truth_full_fill_prevalence": 0.59375,
+      "predicted_any_fill_rate": 0.8125,
+      "predicted_full_fill_rate": 0.5625,
+      "any_fill_precision": 0.961538,
+      "any_fill_recall": 0.925926,
+      "false_positive_rate": 0.2,
+      "false_negative_rate": 0.074074,
+      "full_fill_precision": 1.0,
+      "full_fill_recall": 0.947368,
+      "fill_quantity": {
+        "n": 64,
+        "mae": "0.00015327234375",
+        "bias": "-0.00015326984375",
+        "mean_overfill_error": "0.00000000125",
+        "mean_underfill_error": "0.00015327109375"
+      }
+    },
+    "alpha=0.75": {
+      "n_placements": 64,
+      "truth_any_fill_prevalence": 0.84375,
+      "truth_full_fill_prevalence": 0.59375,
+      "predicted_any_fill_rate": 0.8125,
+      "predicted_full_fill_rate": 0.5625,
+      "any_fill_precision": 0.961538,
+      "any_fill_recall": 0.925926,
+      "false_positive_rate": 0.2,
+      "false_negative_rate": 0.074074,
+      "full_fill_precision": 1.0,
+      "full_fill_recall": 0.947368,
+      "fill_quantity": {
+        "n": 64,
+        "mae": "0.00015327234375",
+        "bias": "-0.00015326984375",
+        "mean_overfill_error": "0.00000000125",
+        "mean_underfill_error": "0.00015327109375"
+      }
+    },
+    "alpha=1.00": {
+      "n_placements": 64,
+      "truth_any_fill_prevalence": 0.84375,
+      "truth_full_fill_prevalence": 0.59375,
+      "predicted_any_fill_rate": 0.875,
+      "predicted_full_fill_rate": 0.59375,
+      "any_fill_precision": 0.964286,
+      "any_fill_recall": 1.0,
+      "false_positive_rate": 0.2,
+      "false_negative_rate": 0.0,
+      "full_fill_precision": 1.0,
+      "full_fill_recall": 1.0,
+      "fill_quantity": {
+        "n": 64,
+        "mae": "0.00000000125",
+        "bias": "0.00000000125",
+        "mean_overfill_error": "0.00000000125",
+        "mean_underfill_error": "0"
+      }
+    },
+    "TOUCH_FILL": {
+      "n_placements": 64,
+      "truth_any_fill_prevalence": 0.84375,
+      "truth_full_fill_prevalence": 0.59375,
+      "predicted_any_fill_rate": 0.96875,
+      "predicted_full_fill_rate": 0.65625,
+      "any_fill_precision": 0.870968,
+      "any_fill_recall": 1.0,
+      "false_positive_rate": 0.8,
+      "false_negative_rate": 0.0,
+      "full_fill_precision": 0.95,
+      "full_fill_recall": 1.0,
+      "fill_quantity": {
+        "n": 64,
+        "mae": "0.0001563403125",
+        "bias": "0.0001563403125",
+        "mean_overfill_error": "0.0001563403125",
+        "mean_underfill_error": "0"
+      }
+    }
+  },
+  "posthoc": {
+    "alpha=0.00": {
+      "false_positives": {
+        "n": 0,
+        "ahead_volume_initial": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_trade_depletion": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_cancel_depletion": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": null
+        },
+        "used_as_model_input": false
+      },
+      "false_negatives": {
+        "n": 14,
+        "ahead_volume_initial": {
+          "total": "0.79891656",
+          "mean": "0.05706546857142857142857142857"
+        },
+        "ahead_trade_depletion": {
+          "total": "0.00007576",
+          "mean": "0.000005411428571428571428571428571"
+        },
+        "ahead_cancel_depletion": {
+          "total": "0.79884080",
+          "mean": "0.05706005714285714285714285714"
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": "0"
+        },
+        "used_as_model_input": false
+      },
+      "warning": "L3 ahead decomposition was joined only after predictions were frozen."
+    },
+    "alpha=0.25": {
+      "false_positives": {
+        "n": 0,
+        "ahead_volume_initial": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_trade_depletion": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_cancel_depletion": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": null
+        },
+        "used_as_model_input": false
+      },
+      "false_negatives": {
+        "n": 4,
+        "ahead_volume_initial": {
+          "total": "0.07965180",
+          "mean": "0.01991295"
+        },
+        "ahead_trade_depletion": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_cancel_depletion": {
+          "total": "0.07965180",
+          "mean": "0.01991295"
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": "0"
+        },
+        "used_as_model_input": false
+      },
+      "warning": "L3 ahead decomposition was joined only after predictions were frozen."
+    },
+    "alpha=0.50": {
+      "false_positives": {
+        "n": 2,
+        "ahead_volume_initial": {
+          "total": "0.01994652",
+          "mean": "0.00997326"
+        },
+        "ahead_trade_depletion": {
+          "total": "0.00000008",
+          "mean": "0.00000004"
+        },
+        "ahead_cancel_depletion": {
+          "total": "0.01994644",
+          "mean": "0.00997322"
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": "0"
+        },
+        "used_as_model_input": false
+      },
+      "false_negatives": {
+        "n": 4,
+        "ahead_volume_initial": {
+          "total": "0.07965180",
+          "mean": "0.01991295"
+        },
+        "ahead_trade_depletion": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_cancel_depletion": {
+          "total": "0.07965180",
+          "mean": "0.01991295"
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": "0"
+        },
+        "used_as_model_input": false
+      },
+      "warning": "L3 ahead decomposition was joined only after predictions were frozen."
+    },
+    "alpha=0.75": {
+      "false_positives": {
+        "n": 2,
+        "ahead_volume_initial": {
+          "total": "0.01994652",
+          "mean": "0.00997326"
+        },
+        "ahead_trade_depletion": {
+          "total": "0.00000008",
+          "mean": "0.00000004"
+        },
+        "ahead_cancel_depletion": {
+          "total": "0.01994644",
+          "mean": "0.00997322"
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": "0"
+        },
+        "used_as_model_input": false
+      },
+      "false_negatives": {
+        "n": 4,
+        "ahead_volume_initial": {
+          "total": "0.07965180",
+          "mean": "0.01991295"
+        },
+        "ahead_trade_depletion": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_cancel_depletion": {
+          "total": "0.07965180",
+          "mean": "0.01991295"
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": "0"
+        },
+        "used_as_model_input": false
+      },
+      "warning": "L3 ahead decomposition was joined only after predictions were frozen."
+    },
+    "alpha=1.00": {
+      "false_positives": {
+        "n": 2,
+        "ahead_volume_initial": {
+          "total": "0.01994652",
+          "mean": "0.00997326"
+        },
+        "ahead_trade_depletion": {
+          "total": "0.00000008",
+          "mean": "0.00000004"
+        },
+        "ahead_cancel_depletion": {
+          "total": "0.01994644",
+          "mean": "0.00997322"
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": "0"
+        },
+        "used_as_model_input": false
+      },
+      "false_negatives": {
+        "n": 0,
+        "ahead_volume_initial": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_trade_depletion": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_cancel_depletion": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": null
+        },
+        "used_as_model_input": false
+      },
+      "warning": "L3 ahead decomposition was joined only after predictions were frozen."
+    },
+    "TOUCH_FILL": {
+      "false_positives": {
+        "n": 8,
+        "ahead_volume_initial": {
+          "total": "0.39891932",
+          "mean": "0.049864915"
+        },
+        "ahead_trade_depletion": {
+          "total": "0.00002594",
+          "mean": "0.0000032425"
+        },
+        "ahead_cancel_depletion": {
+          "total": "0.04034700",
+          "mean": "0.005043375"
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": "0"
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": "0"
+        },
+        "used_as_model_input": false
+      },
+      "false_negatives": {
+        "n": 0,
+        "ahead_volume_initial": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_trade_depletion": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_cancel_depletion": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_modify_decrease": {
+          "total": "0",
+          "mean": null
+        },
+        "ahead_priority_loss": {
+          "total": "0",
+          "mean": null
+        },
+        "used_as_model_input": false
+      },
+      "warning": "L3 ahead decomposition was joined only after predictions were frozen."
+    }
+  }
+}

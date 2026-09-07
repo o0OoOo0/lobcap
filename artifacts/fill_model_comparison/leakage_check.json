@@ -1,0 +1,33 @@
+{
+  "valid": true,
+  "violations": 0,
+  "truth_artifact": "artifacts/virtual_truth/virtual_orders.jsonl",
+  "truth_artifact_sha256": "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca",
+  "expected_frozen_truth_sha256": "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca",
+  "l2_records_checked": 27953,
+  "forbidden_field_hits": [],
+  "observed_exchange_uuid_hits": 0,
+  "fill_model_l3_imports": [],
+  "fill_model_receives_truth_rows": false,
+  "fill_model_input_types": [
+    "L2Projection",
+    "BlindedPlacement",
+    "ModelSpec"
+  ],
+  "blinded_placement_fields": [
+    "virtual_order_id",
+    "placement_sequence",
+    "placement_exchange_time",
+    "expiry_time",
+    "side",
+    "price",
+    "size",
+    "ttl_seconds"
+  ],
+  "same_placement_signature_all_models": true,
+  "placement_signature_mismatches": [],
+  "initial_queue_matches_posthoc_truth_ahead": true,
+  "initial_queue_mismatches": [],
+  "all_frozen_placements_at_bbo": true,
+  "l3_decomposition_usage": "post-hoc error analysis only"
+}

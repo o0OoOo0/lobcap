@@ -1,0 +1,20 @@
+=== btcusdt futures 2026-09-06 ===
+depth          : 5,878
+trades         : 2,003
+snapshots      : 2
+duration       : 0.17 h
+pu gaps(scan)  : 0
+gap events(log): 0
+empty 5m bins  : 0/3
+lifecycle      : {'process_start': 1, 'connect_attempt': 2, 'connected': 2, 'snapshot_ok': 2, 'disconnect': 2, 'process_stop': 1}
+recv-exch ms    : p50=4.4 p95=6.6 p99=7.9
+NOTE: latency is interpretable only if VM clock sync was healthy.
+
+checks:
+  [PASS] depth > 0
+  [PASS] trade > 0
+  [PASS] snapshot > 0
+  [PASS] pu gaps == 0
+  [PASS] empty 5m bins == 0
+
+=> PASS

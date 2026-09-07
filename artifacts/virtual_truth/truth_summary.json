@@ -1,0 +1,65 @@
+{
+  "result": "PASS",
+  "label_type": "L3-derived shadow-fill label",
+  "definition": "Historical L3 order flow is held fixed and a small passive virtual order is inserted without affecting subsequent observed order flow.",
+  "observed_l3_truth": "actual ahead-order executions, cancellations, and modifications",
+  "counterfactual_component": "virtual fills under a no-market-impact assumption",
+  "independent_branches": true,
+  "snapshot_internal_fifo_assumed": false,
+  "scope": {
+    "placement": "BBO only",
+    "sizes_btc": [
+      "0.001",
+      "0.01"
+    ],
+    "ttls_seconds": [
+      1,
+      5,
+      10,
+      30
+    ],
+    "sample": "artifacts/validation/tardis_coinbase/raw_http_slice.txt"
+  },
+  "placements": {
+    "total": 64,
+    "buy": 32,
+    "sell": 32,
+    "pending_unplaced": 0
+  },
+  "outcomes": {
+    "FULL_FILL": 38,
+    "PARTIAL_ONLY": 12,
+    "NO_FILL": 10,
+    "CENSORED": 4
+  },
+  "fill_evidence_order_counts": {
+    "SAME_PRICE_BEHIND_MATCH": 20,
+    "TRADE_THROUGH": 48
+  },
+  "fill_evidence_event_counts": {
+    "SAME_PRICE_BEHIND_MATCH": 20,
+    "TRADE_THROUGH": 216
+  },
+  "initial_ahead_volume_distribution": {
+    "min": "0.00106072",
+    "median": "0.01020057",
+    "max": "0.17822511"
+  },
+  "depletion_totals": {
+    "ahead_trade_depletion": "0.05979744",
+    "ahead_cancel_depletion": "1.57231202",
+    "ahead_modify_decrease": "0",
+    "ahead_priority_loss": "0",
+    "own_filled_volume": "0.22398799"
+  },
+  "queue_ledger_rows": 650,
+  "reconstruction_valid": true,
+  "virtual_invariants_valid": true,
+  "deterministic_replay": true,
+  "limitations": [
+    "Virtual fills are no-market-impact counterfactual labels, not absolute fill ground truth.",
+    "A real inserted order could alter later taker size and the observed match path.",
+    "Snapshot-internal order rank is unknown; all orders resting at placement are only classified collectively as ahead.",
+    "Diagnostic sizes are engine-validation choices, not a final empirical design."
+  ]
+}

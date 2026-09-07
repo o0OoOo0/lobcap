@@ -1,0 +1,136 @@
+{
+  "amendments": [
+    {
+      "at_utc": "2026-09-07T02:27:49Z",
+      "from_version": "prompt5e-v1",
+      "to_version": "prompt5e-v2",
+      "reason": "Tardis HTTP 400 code 220 proved that Coinbase channel 'full' is invalid; current exchange metadata enumerates received, open, done, match, change, and generated full_snapshot as the required L3 components.",
+      "impact": "request construction only; no usable market-data response was downloaded and no L3 truth, L2 projection, alpha, prediction, validation, or test metric existed",
+      "affected_dates": [],
+      "rerun_scope": "none; the failed HTTP 400 gate is retained in processing diagnostics and the gate is repeated under v2 before any multidate processing",
+      "methodology_changed": false,
+      "transport_filter_corrected": true
+    },
+    {
+      "at_utc": "2026-09-07T02:29:26Z",
+      "from_version": "prompt5e-v2",
+      "to_version": "prompt5e-v3",
+      "reason": "Runtime gate at 2025-10-01 04:00 UTC returned HTTP 200 lifecycle data but no generated full_snapshot; full_snapshot-only returned 0 bytes at 04:00 and one snapshot at 00:00.",
+      "impact": "acquisition must replay each date continuously from its midnight generated snapshot through 20:10; only target-window truth/L2/predictions are retained",
+      "affected_dates": [],
+      "rerun_scope": "none; no multidate truth or model outputs existed before this pre-processing gate",
+      "methodology_changed": true,
+      "transport_filter_corrected": false
+    },
+    {
+      "at_utc": "2026-09-07T02:54:54Z",
+      "from_version": "prompt5e-v3",
+      "to_version": "prompt5e-v4",
+      "reason": "Sequential per-minute HTTPS measured 14.106 seconds for 10 calibration responses and projected more than five hours; Tardis response headers recommend slice size 10 and official HTTP documentation supports parallel requests.",
+      "impact": "transport prefetch only: up to 8 minute responses are held in memory and still consumed strictly by offset; L3 sequence, placements, truth, L2 models, splits, metrics, and retained artifacts are unchanged",
+      "affected_dates": [],
+      "rerun_scope": "the interrupted uncheckpointed first date restarts from offset 0; no completed date artifact exists",
+      "methodology_changed": false,
+      "transport_concurrency_changed": true
+    },
+    {
+      "at_utc": "2026-09-07T02:58:40Z",
+      "from_version": "prompt5e-v4",
+      "to_version": "prompt5e-v5",
+      "reason": "At 2025-10-01 00:44:28.313335Z sequence 112571731313, a price-only modify carried old_size=new_size=2.04629394 after prior partial matches. Coinbase official FIX documentation defines OrderQty as total intended quantity including already executed quantity; current code incorrectly required old_size to equal current remaining.",
+      "impact": "L3 book and virtual ahead tracking now derive already_executed=old_size-current_remaining and new_remaining=new_size-already_executed; placement policy, L2 blinding, model definitions, metrics and splits are unchanged",
+      "affected_dates": ["2025-10-01 partial replay through offset 44; no checkpoint saved"],
+      "rerun_scope": "all 12 dates under v5; first date restarts from midnight",
+      "methodology_changed": true,
+      "regression_test": "test_modify_sizes_are_total_intended_quantity_after_partial_fill"
+    },
+    {
+      "at_utc": "2026-09-07T03:09:52Z",
+      "from_version": "prompt5e-v5",
+      "to_version": "prompt5e-v6",
+      "reason": "The earlier causal event at sequence 112571712166 had reason=remainder_after_modification, old_price=113989.06, new_price=113989, old_size=3.17801489 and new_size=2.13729047. Ignoring it caused 69 maker price mismatches and the later failure. Official Coinbase docs also enumerate STP as the other change cause.",
+      "impact": "schema/book/virtual/L2 adapters now apply the runtime-observed resting remainder move and official STP decrease; unknown change reasons remain explicit failures",
+      "affected_dates": ["2025-10-01 partial replay through offset 44; no checkpoint saved"],
+      "rerun_scope": "all 12 dates under v6; first date restarts from midnight",
+      "methodology_changed": true,
+      "regression_tests": ["test_remainder_after_modification_uses_current_remaining_size", "test_stp_change_reduces_remaining_without_losing_priority"]
+    },
+    {
+      "at_utc": "2026-09-07T03:20:28Z",
+      "from_version": "prompt5e-v6",
+      "to_version": "prompt5e-v7",
+      "reason": "At offset 100 the replay peak RSS had grown to 695 MiB because reconstruction diagnostics retained every historical received/open/maker ID instead of only outstanding lifecycle state.",
+      "impact": "diagnostic state is now bounded to received-not-yet-open/done and currently active maker match counts; finalized counts are accumulated as scalars; book transitions, truth, model inputs and metrics are unchanged",
+      "affected_dates": ["2025-10-01 partial replay through offset 100; no checkpoint saved"],
+      "rerun_scope": "all 12 dates under v7; first date restarts from midnight",
+      "methodology_changed": false,
+      "resource_safety_changed": true
+    },
+    {
+      "at_utc": "2026-09-07T04:40:30Z",
+      "from_version": "prompt5e-v7",
+      "to_version": "prompt5e-v8",
+      "reason": "At 2025-10-01 18:28:02.572597Z offset 1108, Coinbase lifecycle sequence jumped from 112615562186 to 112615562913 and Tardis emitted generated full_snapshot sequence 112615565486 about 2.0 exchange-time seconds later. Official Tardis documentation states that WebSocket reconnects create a small permanent gap and a fresh snapshot, and that prior book state must be discarded when the new snapshot begins.",
+      "impact": "Prompt 5E now treats each recovered connection as a distinct acquisition segment: outside evaluation windows only, lifecycle messages from the gap are buffered, the old book is discarded, the generated snapshot is loaded, messages at or below its sequence are discarded, and later messages are replayed. A gap during any frozen evaluation window or a gap without a recovery snapshot remains a blocking failure. Frozen Prompt 5C behavior remains strict by default.",
+      "affected_dates": ["2025-10-01 partial replay through offset 1108; no checkpoint saved"],
+      "rerun_scope": "all 12 dates under v8; all dates restart from midnight",
+      "methodology_changed": true,
+      "regression_tests": ["test_opt_in_recovery_snapshot_starts_new_acquisition_segment", "test_multidate_recovery_is_forbidden_inside_evaluation_window"]
+    },
+    {
+      "at_utc": "2026-09-07T06:52:00Z",
+      "from_version": "prompt5e-v8",
+      "to_version": "prompt5e-v9",
+      "reason": "Final validation of the first full v8 date found A>C in 12 of 640 orders in the 00:00 window. Bounded replay showed that Coinbase sequence 112570364484 increased an ahead order at the same price from 0.00002501 to 0.00003674: FIFO priority loss was real for L3 truth, but L2 aggregate quantity increased and exposed no depletion. The prior structural accumulator incorrectly counted all priority loss as part of L2-observed C.",
+      "impact": "Shadow-fill truth and queue tracking remain unchanged. Structural A is now allocated event-by-event as the L3-known ahead portion capped by the L2-observed nontrade depletion at the placement level. Excess queue depletion that is not L2-observable is separately retained as unobservable_ahead_depletion. Age heterogeneity uses the same observable-A events.",
+      "affected_dates": ["2025-10-01 full replay under v8; validation failed before checkpoint", "2026-03-01 partial replay under v8; interrupted before checkpoint"],
+      "rerun_scope": "all 12 dates under v9; all dates restart from midnight",
+      "methodology_changed": true,
+      "runtime_evidence": {"window": "2025-10-01 00:00-00:10", "placements": 640, "A_gt_C_rows": 12, "example_sequence": 112570364484, "example_old_size": "0.00002501", "example_new_size": "0.00003674", "example_old_price": "114110.02", "example_new_price": "114110.02"}
+    },
+    {
+      "at_utc": "2026-09-07T07:20:00Z",
+      "from_version": "prompt5e-v9",
+      "to_version": "prompt5e-v10",
+      "reason": "The v9 min(raw_ahead_depletion,C) proposal was rejected before any gate result because it numerically clipped rather than classified Coinbase event semantics. Same-price size increases remove the old order from virtual FIFO ahead while increasing, not depleting, the L2 aggregate level.",
+      "impact": "A_visible now contains only cancellation, same-price size decrease, and price-change-away old-level depletion. H_hidden separately contains same-price size-increase priority reset and other L3-only priority loss. alpha_visible uses sum(A_visible)/sum(C); H_hidden is diagnostic only and never enters an L2 model.",
+      "affected_dates": [],
+      "rerun_scope": "bounded 2025-10-01 00:00-00:10 deterministic gate, then the six frozen windows of 2025-10-01 only; the 12-date runner remains prohibited pending explicit approval",
+      "methodology_changed": true,
+      "clipping_used": false
+    },
+    {
+      "at_utc": "2026-09-07T08:33:43Z",
+      "from_version": "prompt5e-v10",
+      "to_version": "prompt5e-v11",
+      "reason": "Bounded recovery replay found snapshot order e79cf127-7791-4aa7-a258-012daffe4db7 resting buy 0.02751152 at 108500, then with no intervening change/open it appeared as taker in matches 112615849420 and 112615849422 totaling 0.02751152 before done-filled 112615849423. Coinbase documents takers as aggressors executing immediately and states every match changes the order book; retaining that ID at its old resting level was invalid.",
+      "impact": "At the first match where a currently-resting ID appears as taker, its entire old-level remainder is removed and the transition is audited as resting_order_became_taker. A later done is classified as retired-taker completion rather than unknown. If such an ID is ahead of a virtual order, the old-level removal is A_visible price-change-away semantics, not H_hidden.",
+      "affected_dates": ["2025-10-01 bounded recovery segment; v10 one-window passed but is invalidated for version consistency; no date checkpoint accepted"],
+      "rerun_scope": "repeat the one-window deterministic gate and recovery-segment gate under v11, then run only the six windows of 2025-10-01",
+      "methodology_changed": true,
+      "runtime_evidence": {"snapshot_sequence":112615565486,"snapshot_price":"108500","match_sequences":[112615849420,112615849422],"done_sequence":112615849423,"quantity":"0.02751152"}
+    },
+    {
+      "at_utc": "2026-09-07T08:55:00Z",
+      "from_version": "prompt5e-v11",
+      "to_version": "prompt5e-v12",
+      "reason": "The v11 first-taker-match removal was falsified by order bfbd6766-e665-4204-9ac8-7df42968b86e, which appeared as taker twice, then received remainder_after_modification and later became maker. A second order showed a received/open/maker/taker/remainder cycle whose taker quantity exceeded the then-resting remainder before authoritative done-filled zero. Coinbase full-channel runtime therefore requires deferred reconciliation, not arithmetic subtraction or immediate permanent removal.",
+      "impact": "Taker matches for a currently-resting ID are accumulated as explicit diagnostic state. A following remainder_after_modification reconciles and moves/reinserts the remainder; a done reconciles and removes the old level. done reason=filled with remaining_size=0 is authoritative, and any book residual removed there is counted as virtual ahead trade depletion, excluded from both A_visible and H_hidden. Unresolved pending reconciliation at segment end is blocking.",
+      "affected_dates": ["2025-10-01 bounded recovery segment under v11; no accepted date checkpoint"],
+      "rerun_scope": "repeat bounded one-window determinism and recovery-segment gates under v12, then the six windows of 2025-10-01 only",
+      "methodology_changed": true,
+      "regression_tests": ["test_snapshot_resting_order_seen_as_taker_is_reconciled_at_done","test_partial_taker_matches_reconcile_at_remainder_change_then_maker_fill","test_snapshot_ahead_order_filled_as_taker_loses_priority_at_done"]
+    },
+    {
+      "at_utc": "2026-09-07T10:34:40Z",
+      "from_version": "prompt5e-v12",
+      "to_version": "prompt5e-v13",
+      "reason": "Final formula audit found that v12 divided H_hidden by non-trade structural reduction only, while the requested denominator is total_observed_L3_ahead_reduction. The latter must also include ahead_trade_depletion.",
+      "impact": "Only the derived hidden_priority_loss_share denominator changes. A_visible, C, H_hidden, alpha_visible, event classification, reconstruction, fill labels, and every gate invariant are unchanged.",
+      "affected_dates": ["2025-10-01 bounded six-window output; recomputed from its retained truth and structural rows without redownload or replay"],
+      "rerun_scope": "no market-data replay required; deterministically postprocess accepted bounded artifacts and repeat compile/unit tests",
+      "methodology_changed": true,
+      "formula": "sum(H_hidden_i) / sum(total_observed_L3_ahead_reduction_i)"
+    }
+  ]
+}

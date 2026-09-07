@@ -1,0 +1,117 @@
+{
+  "frozen_at_utc": "2026-09-07T02:26:05Z",
+  "methodology_version": "prompt5e-v13",
+  "status": "FROZEN_BEFORE_MULTIDATE_DOWNLOAD",
+  "source": {
+    "provider": "Tardis.dev raw HTTP API",
+    "exchange": "coinbase",
+    "symbol": "BTC-USD",
+    "channels": ["received","open","done","match","change","full_snapshot"],
+    "endpoint": "https://api.tardis.dev/v1/data-feeds/coinbase",
+    "minute_slice_semantics": true,
+    "accept_encoding": "gzip",
+    "api_key": false,
+    "raw_retention": "bounded prefetch of at most 8 one-minute responses in memory, consumed strictly in offset order and discarded immediately; only bounded runtime-test samples may be retained",
+    "snapshot_runtime_result": "arbitrary minute offsets do not receive full_snapshot; each date must replay once from the 00:00 generated snapshot through the end of the last selected window",
+    "acquisition_range_each_date": "00:00 through 20:09 inclusive (1210 ordered minute responses)",
+    "derived_output_range": "the six selected 10-minute windows only"
+  },
+  "sampling": {
+    "dates": [
+      "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01",
+      "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01",
+      "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"
+    ],
+    "windows_utc": [
+      "00:00-00:10", "04:00-04:10", "08:00-08:10",
+      "12:00-12:10", "16:00-16:10", "20:00-20:10"
+    ],
+    "minutes_per_window": 10,
+    "evaluation_minutes_per_date": 60,
+    "streamed_reconstruction_minutes_per_date": 1210,
+    "minute_offsets": [0,1,2,3,4,5,6,7,8,9,240,241,242,243,244,245,246,247,248,249,480,481,482,483,484,485,486,487,488,489,720,721,722,723,724,725,726,727,728,729,960,961,962,963,964,965,966,967,968,969,1200,1201,1202,1203,1204,1205,1206,1207,1208,1209]
+  },
+  "split_policy": {
+    "unit": "calendar date",
+    "calibration": "oldest 6 dates",
+    "validation": "next 3 dates",
+    "test": "newest 3 dates",
+    "test_access_rule": "test-derived labels, decompositions, and metrics are not read until structural alpha is frozen after validation"
+  },
+  "placement_policy": {
+    "outcome_blind": true,
+    "book_entry": "current reconstructed BBO immediately before first lifecycle event at or after trigger",
+    "triggers_each_response_minute_seconds": [5,20,35,50],
+    "sides": ["buy","sell"],
+    "sizes_btc": ["0.001","0.01"],
+    "ttls_seconds": [1,5,10,30],
+    "orders_per_trigger": 16,
+    "orders_per_minute_if_all_triggers_place": 64,
+    "counterfactual": "independent no-market-impact shadow branches",
+    "snapshot_internal_fifo_assumed": false,
+    "censoring": "retain unresolved expiration-boundary observations as CENSORED; never impute a large fill time"
+  },
+  "l3_truth": {
+    "implementation": "lobcap.l3.virtual.VirtualL3Reconstructor and VirtualOrderEngine",
+    "sequence_rule": "generated full_snapshot initializes an acquisition segment; buffered sequence > snapshot sequence is replayed; lifecycle sequences must be contiguous within each segment; a Tardis capture gap outside an evaluation window may start a new segment only when followed by a generated full_snapshot that replaces the entire prior book; any gap during an evaluation window is a blocking failure",
+    "fill_evidence": ["SAME_PRICE_BEHIND_MATCH","TRADE_THROUGH"],
+    "ahead_components": ["ahead_cancel_depletion","ahead_modify_decrease","ahead_priority_loss"],
+    "change_semantics": {
+      "modify_order": "old_size/new_size are total intended quantities including already executed quantity; new remaining = new_size - (old_size - current remaining)",
+      "remainder_after_modification": "runtime-observed Coinbase subtype; old_size/new_size are current remainder before/after and old_price/new_price move the resting remainder",
+      "STP": "official size-decrease subtype at payload.price; queue priority retained"
+      ,"resting_id_seen_as_taker": "record taker matches while the ID is also reconstructed as resting; reconcile the old level only at a following remainder_after_modification or authoritative done. A filled done removes any residual as trade depletion, never A_visible or H_hidden"
+    },
+    "bug_fix_policy": "any methodology-changing bug fix must record reason, impact, affected dates and rerun all dates"
+  },
+  "l2_blinding": {
+    "implementation": "lobcap.l2.downsample.L2ProjectingReconstructor",
+    "allowed_model_inputs": ["aggregate price-level size changes","maker-side aggregate trades","sanitized placement side/price/size/time/ttl","initial aggregate queue at placement"],
+    "forbidden_model_inputs": ["exchange order ids","lifecycle reason","FIFO identity","actual ahead decomposition","truth outcome or fill time"]
+  },
+  "models": [
+    {"name":"alpha=0.00","alpha":"0.00"},
+    {"name":"alpha=0.25","alpha":"0.25"},
+    {"name":"alpha=0.50","alpha":"0.50"},
+    {"name":"alpha=0.75","alpha":"0.75"},
+    {"name":"alpha=1.00","alpha":"1.00"},
+    {"name":"STRUCTURAL_ALPHA","alpha_source":"calibration dates only, optionally globally adjusted using validation dates, frozen before test"},
+    {"name":"TOUCH_FILL","rule":"first executable trade ignores queue position"}
+  ],
+  "structural_calibration": {
+    "unit": "virtual-order observation interval",
+    "C_i": "L2-observed nontrade depletion at the placement price before expiry",
+    "A_visible_i": "L3-observed ahead cancellation, same-price size decrease, and old-level depletion caused by an ahead order moving to another price; classified from event semantics with no min(A,C) clipping",
+    "H_hidden_i": "same-price size-increase FIFO priority reset and any other L3-only priority loss without aggregate L2 old-level depletion; diagnostic only and forbidden as an L2 model input",
+    "formula": "alpha_visible = sum(A_visible_i) / sum(C_i) on calibration dates only",
+    "hidden_priority_loss_share": "sum(H_hidden_i) / sum(total_observed_L3_ahead_reduction_i), where total includes trade, cancellation, size-decrease, price-change-away, and hidden priority loss; diagnostic only",
+    "C_zero_handling": "C_i=0 observations contribute zero to numerator and denominator and are excluded from per-observation ratios",
+    "bounds": "require exact Decimal 0 <= A_visible_i <= C_i per event and virtual-order window; no clipping is permitted; any violation blocks the run"
+  },
+  "primary_metrics": {
+    "any_fill_false_positive_rate": "FP/(FP+TN), unresolved censored nonfills excluded",
+    "any_fill_false_negative_rate": "FN/(FN+TP), unresolved censored nonfills excluded",
+    "normalized_fill_quantity_mae": "mean(abs(predicted quantity - truth quantity) / virtual size)"
+  },
+  "secondary_metrics": [
+    "any-fill precision and recall", "full-fill precision and recall",
+    "predicted minus truth fill-rate bias", "first-fill timing MAE",
+    "full-fill timing MAE", "early/late timing direction"
+  ],
+  "aggregation": {
+    "required": ["per-window","per-date","split aggregate"],
+    "cluster_unit": "date",
+    "inference": "effect sizes and date stability; no forced p-values",
+    "bootstrap": "date-block bootstrap confidence intervals only when enough dates exist"
+  },
+  "heterogeneity_posthoc_only": [
+    "TTL", "age since placement", "initial queue", "side", "spread",
+    "short-window realized volatility", "UTC time of day"
+  ],
+  "oracle_policy": "per-test-date best alpha and full-sample best alpha may appear only as ORACLE / IN-SAMPLE REFERENCE ONLY and never as primary results",
+  "scope_exclusions": [
+    "full-day raw downloads", "raw market data writes to /data", "Binance collector modification/restart",
+    "conditional ML", "Binance strategy replay"
+  ],
+  "amendment_record": "methodology_amendments.json"
+}

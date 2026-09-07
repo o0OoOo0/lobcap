@@ -1,0 +1,261 @@
+{
+  "validation": "Prompt 2A — Binance runtime validation only",
+  "host": "lob-collector-01",
+  "utc_started": "2026-09-06T13:38:35.637230Z",
+  "clock": {
+    "timedatectl": "Local time: Sun 2026-09-06 13:38:35 UTC\n           Universal time: Sun 2026-09-06 13:38:35 UTC\n                 RTC time: Sun 2026-09-06 13:38:35\n                Time zone: Etc/UTC (UTC, +0000)\nSystem clock synchronized: yes\n              NTP service: active\n          RTC in local TZ: no",
+    "chronyc_tracking": "Reference ID    : A9FEA9FE (metadata.google.internal)\nStratum         : 3\nRef time (UTC)  : Sun Sep 06 13:29:04 2026\nSystem time     : 0.000003727 seconds fast of NTP time\nLast offset     : +0.000001071 seconds\nRMS offset      : 0.000011951 seconds\nFrequency       : 69.029 ppm slow\nResidual freq   : +0.000 ppm\nSkew            : 0.003 ppm\nRoot delay      : 0.000165566 seconds\nRoot dispersion : 0.000681530 seconds\nUpdate interval : 1034.3 seconds\nLeap status     : Normal"
+  },
+  "rest": {
+    "ping": {
+      "name": "ping",
+      "url": "https://fapi.binance.com/fapi/v1/ping",
+      "utc_started": "2026-09-06T13:38:35.761213Z",
+      "utc_completed": "2026-09-06T13:38:35.800328Z",
+      "http_status": 200,
+      "is_451": false,
+      "is_403": false,
+      "content_type": "application/json",
+      "schema": {
+        "json_type": "dict",
+        "keys": [],
+        "empty_object": true
+      },
+      "response": {},
+      "error": null
+    },
+    "depth": {
+      "name": "depth",
+      "url": "https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=5",
+      "utc_started": "2026-09-06T13:38:35.764873Z",
+      "utc_completed": "2026-09-06T13:38:35.798465Z",
+      "http_status": 200,
+      "is_451": false,
+      "is_403": false,
+      "content_type": "application/json",
+      "schema": {
+        "json_type": "dict",
+        "keys": [
+          "E",
+          "T",
+          "asks",
+          "bids",
+          "lastUpdateId"
+        ],
+        "required_keys_present": true,
+        "bids_type": "list",
+        "asks_type": "list",
+        "bid_level_widths": [
+          2
+        ],
+        "ask_level_widths": [
+          2
+        ]
+      },
+      "response": {
+        "lastUpdateId": 11489198604537,
+        "E": 1788701915791,
+        "T": 1788701915787,
+        "bids": [
+          [
+            "79805.70",
+            "13.997"
+          ],
+          [
+            "79805.60",
+            "1.864"
+          ],
+          [
+            "79805.50",
+            "0.013"
+          ],
+          [
+            "79805.00",
+            "0.002"
+          ],
+          [
+            "79804.90",
+            "4.854"
+          ]
+        ],
+        "asks": [
+          [
+            "79805.80",
+            "0.846"
+          ],
+          [
+            "79805.90",
+            "0.001"
+          ],
+          [
+            "79806.00",
+            "0.001"
+          ],
+          [
+            "79806.10",
+            "0.001"
+          ],
+          [
+            "79806.20",
+            "0.011"
+          ]
+        ]
+      },
+      "error": null
+    }
+  },
+  "websocket": {
+    "depth": {
+      "name": "depth",
+      "url": "wss://fstream.binance.com/public/stream?streams=btcusdt@depth@100ms",
+      "utc_started": "2026-09-06T13:38:35.801348Z",
+      "utc_connected": "2026-09-06T13:38:35.932021Z",
+      "utc_completed": "2026-09-06T13:40:16.302517Z",
+      "websockets_version": "16.1.1",
+      "connected": true,
+      "message_count": 932,
+      "minimum_required": 100,
+      "sample_count": 5,
+      "observed_fields": [
+        "E",
+        "T",
+        "U",
+        "a",
+        "b",
+        "e",
+        "ps",
+        "pu",
+        "s",
+        "st",
+        "u"
+      ],
+      "required_fields": [
+        "E",
+        "T",
+        "U",
+        "a",
+        "b",
+        "e",
+        "pu",
+        "s",
+        "u"
+      ],
+      "messages_missing_required_fields": 0,
+      "server_ping_frames_received": 1,
+      "automatic_pong_frames_sent": 1,
+      "auto_pong_observed": true,
+      "control_frame_evidence": [
+        {
+          "utc": "2026-09-06T13:40:10.992649Z",
+          "direction": "server_ping_received",
+          "frame": "< PING '1788702010989' [text, 13 bytes]"
+        },
+        {
+          "utc": "2026-09-06T13:40:10.992793Z",
+          "direction": "automatic_pong_sent",
+          "frame": "> PONG '1788702010989' [text, 13 bytes]"
+        }
+      ],
+      "unexpected_close": false,
+      "close_code_before_local_close": null,
+      "close_reason_before_local_close": null,
+      "error": null,
+      "recv_minus_event_ms_diagnostic": {
+        "p50": 4.029,
+        "p95": 4.512,
+        "p99": 5.112,
+        "interpretation": "diagnostic only; not a precise network-latency measurement"
+      },
+      "recv_minus_transaction_ms_diagnostic": {
+        "p50": 5.817,
+        "p95": 8.073,
+        "p99": 9.11,
+        "interpretation": "diagnostic only; not a precise network-latency measurement"
+      },
+      "sequence_sanity": {
+        "rule": "current.pu == previous.u",
+        "total_pairs": 931,
+        "mismatches": 0,
+        "first_mismatch": null,
+        "spot_style_U_check_performed": false
+      }
+    },
+    "aggTrade": {
+      "name": "aggTrade",
+      "url": "wss://fstream.binance.com/market/stream?streams=btcusdt@aggTrade",
+      "utc_started": "2026-09-06T13:38:35.829420Z",
+      "utc_connected": "2026-09-06T13:38:35.936744Z",
+      "utc_completed": "2026-09-06T13:39:18.688973Z",
+      "websockets_version": "16.1.1",
+      "connected": true,
+      "message_count": 150,
+      "minimum_required": 10,
+      "sample_count": 5,
+      "observed_fields": [
+        "E",
+        "T",
+        "a",
+        "e",
+        "f",
+        "l",
+        "m",
+        "nq",
+        "p",
+        "q",
+        "s",
+        "st"
+      ],
+      "required_fields": [
+        "E",
+        "T",
+        "a",
+        "e",
+        "f",
+        "l",
+        "m",
+        "p",
+        "q",
+        "s"
+      ],
+      "messages_missing_required_fields": 0,
+      "server_ping_frames_received": 1,
+      "automatic_pong_frames_sent": 1,
+      "auto_pong_observed": true,
+      "control_frame_evidence": [
+        {
+          "utc": "2026-09-06T13:39:08.669170Z",
+          "direction": "server_ping_received",
+          "frame": "< PING '1788701948667' [text, 13 bytes]"
+        },
+        {
+          "utc": "2026-09-06T13:39:08.669232Z",
+          "direction": "automatic_pong_sent",
+          "frame": "> PONG '1788701948667' [text, 13 bytes]"
+        }
+      ],
+      "unexpected_close": false,
+      "close_code_before_local_close": null,
+      "close_reason_before_local_close": null,
+      "error": null,
+      "recv_minus_event_ms_diagnostic": {
+        "p50": 3.855,
+        "p95": 4.931,
+        "p99": 5.014,
+        "interpretation": "diagnostic only; not a precise network-latency measurement"
+      },
+      "recv_minus_transaction_ms_diagnostic": {
+        "p50": 30.05,
+        "p95": 157.533,
+        "p99": 159.47,
+        "interpretation": "diagnostic only; not a precise network-latency measurement"
+      }
+    }
+  },
+  "connection_24h_disconnect": "DOC_VERIFIED, NOT_RUNTIME_TESTED",
+  "artifacts": {
+    "depth_samples": "/home/0woo/lobcap/artifacts/validation/binance_depth_samples.jsonl",
+    "aggtrade_samples": "/home/0woo/lobcap/artifacts/validation/binance_aggtrade_samples.jsonl"
+  },
+  "utc_completed": "2026-09-06T13:40:16.304165Z",
+  "status": "RUNTIME_VERIFIED"
+}

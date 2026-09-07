@@ -1,0 +1,95 @@
+schema_version: 1
+experiment_name: 5e_multidate
+experiment_version: bounded-v13
+provenance: extracted_from_active_code_and_frozen_manifests
+implementation: src/lobcap/l2/multidate.py
+bounded_gate_runner: scripts/validate_prompt5e_bounded.py
+venue:
+  name: coinbase
+  market: spot
+  symbol: BTC-USD
+source:
+  provider: tardis.dev
+  format: exchange-native raw L3 HTTP minute responses
+  channels: [received, open, done, match, change, full_snapshot]
+dates:
+  calibration:
+    - "2025-10-01"
+    - "2025-11-01"
+    - "2025-12-01"
+    - "2026-01-01"
+    - "2026-02-01"
+    - "2026-03-01"
+  validation:
+    - "2026-04-01"
+    - "2026-05-01"
+    - "2026-06-01"
+  test:
+    - "2026-07-01"
+    - "2026-08-01"
+    - "2026-09-01"
+windows_utc:
+  - "00:00-00:10"
+  - "04:00-04:10"
+  - "08:00-08:10"
+  - "12:00-12:10"
+  - "16:00-16:10"
+  - "20:00-20:10"
+placement_rule:
+  price: reconstructed BBO
+  sides: [buy, sell]
+  per_minute_trigger_seconds: [5, 20, 35, 50]
+  ordering: first lifecycle event at or after trigger time is fully applied, then place
+  branch_model: independent_counterfactual
+virtual_sizes_btc: ["0.001", "0.01"]
+ttls_seconds: [1, 5, 10, 30]
+placements_per_window: 640
+alpha_grid: ["0.00", "0.25", "0.50", "0.75", "1.00"]
+model_names:
+  - alpha=0.00
+  - alpha=0.25
+  - alpha=0.50
+  - alpha=0.75
+  - alpha=1.00
+  - STRUCTURAL_ALPHA
+  - TOUCH_FILL
+structural_estimator:
+  formula: sum(A_visible) / sum(C)
+  A_visible: L3 ahead depletion also visible as old-level L2 non-trade depletion
+  C: L2-observed non-trade depletion at the placement price
+  H_hidden: L3-only priority loss excluded from alpha numerator
+  hidden_share_denominator: total_observed_L3_ahead_reduction
+split_rule: chronological_by_date_oldest_6_next_3_newest_3
+random_seed: null
+randomness: none
+evaluation_metrics:
+  primary:
+    - any_fill_false_positive_rate
+    - any_fill_false_negative_rate
+    - normalized_fill_quantity_mae
+  secondary:
+    - any_fill_precision_recall
+    - full_fill_precision_recall
+    - fill_rate_bias
+    - first_fill_mae
+    - full_fill_mae
+    - early_fill_rate
+    - late_fill_rate
+  structural:
+    - alpha_visible
+    - hidden_priority_loss_share
+    - A_visible_le_C_violations
+  grouping:
+    - window
+    - date
+    - ttl
+    - elapsed_age
+    - initial_queue
+    - side
+    - spread
+    - realized_short_window_volatility
+    - time_of_day
+execution_state:
+  one_window_gate: PASS
+  six_window_2025_10_01_gate: PASS
+  full_12_date_72_window_run: NOT_RUN_REQUIRES_EXPLICIT_APPROVAL

@@ -1,0 +1,14 @@
+{
+  "methodology_version": "prompt5e-v13",
+  "status": "PLANNED_BEFORE_DOWNLOAD",
+  "exchange": "coinbase",
+  "symbol": "BTC-USD",
+  "channels": ["received","open","done","match","change","full_snapshot"],
+  "dates": ["2025-10-01","2025-11-01","2025-12-01","2026-01-01","2026-02-01","2026-03-01","2026-04-01","2026-05-01","2026-06-01","2026-07-01","2026-08-01","2026-09-01"],
+  "windows_utc": ["00:00-00:10","04:00-04:10","08:00-08:10","12:00-12:10","16:00-16:10","20:00-20:10"],
+  "planned_windows": 72,
+  "planned_evaluation_minutes": 720,
+  "planned_streamed_reconstruction_minutes": 14520,
+  "full_raw_retained": false,
+  "runtime_snapshot_gate": "ARBITRARY_START_NOT_AVAILABLE__REPLAY_FROM_MIDNIGHT"
+}

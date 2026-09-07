@@ -1,0 +1,5 @@
+{
+  "at_utc": "2026-09-07T06:46:39Z",
+  "error_type": "RuntimeError",
+  "error": "date validation failed 2025-10-01: ['2025-10-01: reconstruction invalid', '2025-10-01 00:00-00:10: structural A > C', '2025-10-01 04:00-04:10: structural A > C', '2025-10-01 08:00-08:10: structural A > C', '2025-10-01 12:00-12:10: structural A > C', '2025-10-01 20:00-20:10: structural A > C']"
+}

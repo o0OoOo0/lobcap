@@ -1,0 +1,36 @@
+{
+  "observed": {
+    "change": 1944,
+    "done": 13870,
+    "full_snapshot": 1,
+    "match": 310,
+    "open": 13673,
+    "received": 13898
+  },
+  "applied": {
+    "change": 1838,
+    "change_book_applied": 1838,
+    "done": 13157,
+    "done_book_applied": 12944,
+    "done_book_ignored": 213,
+    "done_canceled_book_applied": 12836,
+    "done_canceled_observed": 12862,
+    "done_filled_book_applied": 108,
+    "done_filled_observed": 295,
+    "match": 295,
+    "match_book_applied": 295,
+    "open": 12984,
+    "open_book_applied": 12984,
+    "received": 13197,
+    "received_non_book": 13197
+  },
+  "received_but_never_opened": 213,
+  "unknown_done_orders": 213,
+  "unknown_done_received_never_opened": 213,
+  "unknown_done_boundary_or_unclassified": 0,
+  "unknown_change_received_never_opened": 0,
+  "maker_orders_with_multiple_matches": 45,
+  "maximum_matches_for_one_maker_order": 6,
+  "maker_orders_filled_after_match": 108,
+  "active_filled_without_prior_maker_match": 0
+}

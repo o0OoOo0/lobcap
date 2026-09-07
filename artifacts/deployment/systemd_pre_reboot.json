@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-06T15:19:02.827316Z",
+  "counts": {
+    "depth": 47351,
+    "trade": 68053,
+    "snapshot": 17
+  },
+  "bytes": {
+    "depth": 20557120,
+    "trade": 1979864,
+    "snapshot": 146589
+  },
+  "depth_delta": 6200,
+  "trade_delta": 5600,
+  "snapshot_delta": 3,
+  "event_count": 38,
+  "event_delta_count": 8,
+  "event_delta_counts": {
+    "process_start": 1,
+    "connect_attempt": 2,
+    "connected": 2,
+    "snapshot_ok": 3
+  },
+  "last_depth": {
+    "u": 11489846916290,
+    "pu": 11489846901900,
+    "U": 11489846902259,
+    "connection_id": "518df0eb898c492aa3fbbacfe3a67518",
+    "ts_recv_ns": 1788707943649430897
+  },
+  "pass": true
+}

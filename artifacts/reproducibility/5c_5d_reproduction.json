@@ -1,0 +1,34 @@
+{
+  "verified_at": "2026-09-07T14:37:07Z",
+  "status": "PASS",
+  "environment": {
+    "python": "/home/0woo/lobcap/.venv/bin/python",
+    "git_commit": "UNKNOWN"
+  },
+  "input_sha256": {
+    "artifacts/validation/tardis_coinbase/raw_http_slice.txt": "16792f94e6c30be4b8985aa96beec5c2b92ceedce28efc1b97d5c2d0041eb8af",
+    "artifacts/virtual_truth/virtual_orders.jsonl": "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca"
+  },
+  "5c": {
+    "command": "python -m lobcap.l3.virtual --input artifacts/validation/tardis_coinbase/raw_http_slice.txt --out TEMP_DIR/5c --verify-determinism",
+    "deterministic_replay": true,
+    "virtual_orders_sha256": "593920dc416631c0f4924d9ff420ae6b8801580c85cdc50c9db06337773f28ca",
+    "truth_summary_sha256": "125993e8ebd288e1d78871ae05a7a07cc33e95abbfd749ef33905bc07fd27acb",
+    "byte_identical_to_preserved_artifacts": true,
+    "placements": 64
+  },
+  "5d": {
+    "command": "python -m lobcap.l2.compare --raw artifacts/validation/tardis_coinbase/raw_http_slice.txt --truth TEMP_DIR/5c/virtual_orders.jsonl --out TEMP_DIR/5d --verify-determinism",
+    "deterministic_replay": true,
+    "confusion_matrices_sha256": "483b643fbc6dcc5f93380dfeeb797924a42d3e4f2641a8518e4469c3e8c04dd9",
+    "model_metrics_sha256": "9403e52c1bd768d9275a94e7a4292f7c4707acf1dcf5881e085a4374102ace5d",
+    "byte_identical_to_preserved_artifacts": true,
+    "expected_key_metrics": {
+      "placements": 64,
+      "truth_any_fill_rate": 0.84375,
+      "alpha_0_any_fill_FN": 14,
+      "alpha_1_any_fill_FP": 2,
+      "touch_fill_any_fill_FP": 8
+    }
+  }
+}

@@ -1,0 +1,303 @@
+{
+  "kinds": {
+    "depth": {
+      "files": [
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=depth/date=2026-09-06/20260906T130000Z.jsonl.gz",
+          "bytes": 1387712
+        }
+      ],
+      "lines": 5878,
+      "schema_ok_all_records": true,
+      "first_envelope_keys": [
+        "connection_id",
+        "kind",
+        "market",
+        "payload",
+        "schema_version",
+        "symbol",
+        "ts_recv_ns",
+        "venue"
+      ],
+      "last_envelope_keys": [
+        "connection_id",
+        "kind",
+        "market",
+        "payload",
+        "schema_version",
+        "symbol",
+        "ts_recv_ns",
+        "venue"
+      ],
+      "first_payload_keys": [
+        "E",
+        "T",
+        "U",
+        "a",
+        "b",
+        "e",
+        "ps",
+        "pu",
+        "s",
+        "st",
+        "u"
+      ],
+      "last_payload_keys": [
+        "E",
+        "T",
+        "U",
+        "a",
+        "b",
+        "e",
+        "ps",
+        "pu",
+        "s",
+        "st",
+        "u"
+      ],
+      "payload_field_union": [
+        "E",
+        "T",
+        "U",
+        "a",
+        "b",
+        "e",
+        "ps",
+        "pu",
+        "s",
+        "st",
+        "u"
+      ],
+      "payload_field_intersection": [
+        "E",
+        "T",
+        "U",
+        "a",
+        "b",
+        "e",
+        "ps",
+        "pu",
+        "s",
+        "st",
+        "u"
+      ],
+      "required_runtime_payload_fields_preserved": true,
+      "first_ts_recv_ns": 1788702436459127189,
+      "last_ts_recv_ns": 1788703035924443486
+    },
+    "trade": {
+      "files": [
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=trade/date=2026-09-06/20260906T130000Z.jsonl.gz",
+          "bytes": 60212
+        }
+      ],
+      "lines": 2003,
+      "schema_ok_all_records": true,
+      "first_envelope_keys": [
+        "connection_id",
+        "kind",
+        "market",
+        "payload",
+        "schema_version",
+        "symbol",
+        "ts_recv_ns",
+        "venue"
+      ],
+      "last_envelope_keys": [
+        "connection_id",
+        "kind",
+        "market",
+        "payload",
+        "schema_version",
+        "symbol",
+        "ts_recv_ns",
+        "venue"
+      ],
+      "first_payload_keys": [
+        "E",
+        "T",
+        "a",
+        "e",
+        "f",
+        "l",
+        "m",
+        "nq",
+        "p",
+        "q",
+        "s",
+        "st"
+      ],
+      "last_payload_keys": [
+        "E",
+        "T",
+        "a",
+        "e",
+        "f",
+        "l",
+        "m",
+        "nq",
+        "p",
+        "q",
+        "s",
+        "st"
+      ],
+      "payload_field_union": [
+        "E",
+        "T",
+        "a",
+        "e",
+        "f",
+        "l",
+        "m",
+        "nq",
+        "p",
+        "q",
+        "s",
+        "st"
+      ],
+      "payload_field_intersection": [
+        "E",
+        "T",
+        "a",
+        "e",
+        "f",
+        "l",
+        "m",
+        "nq",
+        "p",
+        "q",
+        "s",
+        "st"
+      ],
+      "required_runtime_payload_fields_preserved": true,
+      "first_ts_recv_ns": 1788702436493230506,
+      "last_ts_recv_ns": 1788703036496536452
+    },
+    "snapshot": {
+      "files": [
+        {
+          "path": "/data/market=futures/symbol=btcusdt/kind=snapshot/date=2026-09-06/20260906T000000Z.jsonl.gz",
+          "bytes": 17304
+        }
+      ],
+      "lines": 2,
+      "schema_ok_all_records": true,
+      "first_envelope_keys": [
+        "kind",
+        "market",
+        "payload",
+        "schema_version",
+        "symbol",
+        "ts_recv_ns",
+        "ts_req_ns",
+        "venue"
+      ],
+      "last_envelope_keys": [
+        "kind",
+        "market",
+        "payload",
+        "schema_version",
+        "symbol",
+        "ts_recv_ns",
+        "ts_req_ns",
+        "venue"
+      ],
+      "first_payload_keys": [
+        "E",
+        "T",
+        "asks",
+        "bids",
+        "lastUpdateId"
+      ],
+      "last_payload_keys": [
+        "E",
+        "T",
+        "asks",
+        "bids",
+        "lastUpdateId"
+      ],
+      "payload_field_union": [
+        "E",
+        "T",
+        "asks",
+        "bids",
+        "lastUpdateId"
+      ],
+      "payload_field_intersection": [
+        "E",
+        "T",
+        "asks",
+        "bids",
+        "lastUpdateId"
+      ],
+      "required_runtime_payload_fields_preserved": true,
+      "first_ts_recv_ns": 1788702436391625750,
+      "last_ts_recv_ns": 1788702736433828163
+    }
+  },
+  "sequence": {
+    "rule": "current.pu == previous.u",
+    "messages": 5878,
+    "comparable_pairs": 5877,
+    "mismatches": 0,
+    "first_mismatch": null,
+    "spot_style_U_check_performed": false
+  },
+  "lifecycle": {
+    "files": [
+      {
+        "path": "/data/market=futures/symbol=btcusdt/kind=event/date=2026-09-06/events.jsonl",
+        "bytes": 2561
+      }
+    ],
+    "lines": 10,
+    "counts": {
+      "connect_attempt": 2,
+      "connected": 2,
+      "disconnect": 2,
+      "process_start": 1,
+      "process_stop": 1,
+      "snapshot_ok": 2
+    },
+    "required": {
+      "process_start": 1,
+      "depth_connected": 1,
+      "trade_connected": 1,
+      "process_stop": 1
+    },
+    "collection_start_utc": "2026-09-06T13:47:16.240218Z",
+    "collection_stop_utc": "2026-09-06T13:57:25.570441Z",
+    "process_stop_details": {
+      "stats": {
+        "depth": 5878,
+        "trade": 2003,
+        "snapshot": 2,
+        "sequence_gap": 0
+      }
+    }
+  },
+  "storage": {
+    "gzip_bytes": 1465228,
+    "event_bytes": 2561,
+    "total_file_bytes": 1467789
+  },
+  "schema_v2_pass": true,
+  "raw_payload_preservation_pass": true,
+  "quality": {
+    "exit_code": 0,
+    "artifact": "/home/0woo/lobcap/artifacts/integration/binance_10min_quality.txt"
+  },
+  "performance": {
+    "timeout_wrapper_exit_code": 124,
+    "timeout_interpretation": "SIGTERM sent at 600s; collector wrote disconnect and process_stop before kill-after deadline",
+    "elapsed_wall_seconds": 609.94,
+    "cpu_percent_time_average": 1,
+    "maximum_rss_kib": 41380,
+    "provisional_projection_basis": "gzip bytes from nominal 10-minute sample; decimal MB/GB",
+    "provisional_mb_per_hour": 8.791,
+    "provisional_gb_per_day": 0.211,
+    "provisional_gb_30_days": 6.33,
+    "provisional_gb_90_days": 18.989
+  }
+}

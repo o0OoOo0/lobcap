@@ -1,0 +1,5 @@
+{
+  "at_utc": "2026-09-07T04:38:24Z",
+  "error_type": "RuntimeError",
+  "error": "reconstruction invalid date=2025-10-01 offset=1108: [{'kind': 'capture_sequence_gap', 'source_line': 45222592, 'sequence': 112615562913}, {'kind': 'duplicate_full_snapshot', 'source_line': 45227042, 'sequence': 112615565486}]"
+}

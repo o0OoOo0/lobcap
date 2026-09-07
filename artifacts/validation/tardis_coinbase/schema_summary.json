@@ -1,0 +1,241 @@
+{
+  "source_format": "Tardis local timestamp, one space, Coinbase exchange-native JSON",
+  "local_replay_timestamp": "local_timestamp prefix outside the exchange JSON",
+  "event_types": {
+    "change": {
+      "count": 1944,
+      "observed_keys": [
+        "new_price",
+        "new_size",
+        "old_price",
+        "old_size",
+        "order_id",
+        "product_id",
+        "reason",
+        "sequence",
+        "side",
+        "time",
+        "type"
+      ]
+    },
+    "done": {
+      "count": 13870,
+      "observed_keys": [
+        "order_id",
+        "price",
+        "product_id",
+        "reason",
+        "remaining_size",
+        "sequence",
+        "side",
+        "time",
+        "type"
+      ]
+    },
+    "full_snapshot": {
+      "count": 1,
+      "observed_keys": [
+        "asks",
+        "auction",
+        "auction_mode",
+        "bids",
+        "generated",
+        "product_id",
+        "sequence",
+        "time",
+        "type"
+      ]
+    },
+    "match": {
+      "count": 310,
+      "observed_keys": [
+        "maker_order_id",
+        "price",
+        "product_id",
+        "sequence",
+        "side",
+        "size",
+        "taker_order_id",
+        "time",
+        "trade_id",
+        "type"
+      ]
+    },
+    "open": {
+      "count": 13673,
+      "observed_keys": [
+        "order_id",
+        "price",
+        "product_id",
+        "remaining_size",
+        "sequence",
+        "side",
+        "time",
+        "type"
+      ]
+    },
+    "received": {
+      "count": 13898,
+      "observed_keys": [
+        "funds",
+        "order_id",
+        "order_type",
+        "price",
+        "product_id",
+        "sequence",
+        "side",
+        "size",
+        "time",
+        "type"
+      ]
+    }
+  },
+  "requested_field_presence": {
+    "sequence": {
+      "status": "PRESENT",
+      "event_types": [
+        "change",
+        "done",
+        "full_snapshot",
+        "match",
+        "open",
+        "received"
+      ]
+    },
+    "order_id": {
+      "status": "PRESENT",
+      "event_types": [
+        "change",
+        "done",
+        "open",
+        "received"
+      ]
+    },
+    "maker_order_id": {
+      "status": "PRESENT",
+      "event_types": [
+        "match"
+      ]
+    },
+    "taker_order_id": {
+      "status": "PRESENT",
+      "event_types": [
+        "match"
+      ]
+    },
+    "side": {
+      "status": "PRESENT",
+      "event_types": [
+        "change",
+        "done",
+        "match",
+        "open",
+        "received"
+      ]
+    },
+    "price": {
+      "status": "PRESENT",
+      "event_types": [
+        "done",
+        "match",
+        "open",
+        "received"
+      ]
+    },
+    "size": {
+      "status": "PRESENT",
+      "event_types": [
+        "match",
+        "received"
+      ]
+    },
+    "remaining_size": {
+      "status": "PRESENT",
+      "event_types": [
+        "done",
+        "open"
+      ]
+    },
+    "reason": {
+      "status": "PRESENT",
+      "event_types": [
+        "change",
+        "done"
+      ]
+    },
+    "time": {
+      "status": "PRESENT",
+      "event_types": [
+        "change",
+        "done",
+        "full_snapshot",
+        "match",
+        "open",
+        "received"
+      ]
+    },
+    "local_replay_timestamp": {
+      "status": "PRESENT",
+      "location": "line prefix exposed as local_timestamp in raw_sample.jsonl"
+    }
+  },
+  "snapshot": [
+    {
+      "line": 3754,
+      "local_timestamp": "2026-09-01T00:00:04.4338508Z",
+      "generated": true,
+      "sequence": 135356475328,
+      "product_id": "BTC-USD",
+      "time": "2026-09-01T00:00:02.104186387Z",
+      "bid_orders": 63945,
+      "ask_orders": 46001,
+      "bid_entry_lengths": [
+        3
+      ],
+      "ask_entry_lengths": [
+        3
+      ],
+      "first_bid": [
+        "78555.86",
+        "0.00999976",
+        "7ac525c5-0dde-4d72-9eb0-7db5a6e86a12"
+      ],
+      "first_ask": [
+        "78555.87",
+        "0.00185322",
+        "e3099ae3-6ebd-483e-8eca-61b9a0725eed"
+      ]
+    }
+  ],
+  "snapshot_alignment": [
+    {
+      "snapshot_line": 3754,
+      "snapshot_sequence": 135356475328,
+      "previous_lifecycle": {
+        "line": 3753,
+        "type": "received",
+        "sequence": 135356476857,
+        "local_timestamp": "2026-09-01T00:00:04.4338499Z"
+      },
+      "next_lifecycle": {
+        "line": 3755,
+        "type": "open",
+        "sequence": 135356476858,
+        "local_timestamp": "2026-09-01T00:00:04.4338515Z"
+      },
+      "buffered_events_before_snapshot_above_snapshot_sequence": 1529,
+      "first_buffered_event_to_replay": {
+        "line": 2225,
+        "type": "received",
+        "sequence": 135356475329,
+        "local_timestamp": "2026-09-01T00:00:02.1439602Z"
+      },
+      "last_buffered_event_before_snapshot": {
+        "line": 3753,
+        "type": "received",
+        "sequence": 135356476857,
+        "local_timestamp": "2026-09-01T00:00:04.4338499Z"
+      }
+    }
+  ]
+}

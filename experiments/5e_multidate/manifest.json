@@ -1,0 +1,58 @@
+{
+  "$schema": "../manifest.schema.json",
+  "experiment_name": "5e_multidate",
+  "experiment_version": "bounded-v13",
+  "git_commit": "UNKNOWN",
+  "config_path": "configs/experiments/5e_multidate.yaml",
+  "data_source": {
+    "provider": "tardis.dev",
+    "exchange": "coinbase",
+    "symbol": "BTC-USD",
+    "format": "exchange-native raw L3 HTTP minute responses"
+  },
+  "date_window": {
+    "completed_scope": "2025-10-01 six frozen 10-minute windows",
+    "windows": [
+      "00:00-00:10",
+      "04:00-04:10",
+      "08:00-08:10",
+      "12:00-12:10",
+      "16:00-16:10",
+      "20:00-20:10"
+    ],
+    "planned_full_scope": "12 dates / 72 windows; NOT RUN"
+  },
+  "input_artifacts": [
+    {
+      "path": "Tardis HTTP responses for 2025-10-01 offsets 0..1209 (not retained as raw files)",
+      "sha256": "58e6150860e1d48d67e72e3ac7c9f8939b9f383685342d87820e3077190507df"
+    }
+  ],
+  "output_artifact_paths": [
+    {
+      "path": "artifacts/multidate_calibration/bounded/one_window_v13_run1.json",
+      "sha256": "0dbc3c5bbc96d9a9918c7dc6487e22cdfcff1e6ef979ba24ddaa9145295e83f9",
+      "tracked_in_git": true
+    },
+    {
+      "path": "artifacts/multidate_calibration/bounded/six_window_gate_2025-10-01_summary.json",
+      "sha256": "009a7294a2b8fbdaec3d89cbbadfcd00e37d8aca89a463e09e1d867433176d6e",
+      "tracked_in_git": true
+    },
+    {
+      "path": "artifacts/multidate_calibration/bounded/six_window_gate_2025-10-01.json.gz",
+      "sha256": "dd431c702a7c25a0dd6d8a51bb1562a60e81b4871f38e436d246e659a8fd76f5",
+      "tracked_in_git": false
+    }
+  ],
+  "code_version": {
+    "historical_commit": "UNKNOWN",
+    "methodology_version": "prompt5e-v13",
+    "entrypoint": "python scripts/validate_prompt5e_bounded.py six-window",
+    "full_runner": "python -m lobcap.l2.multidate --run-all (not authorized or run)"
+  },
+  "status": "BOUNDED_PASS_FULL_12_DATE_NOT_RUN",
+  "started_at": "2026-09-07T09:17:04Z",
+  "completed_at": "2026-09-07T10:27:03Z",
+  "postprocessing_note": "v13 corrected only the hidden-share denominator from retained v12 rows; no market-data replay was required"
+}
