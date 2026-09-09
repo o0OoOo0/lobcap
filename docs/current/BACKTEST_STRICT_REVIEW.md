@@ -66,8 +66,7 @@ duplicate handling.
 
 Real browser validation covered setup layout, actual default submission,
 automatic result navigation, translated filled-order timeline, a two-value
-impact-cost experiment and persisted history. The default run was rerun through
-the CLI. Saved-history rendering was also verified after restarting the app
+impact-cost experiment and persisted history. Saved-history rendering was also verified after restarting the app
 and opening a fresh browser session. The default run was rerun through
 the CLI; both recorded-arrival and original v1 digests are unchanged:
 
