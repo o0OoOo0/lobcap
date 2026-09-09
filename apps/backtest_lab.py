@@ -92,6 +92,11 @@ def saved_runs():
 
 runs=saved_runs()
 lookup={p.name:(p,m) for p,m in runs}
+latest=st.session_state.get("last_run")
+if latest in lookup and latest!=st.session_state.get("focused_run"):
+    st.session_state["diagnostic_run"]=latest
+    st.session_state["timeline_run"]=latest
+    st.session_state["focused_run"]=latest
 
 
 def run_label(name):
@@ -145,6 +150,7 @@ with sensitivity:
             bar=st.progress(0)
             comparison,rows=run_sweep(scenario,changes,progress=lambda i,n,r:bar.progress(i/n,text=f"Completed {i}/{n}"))
             st.session_state["comparison"]=str(comparison)
+            st.session_state["last_run"]=rows[-1]["run_id"]
             st.session_state["comparison_axis"]="fill_model" if run_matrix else parameter
             st.rerun()
         except Exception as exc:st.error(str(exc))
@@ -252,6 +258,8 @@ with timeline:
         file=path/"timeline.jsonl.gz"
         if file.exists():
             ids=list(dict.fromkeys(r["order_id"] for r in evidence_rows(file)))
+            filled_ids={r["order_id"] for r in evidence_rows(path/"fills.jsonl.gz")}
+            ids.sort(key=lambda value:value not in filled_ids)
             oid=st.selectbox("주문 ID",ids)
             trace=[r for r in evidence_rows(file) if r["order_id"]==oid]
             frame=pd.json_normalize(trace)
