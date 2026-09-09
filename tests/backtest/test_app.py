@@ -31,6 +31,6 @@ def test_form_submission_resolves_same_default_as_cli(monkeypatch):
     assert not calls and not app.exception
     next(button for button in app.button if button.label=="Run scenario").click().run(timeout=30)
     assert not app.exception and len(calls)==1
-    assert calls[0].effective_sha256==load_backtest_config(ROOT/"configs/backtest/binance_demo.yaml").effective_sha256
+    assert calls[0].effective_sha256==load_backtest_config(ROOT/"configs/backtest/binance_recorded.yaml").effective_sha256
     app.run(timeout=30)
     assert not app.exception and len(calls)==1

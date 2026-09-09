@@ -62,6 +62,7 @@ def audit(config,report_path):
             assert Decimal(fill["fee"])==expected_fee
             used[source.replay_index]+=quantity
             assert used[source.replay_index]<=source.trade.size, "historical trade volume reused"
+            assert used[source.replay_index]<=source.trade.size*Decimal(manifest['resolved_config'].get('max_trade_participation','1'))
             fill_count+=1
         if (path/"markouts.csv.gz").exists():
             with gzip.open(path/"markouts.csv.gz","rt") as stream:
