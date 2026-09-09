@@ -26,11 +26,11 @@ Authoritative runtime: existing GCP Ubuntu VM, Python 3.12, source directory
 ```bash
 python -m pytest -q
 python scripts/validate_backtest_workspace.py --config configs/backtest/binance_recorded.yaml --workspace artifacts/backtest/workspace-final-matrix --output artifacts/backtest/workspace-final-matrix.json --mode matrix --check-collector
-python scripts/validate_backtest_workspace_cancel.py --help
+python scripts/validate_backtest_workspace_cancel.py --config configs/backtest/binance_recorded.yaml --workspace artifacts/backtest/workspace-trading-cancel --output artifacts/backtest/workspace-trading-cancel.json
 ```
 
-The cancel script was also executed against a fresh `workspace-trading-cancel`
-directory; its exact result and arguments are retained in the report below.
+The cancel script used a fresh `workspace-trading-cancel` directory; its result
+is retained in the report below.
 SSH/SCP transferred owned source files and small evidence reports. No collector
 configuration, raw capture, accepted research artifact or cloud resource was changed.
 
@@ -59,6 +59,9 @@ existing MVP documentation retain the external protocol references.
   nine-run expression grid, displayed heatmap and PnL/inventory curves, saved
   comparison conditions, cloned an exact run, changed only maker fee to 1bps,
   completed that run and saved a research note/candidate.
+  After switching to port 8501, the saved note and candidate flag were restored
+  in a fresh browser session. The saved cost comparison contains both parent
+  and clone, fixed strategy identity and two overlay runs.
 - Parent `c90a257de032-2c48e0c5` and clone `39e09b39780c-e5892e1c` both
   produced 92 fills and gross PnL -0.6568 USDT. The clone's additional
   0.73322302 USDT fee explains its net PnL -1.39002302 exactly.
