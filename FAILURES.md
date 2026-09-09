@@ -4,6 +4,7 @@ Nothing is silently excluded.
 
 ## 2026-09-09 — Recorded-arrival extension development
 
+- Updating Streamlit source while its Python process retained the old imported configuration module produced `ImportError: cannot import name 'STRINGS'`. Restarted only the identified lab process; subsequent fresh browser connections use the new modules. The collector was not restarted.
 - A late-fill test initially expired its order before the intended fill. Set its explicit test maximum age to 10 seconds; engine semantics unchanged.
 - The zero-fill participation test initially indexed an absent in-memory `fills` channel. Corrected the assertion to accept an absent channel.
 - Capacity stress now rounds its per-trade cap down to instrument lots, preventing the stress overlay from creating sub-lot fills. Baseline participation=1 retains established queue semantics.

@@ -207,7 +207,7 @@ with diagnose:
         if (path/"diagnostics.json").exists():
             d=json.loads((path/"diagnostics.json").read_text())
             s=json.loads((path/"summary.json").read_text())
-            labels={"inventory_mtm":"재고 보유 중 가격변동","spread_capture":"체결 시점의 불리한 가격","fees":"수수료","positive_sample_result":"이 샘플에서는 양수"}
+            labels={"inventory_mtm":"재고 보유 중 가격변동","spread_capture":"체결 시점의 불리한 가격","fees":"수수료","positive_sample_result":"이 샘플에서는 양수","zero_sample_result":"손익 0 · 체결 유무도 확인하세요"}
             st.write("가장 큰 손실 기여: **"+labels[d["primary_loss_component"]]+"**")
             cards=st.columns(4)
             for card,key,label in zip(cards,["net_pnl","spread_capture","inventory_mtm","fees"],["순손익 USDT","체결 시 스프레드 기여","재고 가격변동 손익","수수료 (양수=비용)"]):

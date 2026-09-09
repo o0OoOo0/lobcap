@@ -33,7 +33,7 @@ def build_diagnostics(path,config):
         reasons=Counter(row["reason"] for row in read_rows(path/"decisions.jsonl.gz"))
         pnl={key:Decimal(summary[key]) for key in ("net_pnl","gross_pnl","spread_capture","inventory_mtm","fees")}
         components={"inventory_mtm":pnl["inventory_mtm"],"spread_capture":pnl["spread_capture"],"fees":-pnl["fees"]}
-        driver=min(components,key=components.get) if pnl["net_pnl"]<0 else "positive_sample_result"
+        driver=min(components,key=components.get) if pnl["net_pnl"]<0 else ("positive_sample_result" if pnl["net_pnl"]>0 else "zero_sample_result")
         stress=notional*config.impact_stress_bps/10000
         output={"status":"PASS","clock_mode":config.clock_mode,"report_ms":config.report_ms,
             "primary_loss_component":driver,"pnl_components":pnl,"filled_quantity":quantity,
