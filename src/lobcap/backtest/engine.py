@@ -28,9 +28,12 @@ class MarketBook:
                 raise ValueError("normalized quantity_before does not match reconstructed book")
             if update.quantity_after:
                 levels[update.price]=update.quantity_after
+                if update.side=="buy" and update.price>self.bid:self.bid=update.price
+                if update.side=="sell" and update.price<self.ask:self.ask=update.price
             else:levels.pop(update.price,None)
         if not self.bids or not self.asks:raise ValueError("empty replay book")
-        self.bid,self.ask=max(self.bids),min(self.asks)
+        if self.bid not in self.bids:self.bid=max(self.bids)
+        if self.ask not in self.asks:self.ask=min(self.asks)
         if self.bid>=self.ask:raise ValueError("crossed replay book")
         self.time_ns=event.time_ns
 

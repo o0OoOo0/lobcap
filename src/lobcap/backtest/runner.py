@@ -29,6 +29,14 @@ _RUN_LOCK=threading.Lock()
 def utc_now():return datetime.now(timezone.utc).isoformat()
 
 
+def parse_setting(key,value):
+    """Keep decimal CLI/form text lossless; YAML floats would round long alpha values."""
+    text=value.strip()
+    if key in DECIMALS:
+        return None if text.lower()=="null" else text
+    return yaml.safe_load(text) if key in INTS else text
+
+
 def config_document(config):
     def iso(ns):
         seconds,fraction=divmod(ns,1_000_000_000)
@@ -55,7 +63,8 @@ def _run_one(config, sample_path=None):
     try:
         result=run(config,initial,iter_events(sample_path),sink)
         status="PASS"
-    except Exception as exc:
+    except BaseException as exc:
+        status="CANCELED" if isinstance(exc,KeyboardInterrupt) else "FAIL"
         error=f"{type(exc).__name__}: {exc}"
         raise
     finally:
@@ -123,8 +132,9 @@ def run_sweep(config, changes, sample_path=None, progress=None):
             with (comparison/"results.csv").open("w",newline="",encoding="utf-8") as f:
                 writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(jsonable(rows))
             manifest["status"]="PASS"
-        except Exception as exc:
-            manifest["status"]="FAIL";manifest["error"]=str(exc)
+        except BaseException as exc:
+            manifest["status"]="CANCELED" if isinstance(exc,KeyboardInterrupt) else "FAIL"
+            manifest["error"]=f"{type(exc).__name__}: {exc}"
             raise
         finally:
             manifest["completed_at"]=utc_now()
@@ -149,14 +159,14 @@ def main(argv=None):
     try:
         config=load_backtest_config(args.config)
         changes=dict(item.split("=",1) for item in args.set)
-        config=variant(config,**{k:yaml.safe_load(v) for k,v in changes.items()})
+        config=variant(config,**{k:parse_setting(k,v) for k,v in changes.items()})
         if args.action=="prepare":print(prepare_sample(config))
         elif args.action=="run":
             result=run_one(config,args.sample)
             print(json.dumps({"output":str(result.output_dir),"digest":result.digest,"summary":jsonable(result.summary)}))
         else:
             if args.core_matrix:changes=core_matrix()
-            elif args.parameter and args.values:changes=[{args.parameter:yaml.safe_load(v)} for v in args.values.split(",")]
+            elif args.parameter and args.values:changes=[{args.parameter:parse_setting(args.parameter,v)} for v in args.values.split(",")]
             else:parser.error("sweep requires --core-matrix or --parameter and --values")
             path,rows=run_sweep(config,changes,args.sample,lambda i,n,r:print(f"{i}/{n}: {r.output_dir.name}",flush=True))
             print(path)

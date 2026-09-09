@@ -125,6 +125,9 @@ def load_backtest_config(path: str | Path) -> BacktestConfig:
         if type(s["warmup_seconds"]) is not int or not 30 <= s["warmup_seconds"] <= 300:
             raise ConfigError("warmup must be 30–300 seconds")
         resolve = lambda value: Path(value) if Path(value).is_absolute() else ROOT / value
+        for key,value in row["settings"].items():
+            if key in DECIMALS and isinstance(value,float):
+                raise ConfigError(f"quote decimal setting {key} in YAML to preserve precision")
         config = BacktestConfig(path, raw_sha, canonical_sha,
             SampleSpec(s["id"], start, end, s["warmup_seconds"] * NS),
             resolve(row["data_root"]), resolve(row["output_path"]))

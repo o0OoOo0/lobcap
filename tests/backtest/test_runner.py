@@ -6,7 +6,7 @@ from decimal import Decimal as D
 import pytest
 import yaml
 
-from lobcap.backtest.replay import write_json,load_sample,sample_fingerprint
+from lobcap.backtest.replay import write_json,load_sample,sample_fingerprint,iter_events
 from lobcap.backtest.runner import run_one,run_sweep,config_document,main,_RUN_LOCK
 from lobcap.backtest.types import BookSnapshot,ReplayEvent,L2Trade,jsonable
 from lobcap.config.backtest import load_backtest_config,variant
@@ -53,3 +53,11 @@ def test_sweep_cap_lock_and_sample_integrity(sample):
     finally:_RUN_LOCK.release()
     with (path/"events.jsonl.gz").open("ab") as f:f.write(b"tampered")
     with pytest.raises(ValueError,match="checksum"):load_sample(path,config)
+
+
+def test_reader_rejects_hidden_nested_trade_fields(sample):
+    _,path=sample
+    with gzip.open(path/"events.jsonl.gz","rt") as f:row=json.loads(f.readline())
+    row["trade"]["maker_order_id"]="hidden"
+    with gzip.open(path/"events.jsonl.gz","wt") as f:f.write(json.dumps(row)+"\n")
+    with pytest.raises(ValueError,match="trade fields"):list(iter_events(path))

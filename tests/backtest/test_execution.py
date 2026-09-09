@@ -74,3 +74,15 @@ def test_depletion_spanning_activation_is_skipped():
     x.on_event(ReplayEvent(1,20,20,"depth",interval_start_ns=0,
         depletion=(Depletion("buy",D(100),D(2),D(0),D(2),D(0)),)))
     assert x.orders["buy"].queue==2 and x.stats["skipped_nontrade_quantity"]==2
+
+
+def test_replacement_downtime_ends_at_new_activation():
+    x=setup(entry_ms=10)
+    q=Quote("buy",D(100),D(".001"))
+    x.submit(q,0,{})
+    x.advance(10_000_000,market(10_000_000),Book())
+    x.request_cancel(x.orders["buy"],20_000_000,"replace")
+    x.advance(20_000_000,market(20_000_000),Book())
+    x.submit(q,30_000_000,{})
+    x.advance(40_000_000,market(40_000_000),Book())
+    assert x.stats["replacement_downtime_ns"]==20_000_000

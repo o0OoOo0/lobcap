@@ -65,7 +65,9 @@ def main():
         assert validation["trading_counts"]=={"depth":5881,"trade":8043},validation
         assert validation["snapshot_matches"]==2
         report["sample"]=manifest;report["sample_validation"]=validation
-        def progress(i,n,r):print(f"{i}/{n} {r.output_dir.name}: net={r.summary['net_pnl']}",flush=True)
+        def progress(i,n,r):
+            performance=reconcile_artifact(r.output_dir)
+            print(f"{i}/{n} {r.output_dir.name}: net={r.summary['net_pnl']} wall={performance['wall_seconds']:.2f}s rss={performance['process_peak_rss_mib']:.1f}MiB",flush=True)
         first,rows1=run_sweep(config,core_matrix(),sample,progress)
         second,rows2=run_sweep(config,list(reversed(core_matrix())),sample,progress)
         assert {r["effective_config_sha256"]:r["deterministic_digest"] for r in rows1}=={r["effective_config_sha256"]:r["deterministic_digest"] for r in rows2}
@@ -92,8 +94,9 @@ def main():
         report["collector_after"]=subprocess.check_output(["systemctl","is-active","lobcap@btcusdt.service"],text=True).strip()
         assert report["collector_after"]=="active"
         report["status"]="PASS"
-    except Exception as exc:
-        report["status"]="FAIL";report["error"]=f"{type(exc).__name__}: {exc}"
+    except BaseException as exc:
+        report["status"]="CANCELED" if isinstance(exc,KeyboardInterrupt) else "FAIL"
+        report["error"]=f"{type(exc).__name__}: {exc}"
         raise
     finally:
         report["wall_seconds"]=time.perf_counter()-started

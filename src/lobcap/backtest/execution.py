@@ -38,6 +38,7 @@ class Execution:
         self.orders = {}
         self.heap = []
         self.ordinal = self.next_id = 0
+        self.replacement_wait = {}
         self.stats = Counter()
         self.stats.update({k:ZERO for k in ("activated_quantity","filled_quantity","skipped_nontrade_quantity","order_lifetime_ns")})
 
@@ -78,6 +79,8 @@ class Execution:
         order.terminal, order.terminal_ns, order.status, order.reason=True,now,status,reason
         if self.orders.get(order.side) is order:
             del self.orders[order.side]
+        if status=="CANCELED" and reason=="replace":
+            self.replacement_wait.setdefault(order.side,now)
         self.stats[status.lower()] += 1
         filled=order.quantity-order.remaining
         if order.activation_ns is not None:
@@ -106,6 +109,8 @@ class Execution:
                     self._finish(order,t,"REJECTED","invalid_book" if invalid else "post_only_marketable")
                 else:
                     order.activation_ns=t
+                    if order.side in self.replacement_wait:
+                        self.stats["replacement_downtime_ns"] += t-self.replacement_wait.pop(order.side)
                     if order.cancel_requested_ns is None:order.status="ACTIVE"
                     order.queue=book.quantity(order.side,order.price)
                     self.stats["activated"] += 1
@@ -173,3 +178,6 @@ class Execution:
     def finish(self, now):
         for order in tuple(self.orders.values()):
             self._finish(order,now,"CENSORED","sample_end_pending" if order.activation_ns is None else "sample_end_active")
+        for started in self.replacement_wait.values():
+            self.stats["replacement_downtime_ns"] += now-started
+        self.replacement_wait.clear()

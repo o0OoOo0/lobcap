@@ -8,12 +8,13 @@ import plotly.express as px
 import streamlit as st
 import yaml
 
-from lobcap.backtest.runner import run_one,run_sweep,core_matrix
+from lobcap.backtest.runner import run_one,run_sweep,core_matrix,parse_setting
 from lobcap.backtest.types import ASSUMPTIONS
 from lobcap.config.backtest import load_backtest_config,variant,STRATEGIES,DECIMALS,INTS
 from lobcap.config.experiment import ROOT
 
 st.set_page_config(page_title="Market-Making Backtest Lab",layout="wide")
+STRATEGY_LABELS={"fixed_spread":"Fixed spread","inventory_skew":"Inventory skew","microprice":"Microprice / imbalance"}
 st.title("Market-Making Backtest Lab")
 st.caption("Binance BTCUSDT · exchange-time replay · maker-only · bounded assumption studies")
 st.info("Order latency is modeled with zero feed latency. Net PnL includes configured maker fees; funding and terminal liquidation are excluded.")
@@ -30,7 +31,7 @@ with configure:
     with st.form("scenario"):
         a,b,c=st.columns(3)
         with a:
-            strategy=st.selectbox("Strategy",STRATEGIES)
+            strategy=st.selectbox("Strategy",STRATEGIES,format_func=lambda x:STRATEGY_LABELS[x])
             mode=st.selectbox("Fill assumption",["alpha","TOUCH_FILL"])
             alpha=st.text_input("Alpha [0, 1] — uncalibrated","0.5")
             size=st.text_input("Size per side (BTC)",str(base.size))
@@ -80,9 +81,15 @@ def saved_runs():
 runs=saved_runs()
 lookup={p.name:(p,m) for p,m in runs}
 
+
+def run_label(name):
+    c=lookup[name][1]["resolved_config"]
+    fill="TOUCH_FILL" if c["alpha"] is None else f"α={c['alpha']}"
+    return f"{STRATEGY_LABELS[c['strategy']]} · {fill} · entry {c['entry_ms']} / cancel {c['cancel_ms']} ms · fee {c['maker_bps']} bps · {name[-4:]}"
+
 with compare:
     st.subheader("Compare identical replay data")
-    selected=st.multiselect("Saved runs",list(lookup),default=list(lookup)[:min(4,len(lookup))],max_selections=12)
+    selected=st.multiselect("Saved runs",list(lookup),default=list(lookup)[:min(4,len(lookup))],max_selections=12,format_func=run_label)
     if selected:
         if len({lookup[name][1]["sample_sha256"] for name in selected})!=1:
             st.error("Selected runs have different sample checksums.")
@@ -96,7 +103,8 @@ with compare:
                     "entry_ms":settings["entry_ms"],"cancel_ms":settings["cancel_ms"],"maker_bps":settings["maker_bps"],
                     **{k:summary[k] for k in ("net_pnl","gross_pnl","fees","spread_capture","inventory_mtm","fill_rate","partial_fill_rate","full_fill_rate","mean_inventory","max_abs_inventory","max_drawdown","ending_inventory")}})
                 frame=pd.read_csv(path/"timeseries.csv.gz")
-                frame["run"]=name;frame["time"]=pd.to_datetime(frame["time_ns"],unit="ns",utc=True);curves.append(frame)
+                frame["run"]=f"{STRATEGY_LABELS[settings['strategy']]} · {'TOUCH' if settings['alpha'] is None else 'α='+settings['alpha']} · {name[-4:]}"
+                frame["time"]=pd.to_datetime(frame["time_ns"],unit="ns",utc=True);curves.append(frame)
             st.dataframe(pd.DataFrame(summaries),width="stretch")
             frame=pd.concat(curves,ignore_index=True)
             left,right=st.columns(2)
@@ -119,7 +127,7 @@ with sensitivity:
     if run_grid or run_matrix:
         try:
             scenario=variant(base,**st.session_state.get("scenario_changes",{}))
-            changes=core_matrix() if run_matrix else [{parameter:yaml.safe_load(v.strip())} for v in values.split(",")]
+            changes=core_matrix() if run_matrix else [{parameter:parse_setting(parameter,v)} for v in values.split(",")]
             bar=st.progress(0)
             comparison,rows=run_sweep(scenario,changes,progress=lambda i,n,r:bar.progress(i/n,text=f"Completed {i}/{n}"))
             st.session_state["comparison"]=str(comparison)
@@ -146,7 +154,7 @@ with audit:
             st.json(json.loads((sample_path/"validation.json").read_text()))
             st.json(json.loads((sample_path/"sample_manifest.json").read_text()))
     if lookup:
-        selected_audit=st.selectbox("Run to audit",list(lookup))
+        selected_audit=st.selectbox("Run to audit",list(lookup),format_func=run_label)
         path,manifest=lookup[selected_audit]
         summary=json.loads((path/"summary.json").read_text())
         st.json({"markouts":summary["markouts"],"execution":summary["execution"],"sharpe":summary["sharpe_status"]})

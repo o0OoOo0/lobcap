@@ -61,6 +61,7 @@ def test_replay_determinism_prefix_invariance_and_isolation():
     for channel in ("decisions","fills","ledger","orders"):
         assert [r for r in a.rows[channel] if r["time_ns"]<2*NS]==[r for r in b.rows[channel] if r["time_ns"]<2*NS]
     assert result.summary["sharpe"] is None
+    assert result.summary["return_buckets"]==0
     assert result.summary["ending_inventory"]==D(".001")
 
 

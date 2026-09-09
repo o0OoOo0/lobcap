@@ -129,7 +129,8 @@ class Metrics:
 
     def finish(self,end,portfolio,execution):
         while self.pending:self._resolve(heapq.heappop(self.pending),self.last_book,"sample_end")
-        self.minute_equity.append(portfolio.equity)
+        if (end-self.config.sample.start_ns)%(60*NS)==0:
+            self.minute_equity.append(portfolio.equity)
         self.sink.write("timeseries",{"time_ns":end,"gross_pnl":portfolio.gross_pnl,"net_pnl":portfolio.net_pnl,
             "inventory":portfolio.inventory,"equity":portfolio.equity,"spread_capture":portfolio.spread_capture,
             "inventory_mtm":portfolio.inventory_mtm,"fees":portfolio.fees,"mid":portfolio.mid})
@@ -154,6 +155,7 @@ class Metrics:
             "quote_availability":{side:ratio(v,duration) for side,v in self.active_ns.items()},
             "cancel_pending_seconds":{side:v/NS for side,v in self.cancel_pending_ns.items()},
             "entry_pending_seconds":{side:v/NS for side,v in self.entry_pending_ns.items()},
+            "replacement_downtime_seconds":s["replacement_downtime_ns"]/NS,
             "markouts":{str(h):self._final_markout(t) for h,t in self.markout_totals.items()},
             "sharpe":sharpe,"sharpe_status":"Unavailable — insufficient sample" if sharpe is None else "descriptive, nonannualized one-minute returns",
             "return_bucket_seconds":60,"return_buckets":len(returns),"assumptions":ASSUMPTIONS}

@@ -158,6 +158,7 @@ def normalize(book, initial, depth, trades, stats, shadows=()):
             yield ReplayEvent(index, t, max(receives), "depth", tuple(refs), tuple(sequences),
                               tuple(updates), interval_start_ns=interval_start, depletion=tuple(attribution))
             interval_start = t
+            stats["last_depth_time_ns"] = t
             traded.clear()
 
 
@@ -226,9 +227,13 @@ def prepare_sample(config):
                 if config.sample.start_ns <= event.time_ns < config.sample.end_ns:
                     counts[event.kind] += len(event.source_refs)
                     max_receive_delay[event.kind] = max(max_receive_delay[event.kind], event.receive_ns-event.time_ns)
-                output.write((json.dumps(jsonable(event), sort_keys=True, separators=(",", ":"))+"\n").encode())
+                row=jsonable(event)
+                assert_blinded_mapping(row)
+                output.write((json.dumps(row, sort_keys=True, separators=(",", ":"))+"\n").encode())
         if not counts["depth"] or not counts["trade"]:
             raise ValueError("sample has no depth/trade coverage")
+        if config.sample.end_ns-stats["last_depth_time_ns"]>500_000_000:
+            raise ValueError("missing depth coverage near sample end")
         if len(shadows) < 1 or not all(item[2] for item in shadows):
             raise ValueError("missing/unaligned independent snapshot validation")
         for item in inputs:
@@ -272,11 +277,25 @@ def load_sample(path, config=None):
 
 
 def iter_events(path):
+    # Strict, flat field contracts avoid repeating a recursive generic Mapping
+    # walk over every primitive on every sweep. Preparation performs the full
+    # shared blinding check; this reader also rejects unknown nested fields.
+    event_fields=frozenset(ReplayEvent.__dataclass_fields__)
+    update_fields=frozenset(L2LevelUpdate.__dataclass_fields__)
+    depletion_fields=frozenset(Depletion.__dataclass_fields__)
+    trade_fields=frozenset(L2Trade.__dataclass_fields__)
     previous_index, previous_time = 0, -1
     with gzip.open(Path(path)/"events.jsonl.gz", "rt", encoding="utf-8") as stream:
         for line in stream:
             row = json.loads(line)
-            assert_blinded_mapping(row)
+            if row.keys()!=event_fields:
+                raise ValueError("unexpected normalized event fields")
+            if any(u.keys()!=update_fields for u in row["updates"]) or any(d.keys()!=depletion_fields for d in row["depletion"]):
+                raise ValueError("unexpected normalized level/depletion fields")
+            if row["trade"] is not None and row["trade"].keys()!=trade_fields:
+                raise ValueError("unexpected normalized trade fields")
+            if not all(isinstance(ref,str) for ref in row["source_refs"]) or not all(type(seq) is int for seq in row["source_sequences"]):
+                raise ValueError("invalid public source references")
             if row["replay_index"] <= previous_index or row["time_ns"] < previous_time:
                 raise ValueError("invalid normalized replay ordering")
             previous_index, previous_time = row["replay_index"], row["time_ns"]
