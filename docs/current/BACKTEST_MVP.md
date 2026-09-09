@@ -1,5 +1,8 @@
 # Market-Making Backtest Lab MVP v1
 
+For the current recorded-arrival interface and additional execution diagnostics,
+see [BACKTEST_REALISM.md](BACKTEST_REALISM.md). This page preserves v1 semantics.
+
 Measured acceptance results and the task report are in
 [BACKTEST_MVP_COMPLETION.md](BACKTEST_MVP_COMPLETION.md), with compact
 [validation evidence](BACKTEST_MVP_VALIDATION.json).

@@ -4,6 +4,8 @@
 
 The separate Binance BTCUSDT MVP, CLI, Streamlit demo and Ubuntu reproduction
 instructions are documented in [BACKTEST_MVP.md](docs/current/BACKTEST_MVP.md).
+The strengthened default lab includes recorded-arrival replay, private report
+delays, loss diagnostics and order timelines: [BACKTEST_REALISM.md](docs/current/BACKTEST_REALISM.md).
 It does not require the Prompt 5E OOS run or modify the active collector.
 
 Updated: 2026-09-06

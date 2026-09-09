@@ -17,7 +17,7 @@ st.set_page_config(page_title="Market-Making Backtest Lab",layout="wide")
 STRATEGY_LABELS={"fixed_spread":"Fixed spread","inventory_skew":"Inventory skew","microprice":"Microprice / imbalance","flow_guard":"Flow guard / 비용·주문흐름 필터"}
 st.title("Market-Making Backtest Lab")
 st.caption("Binance BTCUSDT · captured market replay · maker-only · 주문·체결·손익 추적")
-st.info("수익성 검증 도구입니다. 동일 데이터·설정은 동일 결과를 만듭니다. 수신 지연과 체결 통보는 분리해 모델링하며, 실제 대기열·마켓임팩트는 실측 검증되지 않았습니다.")
+st.info("캡처 데이터로 실행 가정과 손익을 점검합니다. 동일 데이터·설정은 동일 결과를 만듭니다. 수신 지연과 체결 통보는 분리해 모델링하며, 실제 대기열·마켓임팩트는 실측 검증되지 않았습니다.")
 catalogue=sorted((ROOT/"configs/backtest").glob("*.yaml"))
 config_path=st.sidebar.selectbox("Dataset configuration",catalogue,index=next((i for i,p in enumerate(catalogue) if p.stem=="binance_recorded"),0),format_func=lambda p:"수신 기록 포함 · 고정 10분 샘플" if p.stem=="binance_recorded" else "기존 v1 샘플")
 base=load_backtest_config(config_path)
@@ -224,6 +224,15 @@ with diagnose:
             a,b=st.columns(2)
             a.metric("실제 재고 / 통보받은 재고",f"{s['ending_inventory']} / {s.get('ending_known_inventory',s['ending_inventory'])} BTC")
             b.metric("통보 대기 때문에 몰랐던 최대 재고",str(s.get("max_unreported_inventory","0"))+" BTC")
+            if (path/"observations.jsonl.gz").exists():
+                with st.expander("거래소 상태와 전략이 알고 있던 상태 비교"):
+                    observations=pd.DataFrame(evidence_rows(path/"observations.jsonl.gz"))
+                    observations["time"]=pd.to_datetime(observations["time_ns"],unit="ns",utc=True)
+                    for column in ("exchange_mid","observed_mid","exchange_inventory","known_inventory"):
+                        observations[column]=pd.to_numeric(observations[column])
+                    st.plotly_chart(px.line(observations,x="time",y=["exchange_mid","observed_mid"],title="거래소 mid / 수신한 mid"),width="stretch")
+                    st.plotly_chart(px.line(observations,x="time",y=["exchange_inventory","known_inventory"],title="체결된 재고 / 통보받은 재고"),width="stretch")
+                    st.caption("차트는 1초 간격입니다. 주문 타임라인과 원본 근거에는 이벤트 시점이 유지됩니다.")
             fee=pd.DataFrame(d["fee_scenarios_fixed_fills"])
             fee["maker_bps"]=pd.to_numeric(fee["maker_bps"]);fee["net_pnl"]=pd.to_numeric(fee["net_pnl"])
             st.plotly_chart(px.line(fee,x="maker_bps",y="net_pnl",markers=True,title="같은 체결 경로의 수수료 재계산"),width="stretch")
