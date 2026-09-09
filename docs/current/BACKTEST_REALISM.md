@@ -1,5 +1,8 @@
 # Recorded-arrival backtest lab
 
+The current Korean page-based workflow supersedes the older tab layout below:
+[strict review and usage guide](BACKTEST_STRICT_REVIEW.md).
+
 Measured results and the implementation report are in
 [BACKTEST_REALISM_COMPLETION.md](BACKTEST_REALISM_COMPLETION.md).
 

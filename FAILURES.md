@@ -4,6 +4,7 @@ Nothing is silently excluded.
 
 ## 2026-09-09 — Strict lab usability and integrity review
 
+- During staged deployment, Streamlit retained an older presentation module while reading the updated page, producing a missing-label key error. Restarted the lab process after all modules were synchronized; fresh-session saved-history rendering then passed.
 - Browser verification found Streamlit removes a widget's state when its page is not rendered. Selecting an older run could be lost after visiting sensitivity. Added a separate durable selection value and a navigation regression test.
 - The local SSH reconnect helper had exited, leaving port 8501 unavailable while the VM app remained healthy. Restarted the existing helper; verified localhost afterward. It is an active process, not an installed persistent service.
 - Review found that sensitivity silently used the last submitted scenario, and retained results across catalogue changes. Replaced this with explicit saved-run/default selection and dataset-scoped state.

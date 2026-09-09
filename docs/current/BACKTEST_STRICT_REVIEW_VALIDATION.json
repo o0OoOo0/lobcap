@@ -1,0 +1,48 @@
+{
+  "collector": "active",
+  "git_commit": "69aec10400004366f638560b16eeec9d5c15f4f8",
+  "legacy_digest": "f723f938e9ba732896202fba7d1948d9b9da9f9f02aa94c235c6dc52fd21396d",
+  "legacy_performance": {
+    "cpu_seconds": 7.640419629,
+    "output_bytes": 369699,
+    "process_peak_rss_mib": 38.74609375,
+    "sample_preparation_seconds": 0.2372690030024387,
+    "wall_seconds": 7.6563323689915705
+  },
+  "legacy_run": "/home/0woo/lobcap-mvp/artifacts/backtest/runs/14f2baf21aa0-0d7b3e13",
+  "recorded_cli_run": "/home/0woo/lobcap-mvp/artifacts/backtest/runs/03059d33c2d7-479f6ea2",
+  "recorded_digest": "fe87ef329ae21dca8ea8d2efff655db5a07877b28e7d333aa7b3cf556389ef2a",
+  "recorded_performance": {
+    "cpu_seconds": 9.617693247,
+    "output_bytes": 496693,
+    "process_peak_rss_mib": 38.74609375,
+    "sample_preparation_seconds": 0.051829240983352065,
+    "wall_seconds": 9.65507508898736
+  },
+  "status": "PASS",
+  "ui_performance": {
+    "cpu_seconds": 10.156201231,
+    "output_bytes": 496655,
+    "process_peak_rss_mib": 175.19921875,
+    "sample_preparation_seconds": 0.28298621499561705,
+    "wall_seconds": 10.13152521799202
+  },
+  "ui_run": "artifacts/backtest/runs/03059d33c2d7-fc43c67e",
+  "linux_tests_passed": 132,
+  "linux_test_seconds": 43.14,
+  "final_test_commit": "aef9b92",
+  "browser_impact_sweep": {
+    "comparison_id": "032befbd6bc34c459c23c850f1c4103f",
+    "values_bps": [
+      0,
+      1
+    ],
+    "displayed_stressed_pnl": [
+      "-0.519900",
+      "-1.300928"
+    ],
+    "status": "PASS"
+  },
+  "changes_scope": "Presentation, experiment context, JSON atomicity, and diagnostic verification wording; execution/accounting formulas preserved",
+  "saved_history_after_restart": "PASS"
+}
