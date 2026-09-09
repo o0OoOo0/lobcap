@@ -44,13 +44,14 @@ def run(config, initial, events, sink, strategy=None):
     # Lazy imports keep the execution and public contracts independently usable.
     from lobcap.backtest.accounting import Portfolio
     from lobcap.backtest.metrics import Metrics
-    from lobcap.backtest.strategies import Features, decide, risk_control, decision_context
+    from lobcap.backtest.strategies import Features, StrategyParameters, decide, risk_control, decision_context
 
     with localcontext() as context:
         context.prec=50
         book=MarketBook(initial)
         execution=Execution(config,sink)
         features=Features()
+        parameters=StrategyParameters.from_config(config)
         portfolio=None
         metrics=Metrics(config,sink)
         iterator=iter(events)
@@ -93,7 +94,7 @@ def run(config, initial, events, sink, strategy=None):
                 view=PortfolioView(portfolio.cash,portfolio.inventory,portfolio.equity,
                     execution.exposure("buy"),execution.exposure("sell"),
                     tuple((s,o.status) for s,o in sorted(execution.orders.items())))
-                desired=(strategy(market,view) if strategy is not None else decide(config,market,view))
+                desired=(strategy(market,view) if strategy is not None else decide(parameters,market,view))
                 desired=risk_control(config,market,view,desired)
                 decision=decision_context(config,market,view,desired)
                 sink.write("decisions",decision)

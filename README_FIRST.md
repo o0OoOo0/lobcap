@@ -1,5 +1,11 @@
 # LOB Market-Making Simulation — Codex Remote Bootstrap v2
 
+## Market-Making Backtest Lab
+
+The separate Binance BTCUSDT MVP, CLI, Streamlit demo and Ubuntu reproduction
+instructions are documented in [BACKTEST_MVP.md](docs/current/BACKTEST_MVP.md).
+It does not require the Prompt 5E OOS run or modify the active collector.
+
 Updated: 2026-09-06
 
 This pack is designed to be uploaded as-is to:

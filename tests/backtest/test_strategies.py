@@ -1,11 +1,17 @@
 from dataclasses import replace
 from decimal import Decimal as D
 
-from lobcap.backtest.strategies import decide, risk_control, Features
+from lobcap.backtest.strategies import decide as strategy_decide, risk_control, Features, StrategyParameters
 from lobcap.backtest.types import PortfolioView
 from lobcap.config.backtest import load_backtest_config, variant
 from lobcap.config.experiment import ROOT
 from test_execution import market
+
+
+def decide(config,market,portfolio):
+    parameters=StrategyParameters.from_config(config)
+    assert not hasattr(parameters,"alpha") and not hasattr(parameters,"entry_ms")
+    return strategy_decide(parameters,market,portfolio)
 
 
 def test_strategies_and_inventory_reservation():

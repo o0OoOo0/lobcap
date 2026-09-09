@@ -1,10 +1,27 @@
 """Interpretable strategies and causal quote-risk controls."""
 from collections import deque
+from dataclasses import dataclass
 from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
 import math
 import statistics
 
 from lobcap.backtest.types import Quote, DesiredQuotes, ZERO
+
+
+@dataclass(frozen=True, slots=True)
+class StrategyParameters:
+    strategy: str
+    size: Decimal
+    half_spread_ticks: Decimal
+    inventory_skew_ticks: Decimal
+    signal_strength: Decimal
+    max_inventory: Decimal
+    tick: Decimal
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(config.strategy,config.size,config.half_spread_ticks,config.inventory_skew_ticks,
+                   config.signal_strength,config.max_inventory,config.instrument.tick)
 
 
 class Features:
@@ -27,13 +44,13 @@ def _round(price,tick,buy):
 def decide(config, market, portfolio):
     center=market.mid
     if config.strategy=="inventory_skew":
-        center-=config.inventory_skew_ticks*config.instrument.tick*portfolio.inventory/config.max_inventory
+        center-=config.inventory_skew_ticks*config.tick*portfolio.inventory/config.max_inventory
     elif config.strategy=="microprice":
         center+=config.signal_strength*(market.microprice-market.mid)
-    half=config.half_spread_ticks*config.instrument.tick
+    half=config.half_spread_ticks*config.tick
     return DesiredQuotes(
-        Quote("buy",min(market.bid,_round(center-half,config.instrument.tick,True)),config.size),
-        Quote("sell",max(market.ask,_round(center+half,config.instrument.tick,False)),config.size))
+        Quote("buy",min(market.bid,_round(center-half,config.tick,True)),config.size),
+        Quote("sell",max(market.ask,_round(center+half,config.tick,False)),config.size))
 
 
 def risk_control(config, market, portfolio, desired):
