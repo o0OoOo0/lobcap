@@ -74,3 +74,20 @@ def test_cost_stress_is_explicit_and_does_not_change_execution(sample):
     assert D(diagnostics['hypothetical_impact_cost'])==cost
     assert D(diagnostics['stress_adjusted_net_pnl'])==D(stressed.summary['net_pnl'])-cost
     assert D(diagnostics['pnl_components']['spread_capture'])+D(diagnostics['pnl_components']['inventory_mtm'])==D(stressed.summary['gross_pnl'])
+
+
+def test_bootstrap_receipt_evidence_is_bound_to_sample_hash(sample):
+    from lobcap.backtest.types import ARRIVAL_NORMALIZATION_VERSION
+    config,path=sample
+    config=replace(config,sample=replace(config.sample,normalization_version=ARRIVAL_NORMALIZATION_VERSION))
+    received=config.sample.start_ns-config.sample.warmup_ns
+    write_json(path/'validation.json',{'status':'PASS','bootstrap_receive_ns':received})
+    manifest=json.loads((path/'sample_manifest.json').read_text())
+    manifest.update(sample=jsonable(config.sample),bootstrap_receive_ns=received)
+    manifest['files']['validation.json']=sha256_file(path/'validation.json')
+    manifest['sample_sha256']=sample_fingerprint(manifest['files'],config.sample)
+    write_json(path/'sample_manifest.json',manifest)
+    load_sample(path,config)
+    manifest['bootstrap_receive_ns']-=1
+    write_json(path/'sample_manifest.json',manifest)
+    with pytest.raises(ValueError,match='receipt evidence'):load_sample(path,config)

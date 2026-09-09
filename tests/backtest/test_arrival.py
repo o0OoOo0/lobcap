@@ -122,6 +122,16 @@ def test_flow_guard_uses_only_observed_flow_and_costs():
     assert quotes.bid is None and quotes.ask is not None
 
 
+def test_observed_flow_excludes_old_arrivals_and_expires_causally():
+    from lobcap.backtest.strategies import Features
+    features=Features()
+    features.observe_trade(trade(1,0,side='sell',size='10'),2*NS)
+    assert features.flow(2*NS)==(None,D(0))
+    features.observe_trade(trade(2,2*NS,side='sell',size='1'),2*NS)
+    assert features.flow(2*NS)==(D(1),D(1))
+    assert features.flow(3*NS)==(None,D(0))
+
+
 @pytest.mark.parametrize('change',[{'clock_mode':'walltime'},{'report_ms':-1},{'max_trade_participation':'0'},
                                  {'max_trade_participation':'1.1'},{'impact_stress_bps':'-1'}])
 def test_strict_clock_and_capacity_settings(change):
