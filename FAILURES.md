@@ -126,3 +126,4 @@ keep / exclude interval / exclude day
 - Browser automation initially clicked while a multiselect popup remained open; dismissed it with Escape and used a filtered keyboard selection. These were UI automation retries, not simulation failures.
 - The first cancellation integration trial stopped during warmup. Strengthened the script to wait until trading and require non-null inventory; rerun passed with -0.004 BTC retained and no liquidation.
 - Initial commit attempts failed because this worktree had no Git author identity. Used the repository's established recent author identity as command-local Git options; global configuration was not changed.
+- Temporary staging-app cleanup first failed because PowerShell expanded a remote readlink substitution locally. Reissued with a literal single-quoted remote command, checked the exact staging PID cwd and stopped only the temporary 8502 app. Release health and collector stayed active.
