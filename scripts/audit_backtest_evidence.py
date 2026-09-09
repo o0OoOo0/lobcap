@@ -10,6 +10,7 @@ from pathlib import Path
 from lobcap.backtest.replay import iter_events, load_sample, write_json
 from lobcap.config.backtest import load_backtest_config
 from lobcap.config.common import sha256_file
+from lobcap.config.experiment import ROOT
 
 
 def rows(path):
@@ -39,6 +40,10 @@ def audit(config,report_path):
         path=config.output_path/"runs"/run_id
         manifest=json.loads((path/"run_manifest.json").read_text())
         assert manifest["sample_sha256"]==sample_manifest["sample_sha256"]
+        for artifact in manifest["output_artifact_paths"]:
+            artifact_path=Path(artifact["path"])
+            if not artifact_path.is_absolute():artifact_path=ROOT/artifact_path
+            assert sha256_file(artifact_path)==artifact["sha256"], "run artifact checksum mismatch"
         order_states={}
         for order in rows(path/"orders.jsonl.gz"):
             order_states[order["order_id"]]=order
@@ -65,7 +70,7 @@ def audit(config,report_path):
     return {"status":"PASS","runs_audited":len(run_ids),"fills_source_checked":fill_count,
         "sample_end_markouts":censored_markouts,"sample_sha256":sample_manifest["sample_sha256"],
         "acceptance_report_sha256":sha256_file(report_path),
-        "checks":["source side, time, price and references","normal quantity not reused",
+        "checks":["run artifact checksums","source side, time, price and references","normal quantity not reused",
                   "activation precedes fill; fill no later than termination","signed maker fees",
                   "no terminal liquidation fills","visible markout censorship"]}
 
