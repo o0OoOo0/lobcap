@@ -41,6 +41,32 @@ class ModelSpec:
             raise ValueError("alpha must be in [0,1]")
 
 
+@dataclass(frozen=True, slots=True)
+class QueueTransition:
+    queue: Decimal
+    remaining: Decimal
+    filled: Decimal
+    nontrade_reduction: Decimal
+    trade_reduction: Decimal
+
+
+def advance_queue(queue: Decimal, remaining: Decimal, nontrade: Decimal,
+                  executable_trade: Decimal, model: ModelSpec) -> QueueTransition:
+    """Shared incremental fill arithmetic; timing and eligibility belong to callers.
+
+    Input trade volume must already be deduplicated. Non-trade depletion can
+    advance the queue but cannot fill an order. No price slippage is applied.
+    """
+    if any(not x.is_finite() or x < ZERO for x in (queue, remaining, nontrade, executable_trade)):
+        raise ValueError("invalid queue transition input")
+    reduction = ZERO if model.touch_fill else min(queue, model.alpha * nontrade)
+    queue -= reduction
+    consumed = ZERO if model.touch_fill else min(queue, executable_trade)
+    queue -= consumed
+    filled = min(remaining, executable_trade - consumed)
+    return QueueTransition(queue, remaining-filled, filled, reduction, consumed)
+
+
 def build_model_specs(
     alpha_grid: Iterable[Decimal],
     *,
@@ -414,10 +440,9 @@ class StreamingFillEngine:
                 self.invariants["trade_in_nontrade_depletion"] += 1
 
             if not state.model.touch_fill and nontrade:
-                requested = state.model.alpha * nontrade  # type: ignore[operator]
-                reduction = min(state.queue, requested)
-                state.queue -= reduction
-                state.assumed_nontrade += reduction
+                transition = advance_queue(state.queue, state.remaining, nontrade, ZERO, state.model)
+                state.queue = transition.queue
+                state.assumed_nontrade += transition.nontrade_reduction
 
             if _is_executable_trade(placement, frame):
                 if frame.sequence in state.seen_trade_sequences:
@@ -427,13 +452,10 @@ class StreamingFillEngine:
                     state.eligible_events += 1
                     trade_size = frame.trade.size  # type: ignore[union-attr]
                     state.executable_trade_volume += trade_size
-                    if state.model.touch_fill:
-                        virtual_fill = min(state.remaining, trade_size)
-                    else:
-                        consumed_queue = min(state.queue, trade_size)
-                        state.queue -= consumed_queue
-                        state.trade_queue_reduction += consumed_queue
-                        virtual_fill = min(state.remaining, trade_size - consumed_queue)
+                    transition = advance_queue(state.queue, state.remaining, ZERO, trade_size, state.model)
+                    state.queue = transition.queue
+                    state.trade_queue_reduction += transition.trade_reduction
+                    virtual_fill = transition.filled
                     if virtual_fill > ZERO:
                         if state.first_sequence is None:
                             state.first_sequence = frame.sequence
