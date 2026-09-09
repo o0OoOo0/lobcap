@@ -63,7 +63,7 @@ def _inputs(config):
     return result
 
 
-def _stream(paths, kind, end_ns):
+def _stream(paths, kind, end_ns, start_ns=0):
     previous_time = previous_id = None
     for record, ref in records(paths):
         p = payload(record)
@@ -72,6 +72,8 @@ def _stream(paths, kind, end_ns):
         if p.get("s") != "BTCUSDT" or p.get("st", 1) != 1:
             raise ValueError("only BTCUSDT USD-M captured records are supported")
         t = int(p["T"]) * 1_000_000
+        if t < start_ns:
+            continue
         seq = int(p["u"] if kind == "depth" else p["a"])
         if previous_time is not None and (t < previous_time or seq <= previous_id):
             raise ValueError(f"timestamp/sequence regression or duplicate: {ref}")
@@ -156,8 +158,12 @@ def normalize(book, initial, depth, trades, stats, shadows=()):
 def prepare_sample(config):
     destination = config.output_path / "samples" / config.sample.sample_id
     if destination.exists():
-        load_sample(destination, config)
-        return destination
+        manifest_path = destination / "sample_manifest.json"
+        if manifest_path.exists() and json.loads(manifest_path.read_text()).get("status") == "FAIL":
+            destination.rename(destination.with_name(destination.name + ".failed-" + __import__("uuid").uuid4().hex[:8]))
+        else:
+            load_sample(destination, config)
+            return destination
     paths = _inputs(config)
     warmup = config.sample.start_ns - config.sample.warmup_ns
     initial_record = None
@@ -185,7 +191,7 @@ def prepare_sample(config):
     book.load_snapshot(initial_record)
     coverage_bid = Decimal(min(book.bids)) * book.tick
     coverage_ask = Decimal(max(book.asks)) * book.tick
-    depth = iter(_stream(paths["depth"], "depth", config.sample.end_ns))
+    depth = iter(_stream(paths["depth"], "depth", config.sample.end_ns, snapshot_time))
     first = None
     for row in depth:
         if event_is_older_than_snapshot(row[3], book.last_u):
@@ -200,7 +206,7 @@ def prepare_sample(config):
         tuple((Decimal(p)*book.tick, Decimal(q)*book.lot) for p,q in sorted(book.bids.items(), reverse=True)),
         tuple((Decimal(p)*book.tick, Decimal(q)*book.lot) for p,q in sorted(book.asks.items())),
         first[0], book.last_u, coverage_bid, coverage_ask)
-    trades = (row for row in _stream(paths["trade"], "trade", config.sample.end_ns) if row[0] > initial.time_ns)
+    trades = _stream(paths["trade"], "trade", config.sample.end_ns, initial.time_ns + 1)
     inputs = [{"path": str(path), "sha256": sha256_file(path)} for files in paths.values() for path in files]
     destination.mkdir(parents=True)
     stats = Counter()
