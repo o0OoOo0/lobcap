@@ -1,0 +1,10 @@
+{
+  "name": "Observable microprice and inventory signal",
+  "hypothesis": "Combine observable microprice and inventory without changing queue assumptions.",
+  "axes": {
+    "strategy": ["expression"],
+    "signal_expression": ["signal_strength * (microprice-mid)/tick - inventory_skew_ticks * inventory/max_inventory"],
+    "signal_strength": ["0.5", "1", "1.5"]
+  },
+  "scenarios": [{"name": "baseline", "changes": {}}]
+}

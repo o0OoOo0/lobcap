@@ -53,6 +53,10 @@ class BacktestConfig:
     experiment_name: str = "backtest_mvp"
     experiment_version: str = "1"
     evaluation_metrics: tuple[str, ...] = ("pnl", "inventory", "fills", "markouts", "drawdown")
+    signal_expression: str = ""
+    expression_parameters: tuple[tuple[str, Decimal], ...] = ()
+    max_signal_ticks: Decimal = Decimal(10)
+    expression_version: str = "signal-v1"
 
     @property
     def model(self) -> ModelSpec:
@@ -65,6 +69,10 @@ class BacktestConfig:
         row = jsonable(self)
         for key in ("config_path", "raw_file_sha256", "canonical_config_sha256", "output_path", "data_root"):
             row.pop(key)
+        # Preserve established identities when the new language is inactive/default.
+        if self.strategy != "expression" and not self.signal_expression and not self.expression_parameters and self.max_signal_ticks == 10 and self.expression_version == "signal-v1":
+            for key in ("signal_expression", "expression_parameters", "max_signal_ticks", "expression_version"):
+                row.pop(key)
         return row
 
     @property
@@ -74,14 +82,24 @@ class BacktestConfig:
 
 DECIMALS = {"size", "half_spread_ticks", "inventory_skew_ticks", "signal_strength", "max_inventory", "min_spread_ticks", "alpha", "maker_bps", "taker_bps", "initial_cash", "initial_inventory", "volatility_widen_bps", "volatility_reduce_bps", "volatility_stop_bps"}
 DECIMALS |= {"max_trade_participation","impact_stress_bps","flow_threshold","flow_min_volume","volatility_spread_multiplier"}
+DECIMALS.add("max_signal_ticks")
 OPTIONAL = {"alpha", "volatility_widen_bps", "volatility_reduce_bps", "volatility_stop_bps"}
 INTS = {"decision_ms", "max_age_ms", "stale_book_ms", "entry_ms", "cancel_ms", "report_ms"}
-STRINGS = {"strategy","clock_mode"}
+STRINGS = {"strategy","clock_mode", "signal_expression", "expression_version"}
+STRUCTURED = {"expression_parameters"}
 BASELINE_STRATEGIES = ("fixed_spread", "inventory_skew", "microprice")
-STRATEGIES = BASELINE_STRATEGIES + ("flow_guard", "volatility_adaptive")
+STRATEGIES = BASELINE_STRATEGIES + ("flow_guard", "volatility_adaptive", "expression")
 
 
 def validate(config: BacktestConfig) -> BacktestConfig:
+    from lobcap.backtest.workspace.expressions import compile_expression, parameter_values, VERSION
+    if config.expression_version != VERSION:
+        raise ConfigError("unknown signal language version")
+    if not isinstance(config.signal_expression, str):
+        raise ConfigError("signal_expression must be text")
+    parameter_values(config.expression_parameters)
+    if config.strategy == "expression":
+        compile_expression(config.signal_expression, tuple(name for name, _ in config.expression_parameters))
     if config.strategy not in STRATEGIES:
         raise ConfigError("unknown strategy")
     if config.clock_mode not in {"exchange","recorded"}:raise ConfigError("unknown clock mode")
@@ -95,7 +113,7 @@ def validate(config: BacktestConfig) -> BacktestConfig:
         value = getattr(config, name)
         if type(value) is not int or value < (0 if name in {"entry_ms", "cancel_ms", "report_ms"} else 1):
             raise ConfigError(f"invalid {name}")
-    for name in ("size", "max_inventory", "initial_cash"):
+    for name in ("size", "max_inventory", "initial_cash", "max_signal_ticks"):
         if getattr(config, name) <= 0:
             raise ConfigError(f"{name} must be positive")
     for name in ("half_spread_ticks", "inventory_skew_ticks", "signal_strength", "min_spread_ticks", "volatility_widen_bps", "volatility_reduce_bps", "volatility_stop_bps"):
@@ -113,11 +131,14 @@ def validate(config: BacktestConfig) -> BacktestConfig:
 
 
 def variant(config: BacktestConfig, **changes) -> BacktestConfig:
-    allowed = DECIMALS | INTS | STRINGS
+    allowed = DECIMALS | INTS | STRINGS | STRUCTURED
     if set(changes) - allowed:
         raise ConfigError(f"unknown variant fields: {sorted(set(changes)-allowed)}")
     try:
         changes = {k: Decimal(str(v)) if k in DECIMALS and v is not None else v for k, v in changes.items()}
+        if "expression_parameters" in changes:
+            from lobcap.backtest.workspace.expressions import parameter_values
+            changes["expression_parameters"] = parameter_values(changes["expression_parameters"])
     except Exception as exc:
         raise ConfigError("invalid decimal setting") from exc
     return validate(replace(config, **changes))

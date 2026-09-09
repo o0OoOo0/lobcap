@@ -2,6 +2,11 @@
 
 ## Market-Making Backtest Lab
 
+The default **Research Workspace** supports restricted signal formulas, exact
+parameter grids, durable serial jobs, comparison, cloning and research notes:
+[workspace guide](docs/current/BACKTEST_RESEARCH_WORKSPACE.md) and
+[Ubuntu acceptance evidence](docs/current/BACKTEST_RESEARCH_WORKSPACE_COMPLETION.md).
+
 The 10-minute strategy research workflow, conditional hedges, frozen experiments,
 and explicit paper-readiness blockers are documented in
 [BACKTEST_BOUNDED_RESEARCH.md](docs/current/BACKTEST_BOUNDED_RESEARCH.md).

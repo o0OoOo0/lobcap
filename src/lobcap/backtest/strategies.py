@@ -21,12 +21,16 @@ class StrategyParameters:
     flow_threshold: Decimal = Decimal("0.6")
     flow_min_volume: Decimal = Decimal("0.005")
     volatility_spread_multiplier: Decimal = Decimal(1)
+    signal_expression: str = ""
+    expression_parameters: tuple = ()
+    max_signal_ticks: Decimal = Decimal(10)
 
     @classmethod
     def from_config(cls, config):
         return cls(config.strategy,config.size,config.half_spread_ticks,config.inventory_skew_ticks,
                    config.signal_strength,config.max_inventory,config.instrument.tick,config.maker_bps,
-                   config.flow_threshold,config.flow_min_volume,config.volatility_spread_multiplier)
+                   config.flow_threshold,config.flow_min_volume,config.volatility_spread_multiplier,
+                   config.signal_expression,config.expression_parameters,config.max_signal_ticks)
 
 
 class Features:
@@ -59,6 +63,21 @@ def _round(price,tick,buy):
 
 def decide(config, market, portfolio):
     center=market.mid
+    reason="quote"
+    if config.strategy=="expression":
+        from lobcap.backtest.workspace.expressions import compile_expression, FeatureUnavailable
+        values={name:getattr(market,name) for name in ("bid","ask","mid","microprice","imbalance","volatility_bps","trade_imbalance","trade_volume")}
+        values.update({"tick":config.tick,"spread_ticks":(market.ask-market.bid)/config.tick,
+            "inventory":portfolio.inventory,"max_inventory":config.max_inventory,
+            "signal_strength":config.signal_strength,"inventory_skew_ticks":config.inventory_skew_ticks})
+        values.update(dict(config.expression_parameters))
+        try:
+            signal=compile_expression(config.signal_expression,tuple(name for name,_ in config.expression_parameters)).evaluate(values)
+        except FeatureUnavailable:
+            return DesiredQuotes(None,None,"feature_unavailable")
+        bounded=min(max(signal,-config.max_signal_ticks),config.max_signal_ticks)
+        center+=config.tick*bounded
+        if bounded!=signal:reason="signal_clipped"
     if config.strategy=="inventory_skew":
         center-=config.inventory_skew_ticks*config.tick*portfolio.inventory/config.max_inventory
     elif config.strategy=="microprice":
@@ -79,7 +98,7 @@ def decide(config, market, portfolio):
         return DesiredQuotes(bid,ask,"flow_guard")
     return DesiredQuotes(
         Quote("buy",min(market.bid,_round(center-half,config.tick,True)),config.size),
-        Quote("sell",max(market.ask,_round(center+half,config.tick,False)),config.size))
+        Quote("sell",max(market.ask,_round(center+half,config.tick,False)),config.size),reason)
 
 
 def risk_control(config, market, portfolio, desired):

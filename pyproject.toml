@@ -17,6 +17,7 @@ web = ["streamlit>=1.40,<2", "plotly>=5,<7", "pandas>=2,<3"]
 
 [project.scripts]
 lobcap-backtest = "lobcap.backtest.runner:main"
+lobcap-workspace = "lobcap.backtest.workspace.__main__:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

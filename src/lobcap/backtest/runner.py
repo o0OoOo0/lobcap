@@ -7,7 +7,6 @@ import importlib.metadata
 import json
 import platform
 import sys
-import threading
 import time
 import uuid
 from dataclasses import replace
@@ -20,10 +19,12 @@ from lobcap.backtest.artifacts import ArtifactSink
 from lobcap.backtest.engine import run
 from lobcap.backtest.replay import prepare_sample, load_sample, iter_events, write_json
 from lobcap.backtest.types import jsonable
-from lobcap.config.backtest import load_backtest_config, variant, STRATEGIES, BASELINE_STRATEGIES, STRINGS, DECIMALS, INTS
+from lobcap.config.backtest import load_backtest_config, variant, STRATEGIES, BASELINE_STRATEGIES, STRINGS, DECIMALS, INTS, STRUCTURED
 from lobcap.config.experiment import write_run_manifest
 
-_RUN_LOCK=threading.Lock()
+from lobcap.backtest.runtime import RunLock, SimulationCanceled
+
+_RUN_LOCK=RunLock()
 
 
 def utc_now():return datetime.now(timezone.utc).isoformat()
@@ -45,10 +46,10 @@ def config_document(config):
         "end":iso(config.sample.end_ns),"warmup_seconds":config.sample.warmup_ns//1_000_000_000,
         "normalization_version":config.sample.normalization_version},
         "data_root":str(config.data_root),"output_path":str(config.output_path),
-        "settings":{k:jsonable(getattr(config,k)) for k in sorted(DECIMALS|INTS|STRINGS)}}
+        "settings":{k:jsonable(getattr(config,k)) for k in sorted(DECIMALS|INTS|STRINGS|STRUCTURED)}}
 
 
-def _run_one(config, sample_path=None, research_policy=None):
+def _run_one(config, sample_path=None, research_policy=None, cancel_check=None):
     preparation_start=time.perf_counter()
     sample_path=Path(sample_path) if sample_path else prepare_sample(config)
     preparation_seconds=time.perf_counter()-preparation_start
@@ -62,13 +63,14 @@ def _run_one(config, sample_path=None, research_policy=None):
     write_json(output/"resolved_config.json",config.resolved())
     status,error,result="FAIL",None,None
     try:
-        result=run(config,initial,iter_events(sample_path),sink,bootstrap_receive_ns=sample_manifest.get("bootstrap_receive_ns"),research_policy=research_policy)
+        result=run(config,initial,iter_events(sample_path),sink,bootstrap_receive_ns=sample_manifest.get("bootstrap_receive_ns"),research_policy=research_policy,cancel_check=cancel_check)
         sink.close()
         from lobcap.backtest.diagnostics import build_diagnostics
         build_diagnostics(output,config)
         status="PASS"
     except BaseException as exc:
-        status="CANCELED" if isinstance(exc,KeyboardInterrupt) else "FAIL"
+        status="CANCELED" if isinstance(exc,(KeyboardInterrupt,SimulationCanceled)) else "FAIL"
+        exc.output_dir=output
         error=f"{type(exc).__name__}: {exc}"
         raise
     finally:

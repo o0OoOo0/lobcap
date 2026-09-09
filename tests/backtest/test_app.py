@@ -7,7 +7,9 @@ from lobcap.config.experiment import ROOT
 def app_test():
     pytest.importorskip('streamlit')
     from streamlit.testing.v1 import AppTest
-    return AppTest.from_file(str(ROOT/'apps/backtest_lab.py')).run(timeout=30)
+    app=AppTest.from_file(str(ROOT/'apps/backtest_lab.py')).run(timeout=30)
+    # These are regression tests for the retained legacy setup, not the new landing page.
+    return next(item for item in app.radio if item.label=='작업').set_value('시작·설정').run(timeout=30)
 
 
 def widget(elements,label):

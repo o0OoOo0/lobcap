@@ -1,0 +1,10 @@
+{
+  "name": "Inventory skew: 3 by 3 exploration",
+  "hypothesis": "Compare neighboring spreads and inventory skews under unchanged execution assumptions.",
+  "axes": {
+    "strategy": ["inventory_skew"],
+    "half_spread_ticks": ["0.5", "1", "1.5"],
+    "inventory_skew_ticks": ["0", "1", "2"]
+  },
+  "scenarios": [{"name": "baseline", "changes": {}}]
+}

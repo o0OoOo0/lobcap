@@ -43,10 +43,10 @@ class MarketBook:
                           (B-A)/(B+A),volatility,now-self.time_ns,self.coverage_bid,self.coverage_ask)
 
 
-def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None, research_policy=None):
-    if research_policy is not None or config.clock_mode=="recorded" or config.report_ms or config.strategy=="flow_guard":
+def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None, research_policy=None, cancel_check=None):
+    if research_policy is not None or config.clock_mode=="recorded" or config.report_ms or config.strategy in {"flow_guard","expression"}:
         from lobcap.backtest.arrival import run_arrival
-        return run_arrival(config,initial,events,sink,strategy,bootstrap_receive_ns,research_policy)
+        return run_arrival(config,initial,events,sink,strategy,bootstrap_receive_ns,research_policy,cancel_check)
     # Lazy imports keep the execution and public contracts independently usable.
     from lobcap.backtest.accounting import Portfolio
     from lobcap.backtest.metrics import Metrics
@@ -67,6 +67,9 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
         end=config.sample.end_ns
         previous_time=initial.time_ns
         while True:
+            if cancel_check is not None:
+                from lobcap.backtest.runtime import interrupt_if_requested
+                interrupt_if_requested(cancel_check,sink,previous_time,portfolio,execution)
             deadlines=[end,next_decision,next_second]
             if event is not None:deadlines.append(event.time_ns)
             if execution.next_deadline is not None:deadlines.append(execution.next_deadline)

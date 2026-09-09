@@ -114,3 +114,15 @@ keep / exclude interval / exclude day
 ### 2026-09-10 — Roadmap review search command
 - A read-only rg command passed docs/current/BACKTEST* as a literal Windows path and returned OS error 123.
 - Repeated using directory docs/current with -g 'BACKTEST*'; search succeeded. No runtime or source-data failure. Review only; no simulation executed.
+
+### 2026-09-10 — Research workspace implementation validation
+- Native Windows test attempts encountered the existing temporary-directory ACL error; UI tests also lacked Streamlit in the local Python environment. One initial import resolved the old editable checkout until PYTHONPATH was set. Authoritative validation moved to Ubuntu; unrelated Unix resource imports were not changed.
+- First isolated Ubuntu full suite: 172 passed, 5 failed, 5 errors. Seven failures/errors came from a missing read-only link to the existing Coinbase raw fixture. Three used an intermediate QA test snapshot (reserved coefficient redeclaration and absent empty MemorySink channel). Linked the existing immutable fixture and transferred corrected tests; no data interval excluded.
+- Initial artifact-directory link was created inside an existing tracked directory. Replaced that unused symlink with explicit links to existing samples and historical runs/research/comparisons. Original files remain unchanged.
+- Independent QA found same-name scenarios could mix different fee assumptions in comparisons, and the UI bypassed the corrected backend check. Grouping now uses actual execution assumption hashes and explicit strategy-fixed sensitivity; added regression coverage.
+- QA also corrected test-only expectations for audit-label differences between built-in and expression strategies. Quote/fill/accounting equality remains required.
+- Final validation results and any remaining limitations are recorded in BACKTEST_RESEARCH_WORKSPACE_COMPLETION.md.
+- After resuming the session the local SSH tunnel had ended although the VM app was healthy. Restored port forwarding; no server/data changes were needed for that connection issue.
+- Browser automation initially clicked while a multiselect popup remained open; dismissed it with Escape and used a filtered keyboard selection. These were UI automation retries, not simulation failures.
+- The first cancellation integration trial stopped during warmup. Strengthened the script to wait until trading and require non-null inventory; rerun passed with -0.004 BTC retained and no liquidation.
+- Initial commit attempts failed because this worktree had no Git author identity. Used the repository's established recent author identity as command-local Git options; global configuration was not changed.

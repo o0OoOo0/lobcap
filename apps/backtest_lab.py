@@ -18,10 +18,10 @@ from lobcap.backtest.presentation import (STRATEGIES, STRATEGY_HELP, LABELS, SWE
 from lobcap.config.backtest import load_backtest_config, variant
 from lobcap.config.experiment import ROOT
 
-PAGES=["시작·설정", "실행 결과", "실행 비교", "민감도 실험", "주문 추적", "근거·용어", "10분 연구·후보 검토"]
+PAGES=["시작·설정", "실행 결과", "실행 비교", "민감도 실험", "주문 추적", "근거·용어", "10분 연구·후보 검토", "연구 작업 공간"]
 st.set_page_config(page_title="시장조성 백테스트 실험실", layout="wide")
 st.title("시장조성 백테스트 실험실")
-st.caption("Binance BTCUSDT 선물 · 과거 캡처 재생 · 지정가 메이커 주문")
+st.caption("Binance BTCUSDT 선물 · 전략·수식·파라미터 탐색 · 과거 캡처 재생")
 paths=sorted((ROOT/"configs/backtest").glob("*.yaml"))
 config_path=st.sidebar.selectbox("데이터·기본 설정", paths,
     index=next((i for i,p in enumerate(paths) if p.stem=="binance_recorded"),0),
@@ -30,11 +30,11 @@ base=load_backtest_config(config_path)
 identity=str(config_path)+base.effective_sha256
 if st.session_state.get("dataset_identity")!=identity:
     for key in list(st.session_state):
-        if key.startswith("lab_"):del st.session_state[key]
+        if key.startswith(("lab_", "workspace_", "ws_")):del st.session_state[key]
     st.session_state["dataset_identity"]=identity
 if "lab_route" in st.session_state:
     st.session_state["lab_page"]=st.session_state.pop("lab_route")
-page=st.sidebar.radio("작업", PAGES, key="lab_page")
+page=st.sidebar.radio("작업", PAGES, index=7, key="lab_page")
 start=datetime.fromtimestamp(base.sample.start_ns/1e9,timezone.utc)
 end=datetime.fromtimestamp(base.sample.end_ns/1e9,timezone.utc)
 st.sidebar.caption(f"{start:%Y-%m-%d %H:%M}–{end:%H:%M} UTC · {(base.sample.end_ns-base.sample.start_ns)//60_000_000_000}분")
@@ -68,14 +68,15 @@ def settings_table(config):
     if config.strategy=='microprice':fields.append('signal_strength')
     if config.strategy=='flow_guard':fields.extend(['flow_threshold','flow_min_volume','volatility_spread_multiplier'])
     if config.strategy=='volatility_adaptive':fields.append('volatility_spread_multiplier')
+    if config.strategy=='expression':fields.extend(['signal_expression','expression_parameters','max_signal_ticks'])
     rows=[]
     for key in fields:
         value=getattr(config,key)
-        if key=="strategy":value=STRATEGIES[value]
+        if key=="strategy":value=STRATEGIES.get(value,"신호 수식")
         if key=="alpha" and value is None:value="대기열 무시 (TOUCH_FILL)"
         elif value is None:value="사용 안 함"
         if key=="clock_mode":value={"recorded":"기록된 수신 시간","exchange":"거래소 시간 · 정보 지연 0"}[value]
-        rows.append({"설정":LABELS[key],"값":str(value)})
+        rows.append({"설정":LABELS.get(key,key),"값":str(value)})
     return rows
 
 
@@ -358,9 +359,14 @@ def render_bounded_research():
     render_research(base,sample_path)
 
 
+def render_workspace():
+    from lobcap.backtest.workspace_ui import render_workspace as render
+    render(base,sample_path)
+
+
 try:
     {PAGES[0]:render_setup,PAGES[1]:render_result,PAGES[2]:render_compare,
-     PAGES[3]:render_sensitivity,PAGES[4]:render_orders,PAGES[5]:render_audit,PAGES[6]:render_bounded_research}[page]()
+     PAGES[3]:render_sensitivity,PAGES[4]:render_orders,PAGES[5]:render_audit,PAGES[6]:render_bounded_research,PAGES[7]:render_workspace}[page]()
 except (ValueError,TypeError,KeyError,OSError) as exc:
     st.error('설정 또는 저장된 근거를 처리하지 못했습니다. 입력값과 선택한 실행을 확인하세요.')
     st.code(str(exc),language=None)

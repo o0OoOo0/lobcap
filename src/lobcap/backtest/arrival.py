@@ -38,7 +38,7 @@ class ReportSink:
                 self.report(row["time_ns"],"order",{k:v for k,v in row.items() if k!="modeled_queue"})
 
 
-def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=None,research_policy=None):
+def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=None,research_policy=None,cancel_check=None):
     if config.clock_mode=="recorded" and bootstrap_receive_ns is None:
         raise ValueError("Recorded mode requires a sample prepared with bootstrap receive-time evidence")
     if config.clock_mode=="recorded" and bootstrap_receive_ns<initial.time_ns:
@@ -120,6 +120,9 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                             heapq.heappush(ages,(max(delivered,row["activation_ns"]+config.max_age_ms*1_000_000),side,oid))
 
         while True:
+            if cancel_check is not None:
+                from lobcap.backtest.runtime import interrupt_if_requested
+                interrupt_if_requested(cancel_check,sink,previous,portfolio,execution)
             times=[end,next_decision,next_second]
             if event is not None:times.append(event.time_ns)
             if execution.next_deadline is not None:times.append(execution.next_deadline)
@@ -192,16 +195,27 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                 try:
                     desired=strategy(market,view) if strategy else decide(parameters,market,view)
                 except Exception as exc:
+                    from lobcap.backtest.workspace.expressions import ExpressionError
+                    if isinstance(exc,ExpressionError):
+                        sink.write("interrupted",{"status":"FAIL","time_ns":now,"reason":str(exc),
+                            "cash":portfolio.cash,"inventory":portfolio.inventory,
+                            "orders":[jsonable(order.record()) for order in execution.orders.values()],"full_window":False})
+                        raise
                     if control is None:raise
                     control.kill(now,"strategy_exception:"+type(exc).__name__)
                     from lobcap.backtest.types import DesiredQuotes
                     desired=DesiredQuotes(None,None,control.kill_reason)
+                signal_reason=desired.reason
                 desired=risk_control(config,market,view,desired)
                 if control is not None:desired=control.quotes(now,market,view,desired)
                 decision={**decision_context(config,market,view,desired),"clock_mode":config.clock_mode,
                     "observed_book_exchange_ns":observed.time_ns,"observed_book_receive_ns":last_observed_receive,
                     "book_age_ns":market.book_age_ns,"trade_imbalance":flow,"trade_volume":volume,
                     "cash_known":client_cash,"buy_exposure_known":view.buy_exposure,"sell_exposure_known":view.sell_exposure}
+                if config.strategy=="expression":
+                    decision["signal_reason"]=signal_reason
+                    stats["signal_clipped_decisions"]+=int(signal_reason=="signal_clipped")
+                    stats["feature_unavailable_decisions"]+=int(signal_reason=="feature_unavailable")
                 sink.write("decisions",decision)
                 for side,quote in (("buy",desired.bid),("sell",desired.ask)):
                     current=client_orders.get(side)

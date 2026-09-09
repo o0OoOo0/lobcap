@@ -1,0 +1,74 @@
+{
+  "audits": [
+    {
+      "ending_inventory": "-0.0020",
+      "fills": 100,
+      "ledger_rows": 313,
+      "performance": {
+        "cpu_seconds": 9.691692608,
+        "output_bytes": 462384,
+        "process_peak_rss_mib": 39.05078125,
+        "sample_preparation_seconds": 5.004985723644495e-06,
+        "wall_seconds": 10.054861684970092
+      }
+    },
+    {
+      "ending_inventory": "-0.0020",
+      "fills": 104,
+      "ledger_rows": 317,
+      "performance": {
+        "cpu_seconds": 9.75516218,
+        "output_bytes": 405927,
+        "process_peak_rss_mib": 39.296875,
+        "sample_preparation_seconds": 4.071975126862526e-06,
+        "wall_seconds": 9.791711977974046
+      }
+    }
+  ],
+  "cancellation_seconds": 0.10806695005157962,
+  "completed_preserved": 1,
+  "interrupted_files": [
+    "config.yaml",
+    "decisions.jsonl.gz",
+    "execution.jsonl.gz",
+    "fills.jsonl.gz",
+    "interrupted.json",
+    "ledger.jsonl.gz",
+    "markouts.csv.gz",
+    "observations.jsonl.gz",
+    "orders.jsonl.gz",
+    "resolved_config.json",
+    "run_manifest.json",
+    "timeline.jsonl.gz",
+    "timeseries.csv.gz"
+  ],
+  "interrupted_output": "/home/0woo/lobcap-workspace-v1/artifacts/backtest/runs/c2f8a6114a69-4e3fb5d1",
+  "interruption": {
+    "cash": "100318.90160",
+    "full_window": false,
+    "inventory": "-0.004",
+    "orders": [
+      {
+        "activation_ns": 1788704063260000000,
+        "cancel_requested_ns": null,
+        "order_id": "order-00000149",
+        "price": "79713.10",
+        "quantity": "0.001",
+        "reason": "",
+        "remaining": "0.001",
+        "side": "sell",
+        "status": "ACTIVE",
+        "submitted_ns": 1788704063250000000,
+        "terminal_ns": null
+      }
+    ],
+    "reason": "user_cancel",
+    "status": "CANCELED",
+    "terminal_liquidation": false,
+    "time_ns": 1788704063365000000
+  },
+  "job_id": "499b5ca3a0b245ea9f392ad9d94594ea",
+  "resumed_attempt": 2,
+  "status": "PASS",
+  "workspace": "/home/0woo/lobcap-workspace-v1/artifacts/backtest/workspace-trading-cancel"
+}

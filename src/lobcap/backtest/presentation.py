@@ -4,7 +4,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from lobcap.backtest.types import jsonable
-from lobcap.config.backtest import DECIMALS, INTS, STRINGS, variant
+from lobcap.config.backtest import DECIMALS, INTS, STRINGS, STRUCTURED, variant
 
 STRATEGIES = {"fixed_spread":"고정 스프레드", "inventory_skew":"재고 조절",
               "microprice":"호가 불균형 반영", "flow_guard":"거래 흐름·비용 필터", "volatility_adaptive":"변동성 적응"}
@@ -77,7 +77,7 @@ def config_from_run(base, manifest):
         raise ValueError("다른 표본의 설정은 이 실험에 사용할 수 없습니다.")
     if resolved.get("instrument")!=jsonable(base.instrument):raise ValueError("상품 단위가 다릅니다.")
     defaults={"clock_mode":"exchange","report_ms":0,"max_trade_participation":"1","impact_stress_bps":"0"}
-    defaults.update({key:value for key,value in resolved.items() if key in DECIMALS|INTS|STRINGS})
+    defaults.update({key:value for key,value in resolved.items() if key in DECIMALS|INTS|STRINGS|STRUCTURED})
     return variant(base,**defaults)
 
 
@@ -126,7 +126,7 @@ def validate_ui_config(config):
 def comparison_differences(manifests):
     if len({m['sample_sha256'] for m in manifests})!=1:raise ValueError("표본 체크섬이 다른 결과는 직접 비교할 수 없습니다.")
     rows=[]
-    keys=sorted(set().union(*(m['resolved_config'].keys() for m in manifests)) & (DECIMALS|INTS|STRINGS))
+    keys=sorted(set().union(*(m['resolved_config'].keys() for m in manifests)) & (DECIMALS|INTS|STRINGS|STRUCTURED))
     for key in keys:
         values=[m['resolved_config'].get(key) for m in manifests]
         comparable={Decimal(str(v)) if key in DECIMALS and v is not None else v for v in values}
