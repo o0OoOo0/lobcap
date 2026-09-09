@@ -30,6 +30,8 @@ class Metrics:
         self.pending=[]
         self.ordinal=0
         self.inventory_integral=ZERO
+        self.filled_quantity=ZERO
+        self.spread_bps_quantity=ZERO
         self.active_ns={"buy":0,"sell":0}
         self.cancel_pending_ns={"buy":0,"sell":0}
         self.entry_pending_ns={"buy":0,"sell":0}
@@ -56,10 +58,13 @@ class Metrics:
 
     def _groups(self,fill,row,market):
         decision=dict(fill.decision)
+        anchor=decision.get("bid" if fill.side=="buy" else "ask")
+        distance=None if anchor is None else ((Decimal(str(anchor))-fill.price) if fill.side=="buy" else (fill.price-Decimal(str(anchor))))/self.config.instrument.tick
         return {
             "inventory_fraction":bucket(row["inventory_before"]/self.config.max_inventory,(-.5,0,.5,1)),
             "prevailing_spread_ticks":bucket(row["prevailing_spread_ticks"],(1,2,5,10)),
             "quoted_spread_ticks":bucket(decision.get("quoted_spread_ticks"),(1,2,5,10)),
+            "decision_quote_distance_ticks":bucket(distance,(0,1,2,5,10)),
             "imbalance":bucket(market.imbalance,(-.5,0,.5)),
             "volatility_bps":bucket(market.volatility_bps,(.1,.5,1,2)),
             "utc_five_minute":str((fill.time_ns//NS%86400)//300*5),
@@ -77,6 +82,8 @@ class Metrics:
         return self.groups[key]
 
     def on_fill(self,fill,row,market):
+        self.filled_quantity+=fill.quantity
+        self.spread_bps_quantity+=row["spread_capture_bps"]*fill.quantity
         groups=self._groups(fill,row,market)
         for dimension,label in groups.items():
             group=self._group(dimension,label)
@@ -146,6 +153,8 @@ class Metrics:
         duration=end-self.config.sample.start_ns
         return {"net_pnl":portfolio.net_pnl,"gross_pnl":portfolio.gross_pnl,"fees":portfolio.fees,
             "fee_charges":portfolio.charges,"rebates":portfolio.rebates,"spread_capture":portfolio.spread_capture,
+            "spread_capture_per_unit":portfolio.spread_capture/self.filled_quantity if self.filled_quantity else None,
+            "spread_capture_bps":self.spread_bps_quantity/self.filled_quantity if self.filled_quantity else None,
             "inventory_mtm":portfolio.inventory_mtm,"ending_inventory":portfolio.inventory,"ending_cash":portfolio.cash,
             "ending_equity":portfolio.equity,"initial_equity":portfolio.initial_equity,
             "mean_inventory":self.inventory_integral/duration,"max_abs_inventory":portfolio.max_abs_inventory,

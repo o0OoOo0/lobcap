@@ -2,6 +2,40 @@
 
 Nothing is silently excluded.
 
+## 2026-09-09 — Backtest MVP implementation validation
+
+**Component:** bounded backtest lab, isolated feature worktree.
+**Severity:** implementation validation failure; no source-data exclusion.
+
+- Native Windows research collection has the existing Unix-only `resource`
+  import limitation. Some Windows temporary-directory tests also encountered
+  sandbox `WinError 5`. Ubuntu remains authoritative; no portability change
+  was made to research code.
+- Initial sample preparation incorrectly validated trade continuity before
+  the selected bootstrap boundary. The normalizer now starts sequence checks
+  within the selected bootstrap interval. Failed generated sample evidence
+  was preserved; the fixed preparation passed the frozen interval audit.
+- Acceptance attempt `acceptance-001` was interrupted after a run took
+  **63.29 seconds**, exceeding the 60-second target. Peak RSS was approximately
+  **37 MiB**. This incomplete attempt is not accepted evidence, even though
+  its old report retained `RUNNING` after interruption.
+- Profiling found repeated recursive blinding validation in the replay reader
+  dominated execution. Full recursive checks now run during preparation;
+  the reader enforces explicit root/nested field contracts. Cached BBO updates
+  remove repeated whole-book scans. Commit `ee839ac` contains these fixes and
+  records interrupted future attempts as `CANCELED`.
+- A running Streamlit process retained old imported modules during an update
+  and displayed an import error. Restarting only the loopback lab process
+  loaded the committed version. No collector service was restarted.
+
+Raw inputs, collector configuration and accepted research artifacts were not
+modified. Attempt `acceptance-002` confirmed the performance correction but
+was stopped to include final reporting fields and additional contract tests
+in the complete matrix. Final acceptance evidence is recorded in
+`artifacts/backtest/validation/acceptance-003/report.json`; only a `PASS`
+report constitutes acceptance. Full Linux regression at `ee839ac` passed:
+**95 tests in 49.23 seconds**.
+
 ## Entry template
 
 ### YYYY-MM-DDTHH:MM:SSZ — title

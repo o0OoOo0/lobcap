@@ -171,6 +171,10 @@ full-fill rates use the same activated-order denominator; quantity fill rate
 uses activated quantity. Canceled, rejected, pending and censored states are
 separately reported. Mean inventory is time-weighted. Drawdown includes every
 ledger transition, not only the chart's one-second samples.
+Spread capture also reports quantity-weighted USDT per BTC and basis points
+(each fill's contribution divided by its own execution price). Replacement
+downtime sums both sides from replacement cancellation until next activation,
+or until sample end if no replacement activates.
 
 Markout at 100 ms, 1 s and 5 s is `s*(future_mid-fill_price)`. Post-fill drift
 is `s*(future_mid-mid_at_fill)`; negative drift indicates adverse selection.
@@ -178,7 +182,8 @@ Use the last midpoint at/before the target, at most 250 ms old. Targets at or
 beyond sample end are censored. Every horizon reports observations, valid
 count, coverage and volume-weighted values. Markout is never added to PnL.
 
-Fixed conditional buckets cover held inventory, spread, quoted distance,
+Fixed conditional buckets cover held inventory, spread, decision-time distance
+behind the same-side BBO,
 imbalance, trailing volatility, UTC time and execution assumptions. Dimensions
 overlap and must not be summed together. Inventory MTM is partitioned using
 inventory held during the price move; fill evidence retains decision and

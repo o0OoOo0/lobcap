@@ -63,6 +63,9 @@ def test_replay_determinism_prefix_invariance_and_isolation():
     assert result.summary["sharpe"] is None
     assert result.summary["return_buckets"]==0
     assert result.summary["ending_inventory"]==D(".001")
+    assert result.summary["spread_capture_per_unit"]==D(".5")
+    assert result.summary["spread_capture_bps"]==D(50)
+    assert any(r["dimension"]=="decision_quote_distance_ticks" for r in a.rows["conditional_metrics"][0]["buckets"])
 
 
 def test_markout_sign_staleness_and_end_censoring():

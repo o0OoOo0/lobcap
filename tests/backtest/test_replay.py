@@ -1,5 +1,6 @@
 from collections import Counter
 from decimal import Decimal as D
+import json
 
 import pytest
 
@@ -58,3 +59,24 @@ def test_invalid_inputs_block(bad):
     elif bad=="too_large":tr[3]["payload"]["nq"]="3"
     else: dp[3]["payload"]["pu"]=9
     with pytest.raises(ValueError):list(normalize(book,initial,[dp],[tr],Counter()))
+
+
+@pytest.mark.parametrize("fault", ["duplicate", "timestamp", "gap", "truncated"])
+def test_raw_stream_rejects_bad_sequence_or_truncation(tmp_path,fault):
+    path=tmp_path/"trades.jsonl"
+    def raw(t,seq):
+        return {"schema_version":2,"kind":"trade","payload":{"s":"BTCUSDT","T":t,"a":seq}}
+    rows=[raw(10,1),raw(11,2)]
+    if fault=="duplicate":rows[1]["payload"]["a"]=1
+    elif fault=="timestamp":rows[1]["payload"]["T"]=9
+    elif fault=="gap":rows[1]["payload"]["a"]=3
+    path.write_text("\n".join(json.dumps(r) for r in rows)+( '\n{"payload":' if fault=="truncated" else "\n"))
+    with pytest.raises(ValueError):list(_stream([path],"trade",100_000_000))
+
+
+def test_zero_normal_quantity_is_audit_only_without_fabricated_depth():
+    book,initial=setup_book()
+    stats=Counter()
+    events=list(normalize(book,initial,[],[trade(normal="0",total="2")],stats))
+    assert len(events)==1 and events[0].kind=="trade" and events[0].trade is None
+    assert events[0].total_trade_quantity==2 and stats["excluded_rpi_quantity"]==2
