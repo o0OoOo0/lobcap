@@ -1,0 +1,20 @@
+schema_version: 1
+sample:
+  id: binance_btcusdt_20260906_1410_1420
+  start: "2026-09-06T14:10:00Z"
+  end: "2026-09-06T14:20:00Z"
+  warmup_seconds: 30
+data_root: /data
+output_path: artifacts/backtest
+settings:
+  strategy: fixed_spread
+  alpha: "0.5"
+  size: "0.001"
+  half_spread_ticks: "0.5"
+  max_inventory: "0.01"
+  decision_ms: 250
+  entry_ms: 0
+  cancel_ms: 0
+  max_age_ms: 5000
+  maker_bps: "0"
+  taker_bps: "0"

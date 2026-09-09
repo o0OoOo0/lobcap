@@ -13,6 +13,8 @@ from typing import Any, Mapping, TypeAlias
 
 import yaml
 
+from lobcap.config.common import load_yaml_with_hashes, sha256_file
+
 
 ROOT = Path(__file__).parents[3]
 
@@ -249,13 +251,10 @@ def _placement(value: Any, multidate: bool) -> PlacementRule:
 
 
 def _load(path: str | Path) -> tuple[Path, Mapping[str, Any], str, str]:
-    config_path = Path(path).resolve(); raw = config_path.read_bytes()
     try:
-        row = _mapping(yaml.safe_load(raw), "config root")
-    except yaml.YAMLError as exc:
+        return load_yaml_with_hashes(path)
+    except (yaml.YAMLError, ValueError) as exc:
         raise ConfigError(f"invalid YAML: {exc}") from exc
-    canonical = json.dumps(row, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return config_path, row, hashlib.sha256(raw).hexdigest(), hashlib.sha256(canonical.encode()).hexdigest()
 
 
 def _common(path: Path, row: Mapping[str, Any], raw_sha: str, canonical_sha: str) -> dict[str, Any]:
@@ -345,11 +344,11 @@ def config_provenance(config: ExperimentConfig) -> dict[str, Any]:
 
 
 def write_run_manifest(config: ExperimentConfig, *, output_dir: str | Path, status: str, started_at: str, completed_at: str, input_paths: tuple[Path, ...], output_paths: tuple[Path, ...], filename: str = "run_manifest.json") -> Path:
-    inputs = [{"path": _display(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else "UNKNOWN"} for path in input_paths]
+    inputs = [{"path": _display(path), "sha256": sha256_file(path) if path.exists() else "UNKNOWN"} for path in input_paths]
     provenance = config_provenance(config)
     outputs = [{
         "path": _display(path),
-        "sha256": hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else "UNKNOWN",
+        "sha256": sha256_file(path) if path.exists() else "UNKNOWN",
     } for path in output_paths]
     manifest = {"manifest_version": 2, "experiment_name": config.experiment_name, "experiment_version": config.experiment_version, "git_commit": provenance["git_commit"], "code_version": provenance["code_version"], "config_path": provenance["config_path"], "config_provenance": provenance, "data_source": {"input_artifacts": inputs}, "date_window": "defined by versioned config", "evaluation_metrics": list(config.evaluation_metrics), "input_artifacts": inputs, "output_artifact_paths": outputs, "status": status, "started_at": started_at, "completed_at": completed_at}
     target = Path(output_dir) / filename; target.parent.mkdir(parents=True, exist_ok=True)
