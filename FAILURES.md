@@ -31,8 +31,13 @@ Nothing is silently excluded.
 Raw inputs, collector configuration and accepted research artifacts were not
 modified. Attempt `acceptance-002` confirmed the performance correction but
 was stopped to include final reporting fields and additional contract tests
-in the complete matrix. Final acceptance evidence is recorded in
-`artifacts/backtest/validation/acceptance-003/report.json`; only a `PASS`
+in the complete matrix. Attempt `acceptance-003` lost its SSH output pipe and
+recorded `BrokenPipeError: [Errno 32] Broken pipe`; the collector stayed active.
+Its two complete core matrices and completed alpha/entry sweeps remain valid.
+The resumable gate revalidates their configurations, dataset and accounting,
+then reruns unfinished groups under a detached worker with a local log.
+Final acceptance evidence is recorded in
+`artifacts/backtest/validation/acceptance-004/report.json`; only a `PASS`
 report constitutes acceptance. Full Linux regression at `ee839ac` passed:
 **95 tests in 49.23 seconds**.
 

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from lobcap.backtest.runner import run_sweep,core_matrix
 from lobcap.backtest.replay import prepare_sample,load_sample,write_json
-from lobcap.config.backtest import load_backtest_config
+from lobcap.config.backtest import load_backtest_config,variant
 from lobcap.config.experiment import config_provenance
 
 
@@ -49,11 +49,14 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--config",required=True)
     parser.add_argument("--output",default="artifacts/backtest/validation")
+    parser.add_argument("--resume-report",type=Path,help="Reuse completed, revalidated groups from an interrupted report")
     args=parser.parse_args()
     config=load_backtest_config(args.config)
     report_path=Path(args.output)
     report_path.mkdir(parents=True,exist_ok=False)
     report={"status":"RUNNING","provenance":config_provenance(config)}
+    previous=json.loads(args.resume_report.read_text()) if args.resume_report else {}
+    if args.resume_report:report["resumed_from"]=str(args.resume_report)
     started=time.perf_counter()
     try:
         before=subprocess.check_output(["systemctl","is-active","lobcap@btcusdt.service"],text=True).strip()
@@ -65,11 +68,32 @@ def main():
         assert validation["trading_counts"]=={"depth":5881,"trade":8043},validation
         assert validation["snapshot_matches"]==2
         report["sample"]=manifest;report["sample_validation"]=validation
+        if previous:
+            assert previous["sample"]["sample_sha256"]==manifest["sample_sha256"],"resume sample mismatch"
+        def validate_rows(rows,changes):
+            assert len(rows)==len(changes)
+            expected={variant(config,**change).effective_sha256 for change in changes}
+            assert {row["effective_config_sha256"] for row in rows}==expected,"resume configuration mismatch"
+            for row in rows:
+                assert row["sample_sha256"]==manifest["sample_sha256"]
+                run_path=config.output_path/"runs"/row["run_id"]
+                run_manifest=json.loads((run_path/"run_manifest.json").read_text())
+                assert run_manifest["status"]=="PASS"
+                assert run_manifest["effective_config_sha256"]==row["effective_config_sha256"]
+                assert run_manifest["deterministic_digest"]==row["deterministic_digest"]
+                reconcile_artifact(run_path)
         def progress(i,n,r):
             performance=reconcile_artifact(r.output_dir)
             print(f"{i}/{n} {r.output_dir.name}: net={r.summary['net_pnl']} wall={performance['wall_seconds']:.2f}s rss={performance['process_peak_rss_mib']:.1f}MiB",flush=True)
-        first,rows1=run_sweep(config,core_matrix(),sample,progress)
-        second,rows2=run_sweep(config,list(reversed(core_matrix())),sample,progress)
+        if previous.get("determinism")=="PASS":
+            first,second=map(Path,previous["core_comparisons"])
+            rows1=previous["core_matrix"]
+            with open(second/"results.csv",newline="") as stream:rows2=list(csv.DictReader(stream))
+            validate_rows(rows1,core_matrix());validate_rows(rows2,core_matrix())
+            print("Revalidated and reused both completed core matrices",flush=True)
+        else:
+            first,rows1=run_sweep(config,core_matrix(),sample,progress)
+            second,rows2=run_sweep(config,list(reversed(core_matrix())),sample,progress)
         assert {r["effective_config_sha256"]:r["deterministic_digest"] for r in rows1}=={r["effective_config_sha256"]:r["deterministic_digest"] for r in rows2}
         report["core_matrix"]=rows1;report["determinism"]="PASS"
         report["core_comparisons"]=[str(first),str(second)]
@@ -81,7 +105,13 @@ def main():
         all_rows=rows1+rows2
         for parameter,values in sweep_specs.items():
             changes=[{parameter:v,**({"strategy":"inventory_skew"} if parameter=="inventory_skew_ticks" else {})} for v in values]
-            output,rows=run_sweep(config,changes,sample,progress)
+            if parameter in previous.get("sensitivities",{}):
+                prior=previous["sensitivities"][parameter]
+                output,rows=Path(prior["comparison"]),prior["results"]
+                validate_rows(rows,changes)
+                print(f"Revalidated and reused completed {parameter} sweep",flush=True)
+            else:
+                output,rows=run_sweep(config,changes,sample,progress)
             report["sensitivities"][parameter]={"comparison":str(output),"results":rows}
             all_rows+=rows
         performance=[]

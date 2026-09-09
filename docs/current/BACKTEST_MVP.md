@@ -240,6 +240,12 @@ the requested output directory. Failures retain their reports.
 The independent source audit checks every fill against normalized public
 trade side, timestamp, price and normal quantity; checks activation and
 termination bounds, signed fees, and visible end-of-sample censorship.
+If an SSH session interrupts validation, run the gate with
+`--resume-report <interrupted-report.json>` and a new output directory.
+It rechecks completed groups against the same sample and effective settings,
+reconciles their artifacts, and reruns incomplete groups. For remote sessions,
+redirect worker output to a VM-local log under `nohup` so a disconnected
+terminal cannot break the validation process.
 
 Official references: [Binance book synchronization](https://developers.binance.com/en/docs/products/derivatives-trading-usds-futures/websocket-market-streams/How-to-manage-a-local-order-book-correctly),
 [depth fields](https://developers.binance.info/en/docs/catalog/core-trading-derivatives-trading-usd-s-m-futures/api/ws-streams/public),
