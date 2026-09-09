@@ -4,6 +4,8 @@ Nothing is silently excluded.
 
 ## 2026-09-10 — Bounded research implementation
 
+- Auto-review rejected optional Ubuntu `git restore` synchronization because it might overwrite uncommitted work. The command did not execute and was not bypassed. Kept runtime files and Git HEAD intact; a read-only 34-file comparison with implementation commit 5ea375a passed after line-ending normalization.
+
 - Native Windows pytest hit temporary-directory/cache ACL errors, including with a workspace basetemp. Moved authoritative checks to the existing Ubuntu runtime; no research portability code or ACLs changed.
 - The first hedge fixture used a 10 bps guard with a synthetic 50 bps half-spread. Set the fixture guard to 100 bps; retained the production 10 bps rule and added separate guard rejection coverage.
 - Browser automation failed to initialize its kernel assets (OS error 3). Streamlit AppTest covers navigation and form/CLI parity; localhost health is checked separately. Do not claim a new manual browser walkthrough.

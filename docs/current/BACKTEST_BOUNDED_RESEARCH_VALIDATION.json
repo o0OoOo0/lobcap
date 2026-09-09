@@ -1,0 +1,28 @@
+{
+  "collector": "active before and after",
+  "implementation_commit": "5ea375a",
+  "linux_tests_passed": 144,
+  "linux_test_seconds": 52.22,
+  "ui_apptest": "PASS: saved real experiment, gates, ranking, results, four downloads; submission shares CLI plan",
+  "legacy_exchange_digest": "f723f938e9ba732896202fba7d1948d9b9da9f9f02aa94c235c6dc52fd21396d",
+  "legacy_recorded_digest": "fe87ef329ae21dca8ea8d2efff655db5a07877b28e7d333aa7b3cf556389ef2a",
+  "runtime_source_comparison": {"files_checked": 34, "differences": [], "normalization": "CRLF/LF only"},
+  "runtime_git_note": "Ubuntu stays on 3b5c7c2 with implementation edits. Auto-review rejected git restore; files were preserved. Read-only source comparison confirms implementation content matches 5ea375a.",
+  "browser_automation": "Unavailable: kernel asset initialization OS error 3; no manual browser walkthrough claimed",
+  "deterministic_digest": "0af1747f524a65105a0c789f85ffecf36ef033a3505a9af54da86f4265787b6d",
+  "experiments": [
+    "/home/0woo/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d68a8194",
+    "/home/0woo/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d7f311bb"
+  ],
+  "max_process_rss_mib": 43.6640625,
+  "max_wall_seconds": 33.95065398799488,
+  "paper_ready": false,
+  "runs": 48,
+  "source_audit": {
+    "checks": "source references, source price/side/time, maker lifecycle/volume cap, reduce-only hedge, no depth reuse, final inventory",
+    "maker_fills": 2883,
+    "taker_level_fills": 640
+  },
+  "status": "PASS",
+  "total_output_bytes": 29854266
+}
