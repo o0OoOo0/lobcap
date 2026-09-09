@@ -13,7 +13,7 @@ STRATEGY_HELP = {
     "inventory_skew":"매수 재고가 늘면 호가 중심을 낮추고, 매도 재고가 늘면 높입니다. 재고를 자동 청산하지는 않습니다.",
     "microprice":"최우선 매수·매도 잔량으로 계산한 가격 신호를 호가 중심에 반영합니다.",
     "flow_guard":"최근 수신한 거래 흐름이 강하게 한쪽으로 쏠리면 반대편 호가를 중단합니다. 변동성과 양수 수수료만큼 호가 폭을 확보합니다."}
-LABELS = {"strategy":"전략", "alpha":"취소량 대기열 반영 비율 α", "clock_mode":"시장정보 수신 기준",
+LABELS = {"strategy":"전략", "alpha":"거래 외 잔량 감소의 대기열 반영 α", "clock_mode":"시장정보 수신 기준",
     "report_ms":"주문·체결 통보 지연 (ms)", "entry_ms":"주문 도착 지연 (ms)", "cancel_ms":"취소 도착 지연 (ms)",
     "maker_bps":"메이커 수수료 (bps)", "half_spread_ticks":"중심에서 한쪽 호가까지 거리 (tick)",
     "inventory_skew_ticks":"최대 재고일 때 중심 이동 (tick)", "signal_strength":"호가 신호 배수",
@@ -21,7 +21,10 @@ LABELS = {"strategy":"전략", "alpha":"취소량 대기열 반영 비율 α", "
     "size":"한쪽 주문 수량 (BTC)", "max_inventory":"최대 절대 재고 (BTC)", "decision_ms":"판단 주기 (ms)",
     "max_age_ms":"주문 최대 유지 시간 (ms)", "stale_book_ms":"호가 최대 허용 나이 (ms)",
     "min_spread_ticks":"최소 시장 스프레드 (tick)", "flow_threshold":"흐름 불균형 중단 기준",
-    "flow_min_volume":"흐름 판단 최소 거래량 (BTC)", "volatility_spread_multiplier":"변동성 호가 폭 배수"}
+    "flow_min_volume":"흐름 판단 최소 거래량 (BTC)", "volatility_spread_multiplier":"변동성 호가 폭 배수",
+    "initial_cash":"초기 가상 현금 (USDT)","initial_inventory":"초기 재고 (BTC)",
+    "volatility_widen_bps":"호가 폭 확대 변동성 (bps)","volatility_reduce_bps":"수량 축소 변동성 (bps)",
+    "volatility_stop_bps":"호가 중단 변동성 (bps)"}
 SWEEPS = {"alpha":"0, 0.5, 1, null", "clock_mode":"exchange, recorded", "report_ms":"0, 20, 100",
     "entry_ms":"0, 10, 50", "cancel_ms":"0, 10, 50", "maker_bps":"-0.1, 0, 1",
     "max_trade_participation":"0.01, 0.1, 1", "impact_stress_bps":"0, 1, 5",

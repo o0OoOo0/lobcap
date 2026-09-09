@@ -96,3 +96,21 @@ def test_dataset_switch_clears_experiment_context(monkeypatch):
     assert not app.exception and 'lab_comparison' not in app.session_state
     widget(app.radio,'작업').set_value('민감도 실험').run(timeout=30)
     assert not app.exception
+
+
+def test_selected_run_survives_pages_without_the_run_selector(monkeypatch,tmp_path):
+    import lobcap.backtest.presentation as presentation
+    from lobcap.config.backtest import load_backtest_config
+    c=load_backtest_config(ROOT/'configs/backtest/binance_recorded.yaml')
+    runs={}
+    for name in ('newer','older'):
+        path=tmp_path/name;path.mkdir();(path/'config.yaml').write_text('settings: {}')
+        runs[name]=(path,{'run_id':name,'sample_id':c.sample.sample_id,'sample_sha256':'test','resolved_config':c.resolved()})
+    monkeypatch.setattr(presentation,'saved_runs',lambda *args:(runs,[]))
+    app=app_test()
+    widget(app.radio,'작업').set_value('주문 추적').run(timeout=30)
+    widget(app.selectbox,'확인할 실행').set_value('older').run(timeout=30)
+    widget(app.radio,'작업').set_value('민감도 실험').run(timeout=30)
+    widget(app.radio,'작업').set_value('주문 추적').run(timeout=30)
+    assert not app.exception
+    assert widget(app.selectbox,'확인할 실행').value=='older'

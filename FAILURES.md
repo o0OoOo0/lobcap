@@ -4,6 +4,8 @@ Nothing is silently excluded.
 
 ## 2026-09-09 — Strict lab usability and integrity review
 
+- Browser verification found Streamlit removes a widget's state when its page is not rendered. Selecting an older run could be lost after visiting sensitivity. Added a separate durable selection value and a navigation regression test.
+- The local SSH reconnect helper had exited, leaving port 8501 unavailable while the VM app remained healthy. Restarted the existing helper; verified localhost afterward. It is an active process, not an installed persistent service.
 - Review found that sensitivity silently used the last submitted scenario, and retained results across catalogue changes. Replaced this with explicit saved-run/default selection and dataset-scoped state.
 - A new regression test exposed that decimal strings `.5` and `0.50` have different historical configuration fingerprints. Duplicate sweep values now compare typed numeric values, without rewriting accepted provenance.
 - The local environment has no Streamlit installation. UI tests run in the existing Ubuntu web environment; no Windows research portability changes were made.

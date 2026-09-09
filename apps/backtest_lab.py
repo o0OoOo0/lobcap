@@ -61,12 +61,18 @@ def evidence_rows(file):
 
 def settings_table(config):
     fields=["strategy","size","max_inventory","half_spread_ticks","alpha","clock_mode",
-            "entry_ms","cancel_ms","report_ms","maker_bps","max_trade_participation","impact_stress_bps"]
+            "entry_ms","cancel_ms","report_ms","maker_bps","max_trade_participation","impact_stress_bps",
+            "decision_ms","max_age_ms","stale_book_ms","min_spread_ticks","volatility_widen_bps",
+            "volatility_reduce_bps","volatility_stop_bps","initial_cash","initial_inventory"]
+    if config.strategy in {'inventory_skew','flow_guard'}:fields.append('inventory_skew_ticks')
+    if config.strategy=='microprice':fields.append('signal_strength')
+    if config.strategy=='flow_guard':fields.extend(['flow_threshold','flow_min_volume','volatility_spread_multiplier'])
     rows=[]
     for key in fields:
         value=getattr(config,key)
         if key=="strategy":value=STRATEGIES[value]
         if key=="alpha" and value is None:value="대기열 무시 (TOUCH_FILL)"
+        elif value is None:value="사용 안 함"
         if key=="clock_mode":value={"recorded":"기록된 수신 시간","exchange":"거래소 시간 · 정보 지연 0"}[value]
         rows.append({"설정":LABELS[key],"값":str(value)})
     return rows
@@ -77,9 +83,14 @@ def select_run():
         st.info("아직 완료된 실행이 없습니다. ‘시작·설정’에서 첫 백테스트를 실행하세요.")
         st.stop()
     wanted=st.session_state.pop("lab_select_next",None)
-    if wanted in runs:st.session_state["lab_run"]=wanted
-    if st.session_state.get("lab_run") not in runs:st.session_state["lab_run"]=next(iter(runs))
+    if wanted in runs:
+        st.session_state["lab_run"]=wanted
+        st.session_state["lab_selected_run"]=wanted
+    if st.session_state.get("lab_run") not in runs:
+        previous=st.session_state.get("lab_selected_run")
+        st.session_state["lab_run"]=previous if previous in runs else next(iter(runs))
     name=st.selectbox("확인할 실행",list(runs),format_func=label,key="lab_run")
+    st.session_state["lab_selected_run"]=name
     path,manifest=runs[name]
     st.caption(f"실행 ID {name} · 표본 {manifest['sample_sha256'][:12]} · 종료 시점 기준 평가, 자동 청산 없음")
     with st.expander("이 결과에 실제 적용된 설정"):
