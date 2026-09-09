@@ -14,7 +14,7 @@ from lobcap.backtest.runner import run_one, run_sweep
 from lobcap.backtest.replay import load_sample, write_json
 from lobcap.backtest.presentation import (STRATEGIES, STRATEGY_HELP, LABELS, SWEEPS,
     read_json, saved_runs, config_from_run, applicable_parameters, sweep_variants,
-    comparison_differences, run_label, result_message, saved_experiments)
+    comparison_differences, run_label, result_message, saved_experiments, REASONS, STATUSES, EVENTS, validate_ui_config)
 from lobcap.config.backtest import load_backtest_config, variant
 from lobcap.config.experiment import ROOT
 
@@ -98,25 +98,32 @@ def render_setup():
             st.success(f"표본 준비 완료 · 호가 {counts.get('depth',0):,}건 / 거래 {counts.get('trade',0):,}건 · 독립 스냅샷 일치 {validation.get('snapshot_matches',0)}회")
         else:st.warning("표본 준비가 실패했습니다. 실행 시 원본을 다시 점검합니다.")
     else:st.info("첫 실행에는 표본 준비가 포함됩니다. Ubuntu 원본 데이터 경로가 필요합니다.")
-    strategy=st.selectbox("전략",list(STRATEGIES),index=list(STRATEGIES).index(base.strategy),format_func=STRATEGIES.get,key="lab_strategy")
+    source=st.selectbox("설정 불러오기",["기본 설정"]+list(runs),format_func=lambda name:name if name=='기본 설정' else label(name),key="lab_setup_source")
+    template=base if source=='기본 설정' else config_from_run(base,runs[source][1])
+    if st.session_state.get('lab_setup_context')!=source:
+        st.session_state['lab_setup_context']=source
+        st.session_state['lab_strategy']=template.strategy
+        st.session_state['lab_fill_mode']='대기열 무시 (TOUCH_FILL)' if template.alpha is None else '대기열 추정'
+    st.caption("불러온 설정과 전략을 먼저 선택한 뒤 값을 수정하세요. 실행 버튼을 눌러야 입력이 적용됩니다.")
+    strategy=st.selectbox("전략",list(STRATEGIES),index=list(STRATEGIES).index(template.strategy),format_func=STRATEGIES.get,key="lab_strategy")
     st.info(STRATEGY_HELP[strategy])
-    fill_mode=st.radio("체결 가정",["대기열 추정","대기열 무시 (TOUCH_FILL)"],index=int(base.alpha is None),horizontal=True,key="lab_fill_mode")
+    fill_mode=st.radio("체결 가정",["대기열 추정","대기열 무시 (TOUCH_FILL)"],index=int(template.alpha is None),horizontal=True,key="lab_fill_mode")
     st.caption("대기열 추정은 내 앞의 수량부터 소진합니다. 대기열 무시는 거래가 도달하면 앞선 대기량을 무시합니다. 어느 쪽도 실제 체결 확률이나 수익의 상한을 뜻하지 않습니다.")
     changes={"strategy":strategy}
-    with st.form("scenario"):
+    with st.form("scenario_"+source+"_"+strategy):
         left,right=st.columns(2)
         with left:
-            changes["size"]=st.text_input(LABELS["size"],str(base.size),help="매수·매도 각각의 주문 수량입니다. 0.001 BTC × 체결가격이 한 번의 거래대금입니다.")
-            changes["half_spread_ticks"]=st.text_input(LABELS["half_spread_ticks"],str(base.half_spread_ticks),help="0.5 tick은 중심에서 0.05 USDT입니다. 틱 반올림과 현재 최우선 호가 제한 때문에 실제 주문 간격은 더 넓어질 수 있습니다.")
+            changes["size"]=st.text_input(LABELS["size"],str(template.size),help="매수·매도 각각의 주문 수량입니다. 0.001 BTC × 체결가격이 한 번의 거래대금입니다.")
+            changes["half_spread_ticks"]=st.text_input(LABELS["half_spread_ticks"],str(template.half_spread_ticks),help="0.5 tick은 중심에서 0.05 USDT입니다. 틱 반올림과 현재 최우선 호가 제한 때문에 실제 주문 간격은 더 넓어질 수 있습니다.")
         with right:
-            changes["max_inventory"]=st.text_input(LABELS["max_inventory"],str(base.max_inventory),help="잔여 주문이 모두 체결되는 경우까지 포함한 BTC 한도입니다. 취소 요청만으로 예약량을 없애지 않습니다.")
-            changes["maker_bps"]=st.text_input(LABELS["maker_bps"],str(base.maker_bps),help="1 bps = 0.01%. 거래대금 100 USDT에 1 bps면 0.01 USDT 비용입니다. 음수는 리베이트입니다.")
+            changes["max_inventory"]=st.text_input(LABELS["max_inventory"],str(template.max_inventory),help="잔여 주문이 모두 체결되는 경우까지 포함한 BTC 한도입니다. 취소 요청만으로 예약량을 없애지 않습니다.")
+            changes["maker_bps"]=st.text_input(LABELS["maker_bps"],str(template.maker_bps),help="1 bps = 0.01%. 거래대금 100 USDT에 1 bps면 0.01 USDT 비용입니다. 음수는 리베이트입니다.")
         st.caption("수수료 0은 비용을 제외한 진단값입니다. 본인 계정의 수수료를 가정할 때는 직접 입력하세요.")
         with st.expander("전략별 조절값"):
             if strategy in {"inventory_skew","flow_guard"}:
-                changes["inventory_skew_ticks"]=st.text_input(LABELS["inventory_skew_ticks"],str(base.inventory_skew_ticks))
+                changes["inventory_skew_ticks"]=st.text_input(LABELS["inventory_skew_ticks"],str(template.inventory_skew_ticks))
             if strategy=="microprice":
-                changes["signal_strength"]=st.text_input(LABELS["signal_strength"],str(base.signal_strength),help="0은 중간가격, 1은 최우선 잔량으로 계산한 microprice 중심입니다.")
+                changes["signal_strength"]=st.text_input(LABELS["signal_strength"],str(template.signal_strength),help="0은 중간가격, 1은 최우선 잔량으로 계산한 microprice 중심입니다.")
             if strategy=="flow_guard":
                 for key in ("flow_threshold","flow_min_volume","volatility_spread_multiplier"):
                     changes[key]=st.text_input(LABELS[key],str(getattr(base,key)))
@@ -124,25 +131,25 @@ def render_setup():
             if strategy=="fixed_spread":st.write("이 전략의 조절값은 위의 호가 거리와 주문 수량입니다.")
         with st.expander("체결·지연 가정"):
             if fill_mode=="대기열 추정":
-                changes["alpha"]=st.text_input(LABELS["alpha"],str(base.alpha if base.alpha is not None else '0.5'),help="0은 거래 외 잔량 감소를 대기열 진전에 반영하지 않고, 1은 전부 반영합니다. 체결 확률이 아닙니다.")
+                changes["alpha"]=st.text_input(LABELS["alpha"],str(template.alpha if template.alpha is not None else '0.5'),help="0은 거래 외 잔량 감소를 대기열 진전에 반영하지 않고, 1은 전부 반영합니다. 체결 확률이 아닙니다.")
             else:changes["alpha"]=None
-            clocks=["exchange"] if base.sample.normalization_version.endswith("v1") else ["recorded","exchange"]
-            changes["clock_mode"]=st.selectbox(LABELS["clock_mode"],clocks,index=clocks.index(base.clock_mode),format_func=lambda x:"기록 수신 시간" if x=="recorded" else "거래소 시간 · 정보 지연 0")
+            clocks=["exchange"] if template.sample.normalization_version.endswith("v1") else ["recorded","exchange"]
+            changes["clock_mode"]=st.selectbox(LABELS["clock_mode"],clocks,index=clocks.index(template.clock_mode),format_func=lambda x:"기록 수신 시간" if x=="recorded" else "거래소 시간 · 정보 지연 0")
             for key in ("entry_ms","cancel_ms","report_ms"):
                 changes[key]=st.number_input(LABELS[key],min_value=0,value=getattr(base,key),step=10)
-            changes["max_trade_participation"]=st.text_input(LABELS["max_trade_participation"],str(base.max_trade_participation),help="0.1은 공개 거래 한 건의 최대 10%만 내 체결에 허용합니다. 상한을 최소 수량 단위로 내리므로 작은 거래에서는 체결이 0일 수 있습니다.")
+            changes["max_trade_participation"]=st.text_input(LABELS["max_trade_participation"],str(template.max_trade_participation),help="0.1은 공개 거래 한 건의 최대 10%만 내 체결에 허용합니다. 상한을 최소 수량 단위로 내리므로 작은 거래에서는 체결이 0일 수 있습니다.")
             st.caption("수신 시간은 수집기 위치 기준입니다. 주문·취소·통보 지연 값은 별도 가정입니다.")
         with st.expander("위험 제어·가상 비용"):
             for key in ("decision_ms","max_age_ms","stale_book_ms"):
                 changes[key]=st.number_input(LABELS[key],min_value=1,value=getattr(base,key))
-            changes["min_spread_ticks"]=st.text_input(LABELS["min_spread_ticks"],str(base.min_spread_ticks))
+            changes["min_spread_ticks"]=st.text_input(LABELS["min_spread_ticks"],str(template.min_spread_ticks))
             for key,title in (("volatility_widen_bps","호가를 넓히는 변동성 (bps)"),("volatility_reduce_bps","수량을 줄이는 변동성 (bps)"),("volatility_stop_bps","호가를 중단하는 변동성 (bps)")):
                 changes[key]=st.text_input(title,"" if getattr(base,key) is None else str(getattr(base,key)),help="비워두면 끕니다. 과거 30초의 1초 수익률 표준편차입니다.") or None
-            changes["impact_stress_bps"]=st.text_input(LABELS["impact_stress_bps"],str(base.impact_stress_bps),help="실측 임팩트가 아닙니다. 원래 체결·손익을 보존하고, 거래대금에 가상의 추가 비용을 적용한 결과를 따로 계산합니다.")
+            changes["impact_stress_bps"]=st.text_input(LABELS["impact_stress_bps"],str(template.impact_stress_bps),help="실측 임팩트가 아닙니다. 원래 체결·손익을 보존하고, 거래대금에 가상의 추가 비용을 적용한 결과를 따로 계산합니다.")
             st.caption("테이커 주문과 테이커 비용은 사용하지 않습니다. 펀딩·시장 반응·자동 청산도 포함하지 않습니다.")
         submitted=st.form_submit_button("백테스트 실행",type="primary")
     if submitted:
-        config=variant(base,**changes)
+        config=validate_ui_config(variant(template,**changes))
         with st.spinner("호가 재생 → 주문·체결 → 손익 대조 중…"):
             result=run_one(config)
         st.session_state["lab_select_next"]=result.output_dir.name
@@ -193,7 +200,7 @@ def render_result():
             st.metric(f"가상 추가 비용 {d['impact_stress_bps']} bps 적용 후",f"{float(d['stress_adjusted_net_pnl']):,.6f} USDT")
             st.caption("가정한 비용 스트레스입니다. 과거 시장 경로를 바꾸는 마켓임팩트 모델은 아닙니다.")
         with st.expander("주문 판단 이유와 가격 차이"):
-            st.dataframe([{"판단 이유":k,"횟수":v} for k,v in d['decision_reasons'].items()],hide_index=True)
+            st.dataframe([{"판단 이유":REASONS.get(k,k),"횟수":v} for k,v in d['decision_reasons'].items()],hide_index=True)
             st.write(f"판단 시 중간가격 대비 체결가격 비용: {float(d['decision_mid_shortfall_usdt']):,.6f} USDT (양수일수록 불리)")
             st.caption("스프레드 기여는 체결 시 중간가격과 비교합니다. 위 가격 차이는 판단 시 가격과 비교하므로 같은 값이 아닙니다. 추가 손익 차감도 아닙니다.")
     if (path/'observations.jsonl.gz').exists():
@@ -281,14 +288,16 @@ def render_orders():
         st.info("주문이 제출되지 않았습니다. 실행 결과의 판단 이유와 호가 중단 조건을 확인하세요.");return
     filled={r['order_id'] for r in evidence_rows(path/'fills.jsonl.gz')}
     ids=sorted(records,key=lambda key:(key not in filled,key))
-    oid=st.selectbox('주문',ids,format_func=lambda key:f"{key} · {'매수' if records[key]['side']=='buy' else '매도'} · {records[key]['status']} · {'체결 있음' if key in filled else '미체결'}")
+    oid=st.selectbox('주문',ids,format_func=lambda key:f"{key} · {'매수' if records[key]['side']=='buy' else '매도'} · {STATUSES.get(records[key]['status'],records[key]['status'])} · {'체결 있음' if key in filled else '미체결'}")
     order=records[oid]
     st.write(f"지정가 {order['price']} USDT · 주문 {order['quantity']} BTC · 남은 수량 {order['remaining']} BTC")
     timeline_file=path/'timeline.jsonl.gz'
     trace=[r for r in evidence_rows(timeline_file if timeline_file.exists() else path/'orders.jsonl.gz') if r['order_id']==oid]
     frame=pd.json_normalize(trace);frame['시각']=pd.to_datetime(frame['time_ns'],unit='ns',utc=True)
     if 'actor' not in frame:frame['actor']='exchange'
-    st.caption("client는 전략이 아는 시점, exchange는 시뮬레이션 거래소 시점입니다. CENSORED는 표본 종료로 관측을 멈춘 상태입니다.")
+    frame['actor']=frame['actor'].replace({'client':'전략이 아는 시점','exchange':'거래소 상태','simulation':'표본 종료'})
+    frame['event']=frame['event'].map(lambda value:EVENTS.get(value,value))
+    st.caption("거래소에서 발생한 시점과 전략이 통보받은 시점이 다를 수 있습니다. 표본 종료는 주문 취소나 청산을 뜻하지 않습니다.")
     st.plotly_chart(px.scatter(frame,x='시각',y='actor',color='event',hover_data=['time_ns']),width='stretch')
     visible=[c for c in ('시각','actor','event','price','remaining','modeled_queue') if c in frame]
     st.dataframe(frame[visible].rename(columns={'actor':'발생 위치','event':'사건','price':'지정가','remaining':'남은 수량','modeled_queue':'추정 선행 대기량'}),hide_index=True,width='stretch')

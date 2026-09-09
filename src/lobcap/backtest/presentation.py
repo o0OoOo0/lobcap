@@ -26,6 +26,18 @@ SWEEPS = {"alpha":"0, 0.5, 1, null", "clock_mode":"exchange, recorded", "report_
     "entry_ms":"0, 10, 50", "cancel_ms":"0, 10, 50", "maker_bps":"-0.1, 0, 1",
     "max_trade_participation":"0.01, 0.1, 1", "impact_stress_bps":"0, 1, 5",
     "half_spread_ticks":"0.5, 1, 2", "inventory_skew_ticks":"0, 1, 2", "signal_strength":"0, 1, 2"}
+REASONS={'quote':'기본 양방향 호가','flow_guard':'거래 흐름·비용 조건 충족',
+    'stale_book':'받은 호가가 너무 오래됨','invalid_book':'비정상 호가','unknown_depth_coverage':'알려진 호가 범위 밖',
+    'minimum_spread':'시장 스프레드가 최소 기준 미만','volatility_warmup':'변동성 계산용 과거 관측 부족',
+    'volatility_stop':'변동성 중단 기준 초과','volatility_widen_reduce':'변동성에 따라 호가 폭·수량 조절',
+    'buy_flow_suppress_ask':'강한 매수 흐름으로 매도 호가 중단','sell_flow_suppress_bid':'강한 매도 흐름으로 매수 호가 중단'}
+STATUSES={'PENDING_ENTRY':'접수 대기','ACTIVE':'체결 가능','CANCEL_PENDING':'취소 대기',
+    'CANCELED':'취소 완료','FILLED':'전량 체결','REJECTED':'거부','CENSORED':'표본 종료로 관측 중단'}
+EVENTS={'submit':'제출 기록','submit_send':'주문 전송','activate':'주문 활성화','activate_received':'활성화 통보 수신',
+    'cancel_send':'취소 전송','cancel_request':'취소 요청 기록','partial_fill':'부분 체결','partial_fill_received':'부분 체결 상태 수신',
+    'full_fill':'전량 체결','full_fill_received':'전량 체결 상태 수신','fill_received':'체결 내역 수신',
+    'terminal':'주문 종료','terminal_received':'종료 통보 수신','cancel_noop':'이미 체결된 주문의 취소',
+    'cancel_noop_received':'취소 무효 통보 수신'}
 
 
 def read_json(path):
@@ -94,8 +106,17 @@ def sweep_variants(config, parameter, text):
     if not 2<=len(values)<=24 or any(not v for v in values):raise ValueError("비교할 값을 2–24개 입력하세요. 빈 값은 사용할 수 없습니다.")
     changes=[{parameter:parse_setting(parameter,value)} for value in values]
     configs=[variant(config,**change) for change in changes]
+    for current in configs:validate_ui_config(current)
     if len({getattr(c,parameter) for c in configs})!=len(configs):raise ValueError("동일한 값이 중복되어 있습니다.")
     return changes
+
+
+def validate_ui_config(config):
+    decisions=(config.sample.end_ns-config.sample.start_ns)//(config.decision_ms*1_000_000)
+    if decisions>60_000:raise ValueError(f"판단 횟수 {decisions:,}회: 화면 실행 한도는 60,000회입니다. 판단 주기를 늘리세요.")
+    if config.size<config.instrument.lot:raise ValueError("주문 수량이 최소 수량 단위보다 작아 호가를 낼 수 없습니다.")
+    if config.max_inventory<config.instrument.lot:raise ValueError("재고 한도가 최소 주문 수량보다 작습니다.")
+    return config
 
 
 def comparison_differences(manifests):

@@ -65,3 +65,23 @@ def test_zero_fill_and_rebate_interpretation():
     assert '체결 0건' in result_message({'execution':{}})
     summary={'execution':{'fill_events':1},'spread_capture':'-2','inventory_mtm':'0','fees':'-1','net_pnl':'-1'}
     assert '스프레드 기여' in result_message(summary)
+
+
+def test_saved_experiment_survives_session_reset_and_rejects_mismatch(tmp_path):
+    from lobcap.backtest.presentation import saved_experiments
+    folder=tmp_path/'comparisons/test';folder.mkdir(parents=True)
+    write_json(folder/'lab_experiment.json',{'sample_id':'sample','sample_sha256':'hash','parameter':'alpha','source':'기본 설정'})
+    write_json(folder/'comparison_manifest.json',{'status':'PASS','sample_sha256':'hash'})
+    (folder/'results.csv').write_text('alpha,net_pnl\n0,-1\n1,2\n')
+    rows,issues=saved_experiments(tmp_path,'sample')
+    assert list(rows)==['test'] and not issues
+    write_json(folder/'comparison_manifest.json',{'status':'PASS','sample_sha256':'other'})
+    rows,issues=saved_experiments(tmp_path,'sample')
+    assert not rows and len(issues)==1
+
+
+def test_ui_rejects_excessive_decision_count_and_zero_rounded_order():
+    from lobcap.backtest.presentation import validate_ui_config
+    for changes in ({'decision_ms':1},{'size':'.0001'},{'max_inventory':'.0001'}):
+        with pytest.raises(ValueError):validate_ui_config(variant(config(),**changes))
+    assert validate_ui_config(config())==config()
