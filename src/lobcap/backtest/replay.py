@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import gzip
+import hashlib
 import heapq
 import itertools
 import json
+import uuid
 from collections import Counter, defaultdict
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal
@@ -20,6 +22,10 @@ from lobcap.rebuild import OrderBook, first_top_mismatch
 
 def write_json(path, value):
     Path(path).write_text(json.dumps(jsonable(value), sort_keys=True, indent=2) + "\n", encoding="utf-8")
+
+
+def sample_fingerprint(files, sample):
+    return hashlib.sha256(json.dumps({"files":files,"sample":jsonable(sample)},sort_keys=True).encode()).hexdigest()
 
 
 def records(paths):
@@ -160,7 +166,7 @@ def prepare_sample(config):
     if destination.exists():
         manifest_path = destination / "sample_manifest.json"
         if manifest_path.exists() and json.loads(manifest_path.read_text()).get("status") == "FAIL":
-            destination.rename(destination.with_name(destination.name + ".failed-" + __import__("uuid").uuid4().hex[:8]))
+            destination.rename(destination.with_name(destination.name + ".failed-" + uuid.uuid4().hex[:8]))
         else:
             load_sample(destination, config)
             return destination
@@ -233,7 +239,7 @@ def prepare_sample(config):
                       "snapshot_matches": stats["snapshot_matches"], "gaps": 0, "crossed": 0}
         write_json(destination / "validation.json", validation)
         files = {name: sha256_file(destination/name) for name in ("initial_book.json", "events.jsonl.gz", "validation.json")}
-        sample_hash = __import__("hashlib").sha256(json.dumps({"files":files,"sample":jsonable(config.sample)}, sort_keys=True).encode()).hexdigest()
+        sample_hash = sample_fingerprint(files,config.sample)
         write_json(destination / "sample_manifest.json", {"status":"PASS", "sample": config.sample,
             "instrument":config.instrument, "input_artifacts":inputs, "files":files, "sample_sha256":sample_hash})
         return destination
@@ -252,8 +258,12 @@ def load_sample(path, config=None):
     if config is not None and (manifest["sample"] != jsonable(config.sample) or manifest["instrument"] != jsonable(config.instrument)):
         raise ValueError("sample configuration mismatch")
     for name, digest in manifest["files"].items():
+        if name not in {"initial_book.json","events.jsonl.gz","validation.json"}:
+            raise ValueError("unexpected sample artifact")
         if sha256_file(path/name) != digest:
             raise ValueError(f"sample checksum mismatch: {name}")
+    if set(manifest["files"])!={"initial_book.json","events.jsonl.gz","validation.json"} or sample_fingerprint(manifest["files"],manifest["sample"])!=manifest["sample_sha256"]:
+        raise ValueError("sample manifest fingerprint mismatch")
     row = json.loads((path / "initial_book.json").read_text())
     row["bids"] = tuple(tuple(Decimal(x) for x in pair) for pair in row["bids"])
     row["asks"] = tuple(tuple(Decimal(x) for x in pair) for pair in row["asks"])

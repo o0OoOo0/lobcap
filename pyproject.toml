@@ -12,6 +12,12 @@ dependencies = [
   "PyYAML>=6,<7",
 ]
 
+[project.optional-dependencies]
+web = ["streamlit>=1.40,<2", "plotly>=5,<7", "pandas>=2,<3"]
+
+[project.scripts]
+lobcap-backtest = "lobcap.backtest.runner:main"
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
