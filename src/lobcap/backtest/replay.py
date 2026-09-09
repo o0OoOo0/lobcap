@@ -79,6 +79,8 @@ def _stream(paths, kind, end_ns, start_ns=0):
             raise ValueError("only BTCUSDT USD-M captured records are supported")
         t = int(p["T"]) * 1_000_000
         if t < start_ns:
+            if previous_time is not None:
+                raise ValueError(f"timestamp regression across bootstrap boundary: {ref}")
             continue
         seq = int(p["u"] if kind == "depth" else p["a"])
         if previous_time is not None and (t < previous_time or seq <= previous_id):

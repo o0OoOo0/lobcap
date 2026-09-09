@@ -80,3 +80,12 @@ def test_zero_normal_quantity_is_audit_only_without_fabricated_depth():
     events=list(normalize(book,initial,[],[trade(normal="0",total="2")],stats))
     assert len(events)==1 and events[0].kind=="trade" and events[0].trade is None
     assert events[0].total_trade_quantity==2 and stats["excluded_rpi_quantity"]==2
+
+
+def test_timestamp_cannot_regress_outside_bootstrap_after_stream_starts(tmp_path):
+    path=tmp_path/"trades.jsonl"
+    rows=[{"schema_version":2,"kind":"trade","payload":{"s":"BTCUSDT","T":t,"a":seq}}
+          for t,seq in ((9,1),(10,2),(9,3))]
+    path.write_text("\n".join(json.dumps(r) for r in rows))
+    with pytest.raises(ValueError,match="bootstrap boundary"):
+        list(_stream([path],"trade",100_000_000,start_ns=10_000_000))
