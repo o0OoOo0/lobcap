@@ -1,5 +1,8 @@
 # Recorded-arrival backtest lab
 
+Measured results and the implementation report are in
+[BACKTEST_REALISM_COMPLETION.md](BACKTEST_REALISM_COMPLETION.md).
+
 This extension separates the exchange's reconstructed state from what a
 strategy has received. It also adds delayed private order reports, trade-volume
 capacity stress, a cost/flow-aware diagnostic strategy, and explanations of

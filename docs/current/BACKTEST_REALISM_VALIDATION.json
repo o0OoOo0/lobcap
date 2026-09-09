@@ -1,0 +1,231 @@
+{
+  "status": "PASS",
+  "date": "2026-09-09",
+  "validation_commit": "9324df542685dd28c32ea9d7008c7b37a22c086b",
+  "final_runtime_commit": "d47d33310bf603c4e9e55c19341b262696fd42aa",
+  "linux_tests_passed": 120,
+  "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+  "sample_validation": {
+    "bootstrap_receive_ns": 1788703764699826334,
+    "bootstrap_sequence": 11489355960684,
+    "crossed": 0,
+    "gaps": 0,
+    "max_receive_delay_ns": {
+      "depth": 818130966,
+      "trade": 2902617324
+    },
+    "snapshot_matches": 2,
+    "stats": {
+      "depth_packets": 6227,
+      "excluded_rpi_quantity": "0.000",
+      "last_depth_time_ns": 1788704399901000000,
+      "max_depth_interval_ns": 192000000,
+      "snapshot_matches": 2,
+      "trade_events": 8218
+    },
+    "status": "PASS",
+    "trading_counts": {
+      "depth": 5881,
+      "trade": 8043
+    }
+  },
+  "same_raw_inputs_as_v1": true,
+  "runs_validated": 41,
+  "determinism": "PASS",
+  "client_audit": "PASS",
+  "v1_exact_digest_parity": "PASS",
+  "performance": {
+    "max_process_peak_rss_mib": 43.3203125,
+    "max_run_wall_seconds": 40.705801603005966,
+    "preparation_seconds": 39.133757088013226,
+    "matrix_cpu_seconds": 897.2052965809999,
+    "matrix_output_bytes": 19333660
+  },
+  "source_audit": {
+    "acceptance_report_sha256": "9a38bce25e3ea7d09aa126358390951f3b53a949ec4db657c9a272e137b2cdae",
+    "checks": [
+      "run artifact checksums",
+      "source side, time, price and references",
+      "normal quantity not reused",
+      "activation precedes fill; fill no later than termination",
+      "signed maker fees",
+      "no terminal liquidation fills",
+      "visible markout censorship"
+    ],
+    "fills_source_checked": 11175,
+    "runs_audited": 41,
+    "sample_end_markouts": 100,
+    "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+    "status": "PASS"
+  },
+  "ui_cli": {
+    "ui_run": "artifacts/backtest/runs/03059d33c2d7-86521a9e",
+    "cli_run": "/home/0woo/lobcap-mvp/artifacts/backtest/runs/03059d33c2d7-099c6a9e",
+    "digest": "fe87ef329ae21dca8ea8d2efff655db5a07877b28e7d333aa7b3cf556389ef2a",
+    "ui_performance": {
+      "cpu_seconds": 10.543846297,
+      "output_bytes": 496588,
+      "process_peak_rss_mib": 190.80859375,
+      "sample_preparation_seconds": 0.03411986099672504,
+      "wall_seconds": 10.528923645004397
+    },
+    "cli_performance": {
+      "cpu_seconds": 10.200939041,
+      "output_bytes": 496626,
+      "process_peak_rss_mib": 38.6171875,
+      "sample_preparation_seconds": 0.037118651001947,
+      "wall_seconds": 10.216480984992813
+    }
+  },
+  "default_result": {
+    "net_pnl": "-0.519900",
+    "spread_capture": "-0.020200",
+    "inventory_mtm": "-0.499700",
+    "fees": "0.000000",
+    "ending_inventory": "-0.0040",
+    "max_unreported_inventory": "0.001",
+    "clock_diagnostics": {
+      "fill_reports_received": 98,
+      "max_feed_delay_ns": 2902617324,
+      "observed_depth": 6227,
+      "observed_trade": 8218,
+      "sequence_delivery_hold_ns": 0
+    }
+  },
+  "core_results": [
+    {
+      "strategy": "fixed_spread",
+      "clock_mode": "exchange",
+      "fill_model": "alpha=0.5",
+      "net_pnl": "-0.531250",
+      "ending_inventory": "-0.0030"
+    },
+    {
+      "strategy": "fixed_spread",
+      "clock_mode": "exchange",
+      "fill_model": "TOUCH_FILL",
+      "net_pnl": "-0.98875",
+      "ending_inventory": "0.009"
+    },
+    {
+      "strategy": "fixed_spread",
+      "clock_mode": "recorded",
+      "fill_model": "alpha=0.5",
+      "net_pnl": "-0.450350",
+      "ending_inventory": "-0.0030"
+    },
+    {
+      "strategy": "fixed_spread",
+      "clock_mode": "recorded",
+      "fill_model": "TOUCH_FILL",
+      "net_pnl": "-0.83175",
+      "ending_inventory": "0.009"
+    },
+    {
+      "strategy": "inventory_skew",
+      "clock_mode": "exchange",
+      "fill_model": "alpha=0.5",
+      "net_pnl": "-0.956850",
+      "ending_inventory": "-0.0030"
+    },
+    {
+      "strategy": "inventory_skew",
+      "clock_mode": "exchange",
+      "fill_model": "TOUCH_FILL",
+      "net_pnl": "-1.51455",
+      "ending_inventory": "0.001"
+    },
+    {
+      "strategy": "inventory_skew",
+      "clock_mode": "recorded",
+      "fill_model": "alpha=0.5",
+      "net_pnl": "-0.875050",
+      "ending_inventory": "-0.0030"
+    },
+    {
+      "strategy": "inventory_skew",
+      "clock_mode": "recorded",
+      "fill_model": "TOUCH_FILL",
+      "net_pnl": "-1.45075",
+      "ending_inventory": "0.001"
+    },
+    {
+      "strategy": "microprice",
+      "clock_mode": "exchange",
+      "fill_model": "alpha=0.5",
+      "net_pnl": "-1.052550",
+      "ending_inventory": "-0.0010"
+    },
+    {
+      "strategy": "microprice",
+      "clock_mode": "exchange",
+      "fill_model": "TOUCH_FILL",
+      "net_pnl": "0.14125",
+      "ending_inventory": "-0.009"
+    },
+    {
+      "strategy": "microprice",
+      "clock_mode": "recorded",
+      "fill_model": "alpha=0.5",
+      "net_pnl": "-0.622950",
+      "ending_inventory": "-0.0010"
+    },
+    {
+      "strategy": "microprice",
+      "clock_mode": "recorded",
+      "fill_model": "TOUCH_FILL",
+      "net_pnl": "0.23345",
+      "ending_inventory": "-0.009"
+    },
+    {
+      "strategy": "flow_guard",
+      "clock_mode": "exchange",
+      "fill_model": "alpha=0.5",
+      "net_pnl": "0.131500",
+      "ending_inventory": "0.0040"
+    },
+    {
+      "strategy": "flow_guard",
+      "clock_mode": "exchange",
+      "fill_model": "TOUCH_FILL",
+      "net_pnl": "0.17210",
+      "ending_inventory": "0.004"
+    },
+    {
+      "strategy": "flow_guard",
+      "clock_mode": "recorded",
+      "fill_model": "alpha=0.5",
+      "net_pnl": "0.030300",
+      "ending_inventory": "0.0060"
+    },
+    {
+      "strategy": "flow_guard",
+      "clock_mode": "recorded",
+      "fill_model": "TOUCH_FILL",
+      "net_pnl": "0.03070",
+      "ending_inventory": "0.006"
+    }
+  ],
+  "final_ui_test_commit": "92c5c89",
+  "final_ui_tests_passed": 2,
+  "browser_sensitivity": {
+    "status": "PASS",
+    "values": {
+      "report_ms": [
+        0,
+        20
+      ]
+    },
+    "completed": 2,
+    "comparison": "artifacts/backtest/comparisons/5f1d069baf7240ff94e2e0fcbcf5464c",
+    "observed_net_pnl": [
+      "-0.450350",
+      "-0.519900"
+    ]
+  },
+  "limits": [
+    "Queue/own-order fill realism is uncalibrated",
+    "Impact is a separate fixed-notional stress",
+    "Fixed ten-minute sample does not establish profitability"
+  ]
+}
