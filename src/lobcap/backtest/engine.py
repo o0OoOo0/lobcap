@@ -43,10 +43,10 @@ class MarketBook:
                           (B-A)/(B+A),volatility,now-self.time_ns,self.coverage_bid,self.coverage_ask)
 
 
-def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None):
-    if config.clock_mode=="recorded" or config.report_ms or config.strategy=="flow_guard":
+def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None, research_policy=None):
+    if research_policy is not None or config.clock_mode=="recorded" or config.report_ms or config.strategy=="flow_guard":
         from lobcap.backtest.arrival import run_arrival
-        return run_arrival(config,initial,events,sink,strategy,bootstrap_receive_ns)
+        return run_arrival(config,initial,events,sink,strategy,bootstrap_receive_ns,research_policy)
     # Lazy imports keep the execution and public contracts independently usable.
     from lobcap.backtest.accounting import Portfolio
     from lobcap.backtest.metrics import Metrics

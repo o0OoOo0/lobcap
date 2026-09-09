@@ -38,7 +38,7 @@ class ReportSink:
                 self.report(row["time_ns"],"order",{k:v for k,v in row.items() if k!="modeled_queue"})
 
 
-def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=None):
+def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=None,research_policy=None):
     if config.clock_mode=="recorded" and bootstrap_receive_ns is None:
         raise ValueError("Recorded mode requires a sample prepared with bootstrap receive-time evidence")
     if config.clock_mode=="recorded" and bootstrap_receive_ns<initial.time_ns:
@@ -55,6 +55,11 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
         ages=[]
         proxy=ReportSink(sink,truth,reports,config)
         execution=ExchangeExecution(config,proxy)
+        control=None
+        if research_policy is not None:
+            from lobcap.backtest.research_execution import ResearchControl
+            control=ResearchControl(config,research_policy,sink)
+            execution.enforce_lots=True
         features=Features()
         parameters=StrategyParameters.from_config(config)
         metrics=Metrics(config,sink)
@@ -118,6 +123,7 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
             times=[end,next_decision,next_second]
             if event is not None:times.append(event.time_ns)
             if execution.next_deadline is not None:times.append(execution.next_deadline)
+            if control is not None and control.next_deadline is not None:times.append(control.next_deadline)
             if metrics.next_deadline is not None:times.append(metrics.next_deadline)
             for queue in (deliveries,reports,ages):
                 if queue:times.append(queue[0][0])
@@ -128,6 +134,7 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
             # Exchange events win ties with cancellations/entries, as in the baseline.
             while event is not None and event.time_ns==now:
                 truth.apply(event)
+                if control is not None:control.on_market(event)
                 if portfolio is not None:
                     change=portfolio.mark(truth.mid,now,event.replay_index)
                     if change is not None:metrics.on_mark(*change)
@@ -148,6 +155,12 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
             if portfolio is None and now>=config.sample.start_ns:
                 portfolio=Portfolio(config,truth.mid,sink)
             execution.advance(now,truth.view(now),truth)
+            if control is not None and portfolio is not None:
+                for fill in control.execute(now,truth,portfolio.inventory):
+                    row=portfolio.apply_fill(fill,truth.view(now,features.volatility))
+                    metrics.on_fill(fill,row,truth.view(now,features.volatility))
+                    proxy.report(now,"fill",jsonable(row))
+                    execution.assert_inventory(portfolio.inventory)
             # Market-data delivery and private reports are separate client inputs.
             while deliveries and deliveries[0][0]<=now:
                 delivered,_,incoming=heapq.heappop(deliveries)
@@ -159,6 +172,9 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                     if incoming.kind=="depth":last_observed_receive=delivered
                     stats["observed_"+incoming.kind]+=1
             receive_reports(now)
+            if control is not None and portfolio is not None and observed is not None:
+                control.review(now,observed.view(now),PortfolioView(client_cash,client_inventory,
+                    client_cash+client_inventory*observed.mid,client_exposure("buy"),client_exposure("sell")),cancel,client_orders)
             while ages and ages[0][0]<=now:
                 _,side,oid=heapq.heappop(ages)
                 if side in client_orders and client_orders[side]["order_id"]==oid:
@@ -173,8 +189,15 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                 market=replace(observed.view(now,features.volatility),trade_imbalance=flow,trade_volume=volume)
                 view=PortfolioView(client_cash,client_inventory,client_cash+client_inventory*observed.mid,
                     client_exposure("buy"),client_exposure("sell"),tuple((s,o["status"]) for s,o in sorted(client_orders.items())))
-                desired=strategy(market,view) if strategy else decide(parameters,market,view)
+                try:
+                    desired=strategy(market,view) if strategy else decide(parameters,market,view)
+                except Exception as exc:
+                    if control is None:raise
+                    control.kill(now,"strategy_exception:"+type(exc).__name__)
+                    from lobcap.backtest.types import DesiredQuotes
+                    desired=DesiredQuotes(None,None,control.kill_reason)
                 desired=risk_control(config,market,view,desired)
+                if control is not None:desired=control.quotes(now,market,view,desired)
                 decision={**decision_context(config,market,view,desired),"clock_mode":config.clock_mode,
                     "observed_book_exchange_ns":observed.time_ns,"observed_book_receive_ns":last_observed_receive,
                     "book_age_ns":market.book_age_ns,"trade_imbalance":flow,"trade_volume":volume,
@@ -218,6 +241,12 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                 "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
                 "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
                 *ASSUMPTIONS[1:]]})
+        if control is not None:
+            summary["research_execution"]=control.summary()
+            summary["assumptions"]=[a for a in summary["assumptions"] if not a.startswith(("No market impact", "Net PnL includes"))]
+            summary["assumptions"] += ["Conditional taker hedge and taker fees enabled by research policy; no automatic terminal liquidation.",
+                "Funding, exchange mark price, leverage tiers and exchange margin liquidation are not modeled.",
+                "Historical market path is unchanged; local depth consumption is hypothetical."]
         invariants={"status":"PASS","pnl_identity":True,"inventory_limit":True,"client_reservations":True,
             "no_overfill":True,"no_future_activation_fill":True,"strategy_observes_delivered_state_only":True}
         sink.write("summary",summary);sink.write("invariants",invariants)

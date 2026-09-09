@@ -18,7 +18,7 @@ from lobcap.backtest.presentation import (STRATEGIES, STRATEGY_HELP, LABELS, SWE
 from lobcap.config.backtest import load_backtest_config, variant
 from lobcap.config.experiment import ROOT
 
-PAGES=["시작·설정", "실행 결과", "실행 비교", "민감도 실험", "주문 추적", "근거·용어"]
+PAGES=["시작·설정", "실행 결과", "실행 비교", "민감도 실험", "주문 추적", "근거·용어", "10분 연구·후보 검토"]
 st.set_page_config(page_title="시장조성 백테스트 실험실", layout="wide")
 st.title("시장조성 백테스트 실험실")
 st.caption("Binance BTCUSDT 선물 · 과거 캡처 재생 · 지정가 메이커 주문")
@@ -67,6 +67,7 @@ def settings_table(config):
     if config.strategy in {'inventory_skew','flow_guard'}:fields.append('inventory_skew_ticks')
     if config.strategy=='microprice':fields.append('signal_strength')
     if config.strategy=='flow_guard':fields.extend(['flow_threshold','flow_min_volume','volatility_spread_multiplier'])
+    if config.strategy=='volatility_adaptive':fields.append('volatility_spread_multiplier')
     rows=[]
     for key in fields:
         value=getattr(config,key)
@@ -140,6 +141,8 @@ def render_setup():
                     changes[key]=st.text_input(LABELS[key],str(getattr(base,key)))
                 st.caption("30초 변동성이 준비되지 않으면 호가를 중단합니다. 흐름 불균형은 −1~1이고, 중단 기준은 0~1입니다.")
             if strategy=="fixed_spread":st.write("이 전략의 조절값은 위의 호가 거리와 주문 수량입니다.")
+            if strategy=="volatility_adaptive":
+                changes["volatility_spread_multiplier"]=st.text_input(LABELS["volatility_spread_multiplier"],str(template.volatility_spread_multiplier))
         with st.expander("체결·지연 가정"):
             if fill_mode=="대기열 추정":
                 changes["alpha"]=st.text_input(LABELS["alpha"],str(template.alpha if template.alpha is not None else '0.5'),help="0은 거래 외 잔량 감소를 대기열 진전에 반영하지 않고, 1은 전부 반영합니다. 체결 확률이 아닙니다.")
@@ -350,9 +353,14 @@ def render_audit():
     st.download_button('근거 파일 다운로드',file.read_bytes(),name)
 
 
+def render_bounded_research():
+    from lobcap.backtest.research_ui import render_research
+    render_research(base,sample_path)
+
+
 try:
     {PAGES[0]:render_setup,PAGES[1]:render_result,PAGES[2]:render_compare,
-     PAGES[3]:render_sensitivity,PAGES[4]:render_orders,PAGES[5]:render_audit}[page]()
+     PAGES[3]:render_sensitivity,PAGES[4]:render_orders,PAGES[5]:render_audit,PAGES[6]:render_bounded_research}[page]()
 except (ValueError,TypeError,KeyError,OSError) as exc:
     st.error('설정 또는 저장된 근거를 처리하지 못했습니다. 입력값과 선택한 실행을 확인하세요.')
     st.code(str(exc),language=None)

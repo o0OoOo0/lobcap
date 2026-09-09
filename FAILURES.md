@@ -2,6 +2,14 @@
 
 Nothing is silently excluded.
 
+## 2026-09-10 — Bounded research implementation
+
+- Native Windows pytest hit temporary-directory/cache ACL errors, including with a workspace basetemp. Moved authoritative checks to the existing Ubuntu runtime; no research portability code or ACLs changed.
+- The first hedge fixture used a 10 bps guard with a synthetic 50 bps half-spread. Set the fixture guard to 100 bps; retained the production 10 bps rule and added separate guard rejection coverage.
+- Browser automation failed to initialize its kernel assets (OS error 3). Streamlit AppTest covers navigation and form/CLI parity; localhost health is checked separately. Do not claim a new manual browser walkthrough.
+- A documentation patch used a nonexistent README anchor and was rejected atomically. Read the actual heading and reapplied; no code was affected.
+- Sandbox SSH wrapper produced no remote command execution. The explicit authorized SSH invocation succeeded; remote collector was active.
+
 ## 2026-09-09 — Strict lab usability and integrity review
 
 - During staged deployment, Streamlit retained an older presentation module while reading the updated page, producing a missing-label key error. Restarted the lab process after all modules were synchronized; fresh-session saved-history rendering then passed.
@@ -100,3 +108,7 @@ known / suspected / unknown
 keep / exclude interval / exclude day
 
 #### Follow-up validation
+
+### 2026-09-10 — Roadmap review search command
+- A read-only rg command passed docs/current/BACKTEST* as a literal Windows path and returned OS error 123.
+- Repeated using directory docs/current with -g 'BACKTEST*'; search succeeded. No runtime or source-data failure. Review only; no simulation executed.

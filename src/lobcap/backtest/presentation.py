@@ -7,8 +7,9 @@ from lobcap.backtest.types import jsonable
 from lobcap.config.backtest import DECIMALS, INTS, STRINGS, variant
 
 STRATEGIES = {"fixed_spread":"고정 스프레드", "inventory_skew":"재고 조절",
-              "microprice":"호가 불균형 반영", "flow_guard":"거래 흐름·비용 필터"}
+              "microprice":"호가 불균형 반영", "flow_guard":"거래 흐름·비용 필터", "volatility_adaptive":"변동성 적응"}
 STRATEGY_HELP = {
+    "volatility_adaptive":"과거 30초의 변동성이 커지면 호가 폭을 넓힙니다. 변동성 준비 전에는 주문하지 않습니다.",
     "fixed_spread":"현재 중간가격 양쪽에 일정한 간격으로 주문합니다. 가격 방향을 예측하지 않습니다.",
     "inventory_skew":"매수 재고가 늘면 호가 중심을 낮추고, 매도 재고가 늘면 높입니다. 재고를 자동 청산하지는 않습니다.",
     "microprice":"최우선 매수·매도 잔량으로 계산한 가격 신호를 호가 중심에 반영합니다.",

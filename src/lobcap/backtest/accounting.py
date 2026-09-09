@@ -52,7 +52,10 @@ class Portfolio:
     def apply_fill(self,fill,market):
         sign=1 if fill.side=="buy" else -1
         before_inventory=self.inventory
-        fee=fill.price*fill.quantity*self.config.maker_bps/10000
+        if fill.role not in {"maker", "taker"}:
+            raise ValueError("unknown execution role")
+        rate=self.config.maker_bps if fill.role=="maker" else self.config.taker_bps
+        fee=fill.price*fill.quantity*rate/10000
         spread=sign*fill.quantity*(self.mid-fill.price)
         self.cash-=sign*fill.price*fill.quantity+fee
         self.inventory+=sign*fill.quantity

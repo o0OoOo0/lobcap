@@ -78,7 +78,7 @@ OPTIONAL = {"alpha", "volatility_widen_bps", "volatility_reduce_bps", "volatilit
 INTS = {"decision_ms", "max_age_ms", "stale_book_ms", "entry_ms", "cancel_ms", "report_ms"}
 STRINGS = {"strategy","clock_mode"}
 BASELINE_STRATEGIES = ("fixed_spread", "inventory_skew", "microprice")
-STRATEGIES = BASELINE_STRATEGIES + ("flow_guard",)
+STRATEGIES = BASELINE_STRATEGIES + ("flow_guard", "volatility_adaptive")
 
 
 def validate(config: BacktestConfig) -> BacktestConfig:

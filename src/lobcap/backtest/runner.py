@@ -48,7 +48,7 @@ def config_document(config):
         "settings":{k:jsonable(getattr(config,k)) for k in sorted(DECIMALS|INTS|STRINGS)}}
 
 
-def _run_one(config, sample_path=None):
+def _run_one(config, sample_path=None, research_policy=None):
     preparation_start=time.perf_counter()
     sample_path=Path(sample_path) if sample_path else prepare_sample(config)
     preparation_seconds=time.perf_counter()-preparation_start
@@ -62,7 +62,7 @@ def _run_one(config, sample_path=None):
     write_json(output/"resolved_config.json",config.resolved())
     status,error,result="FAIL",None,None
     try:
-        result=run(config,initial,iter_events(sample_path),sink,bootstrap_receive_ns=sample_manifest.get("bootstrap_receive_ns"))
+        result=run(config,initial,iter_events(sample_path),sink,bootstrap_receive_ns=sample_manifest.get("bootstrap_receive_ns"),research_policy=research_policy)
         sink.close()
         from lobcap.backtest.diagnostics import build_diagnostics
         build_diagnostics(output,config)
@@ -93,6 +93,9 @@ def _run_one(config, sample_path=None):
             "performance":{"wall_seconds":time.perf_counter()-begin,"cpu_seconds":time.process_time()-cpu,
                 "process_peak_rss_mib":rss,"sample_preparation_seconds":preparation_seconds,
                 "output_bytes":sum(p.stat().st_size for p in output.iterdir())}})
+        if research_policy is not None:
+            manifest["research_policy"]=jsonable(research_policy)
+            manifest["command"]=None  # Research manifest provides the complete reproduction command.
         write_json(manifest_path,manifest)
     return replace(result,output_dir=output)
 

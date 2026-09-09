@@ -2,6 +2,10 @@
 
 ## Market-Making Backtest Lab
 
+The 10-minute strategy research workflow, conditional hedges, frozen experiments,
+and explicit paper-readiness blockers are documented in
+[BACKTEST_BOUNDED_RESEARCH.md](docs/current/BACKTEST_BOUNDED_RESEARCH.md).
+
 The separate Binance BTCUSDT MVP, CLI, Streamlit demo and Ubuntu reproduction
 instructions are documented in [BACKTEST_MVP.md](docs/current/BACKTEST_MVP.md).
 The strengthened default lab includes recorded-arrival replay, private report

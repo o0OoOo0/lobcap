@@ -64,6 +64,9 @@ def decide(config, market, portfolio):
     elif config.strategy=="microprice":
         center+=config.signal_strength*(market.microprice-market.mid)
     half=config.half_spread_ticks*config.tick
+    if config.strategy=="volatility_adaptive":
+        if market.volatility_bps is None:return DesiredQuotes(None,None,"volatility_warmup")
+        half=max(half,market.mid*Decimal(str(market.volatility_bps))*config.volatility_spread_multiplier/10000)
     if config.strategy=="flow_guard":
         if market.volatility_bps is None:return DesiredQuotes(None,None,"volatility_warmup")
         center=market.microprice-config.inventory_skew_ticks*config.tick*portfolio.inventory/config.max_inventory

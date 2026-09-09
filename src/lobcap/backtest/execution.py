@@ -40,6 +40,7 @@ class Execution:
         self.ordinal = self.next_id = 0
         self.replacement_wait = {}
         self.stats = Counter()
+        self.enforce_lots = False  # Research policy opts in; preserve legacy queue semantics.
         self.stats.update({k:ZERO for k in ("activated_quantity","filled_quantity","skipped_nontrade_quantity","order_lifetime_ns")})
 
     def _schedule(self, t, kind, order):
@@ -145,6 +146,12 @@ class Execution:
                 from dataclasses import replace
                 self.stats["participation_capped_quantity"]+=transition.filled-cap
                 transition=replace(transition,filled=cap,remaining=order.remaining-cap)
+            if self.enforce_lots:
+                rounded=(transition.filled/self.config.instrument.lot).to_integral_value(rounding=ROUND_FLOOR)*self.config.instrument.lot
+                if rounded!=transition.filled:
+                    from dataclasses import replace
+                    self.stats["lot_rounded_quantity"]+=transition.filled-rounded
+                    transition=replace(transition,filled=rounded,remaining=order.remaining-rounded)
             if nontrade or executable:
                 self.sink.write("execution", {"time_ns":event.time_ns,"replay_index":event.replay_index,
                     "order_id":order.order_id,"queue_before":order.queue,"queue_after":transition.queue,

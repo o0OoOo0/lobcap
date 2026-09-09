@@ -23,7 +23,7 @@ def test_navigation_is_lazy_and_never_runs_a_simulation(monkeypatch):
     monkeypatch.setattr(presentation,'saved_runs',lambda *args:({},[]))
     app=app_test()
     assert not app.exception
-    for name in ('실행 결과','실행 비교','민감도 실험','주문 추적','근거·용어','시작·설정'):
+    for name in ('실행 결과','실행 비교','민감도 실험','주문 추적','근거·용어','10분 연구·후보 검토','시작·설정'):
         widget(app.radio,'작업').set_value(name).run(timeout=30)
         assert not app.exception
 
@@ -114,3 +114,22 @@ def test_selected_run_survives_pages_without_the_run_selector(monkeypatch,tmp_pa
     widget(app.radio,'작업').set_value('주문 추적').run(timeout=30)
     assert not app.exception
     assert widget(app.selectbox,'확인할 실행').value=='older'
+
+
+def test_research_submission_uses_shared_cli_plan_and_requires_submit(monkeypatch):
+    import lobcap.backtest.research_ui as research_ui
+    from lobcap.backtest.research import make_plan
+    from lobcap.config.backtest import load_backtest_config
+    calls=[]
+    def capture(base,sample,strategies,hypothesis,**kwargs):
+        calls.append(make_plan(base,strategies,hypothesis))
+        raise RuntimeError('captured research submission')
+    monkeypatch.setattr(research_ui,'run_research',capture)
+    app=app_test()
+    widget(app.radio,'작업').set_value('10분 연구·후보 검토').run(timeout=30)
+    assert not calls and not app.exception
+    widget(app.button,'설정 동결 후 연구 실행').click().run(timeout=30)
+    assert not app.exception and len(calls)==1
+    assert calls[0]==make_plan(load_backtest_config(ROOT/'configs/backtest/binance_recorded.yaml'))
+    app.run(timeout=30)
+    assert len(calls)==1
