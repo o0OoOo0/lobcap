@@ -50,6 +50,10 @@ def main():
         prep=time.perf_counter();sample=prepare_sample(c)
         report['preparation_seconds']=time.perf_counter()-prep
         _,report['sample']=load_sample(sample,c)
+        validation=json.loads((sample/'validation.json').read_text())
+        assert validation['trading_counts']=={'depth':5881,'trade':8043}
+        assert validation['snapshot_matches']==2
+        report['sample_validation']=validation
         def progress(i,n,result):
             p=reconcile_artifact(result.output_dir)
             check_client(result.output_dir)
@@ -74,7 +78,9 @@ def main():
         performance=[reconcile_artifact(c.output_path/'runs'/r['run_id']) for r in all_rows]
         report['runs_validated']=len(all_rows)
         report['performance']={'max_run_wall_seconds':max(p['wall_seconds'] for p in performance),
-            'max_process_peak_rss_mib':max(p['process_peak_rss_mib'] for p in performance)}
+            'max_process_peak_rss_mib':max(p['process_peak_rss_mib'] for p in performance),
+            'total_output_bytes':sum(p['output_bytes'] for p in performance),
+            'total_cpu_seconds':sum(p['cpu_seconds'] for p in performance)}
         report['collector_after']=subprocess.check_output(['systemctl','is-active','lobcap@btcusdt.service'],text=True).strip()
         assert report['collector_after']=='active'
         report['status']='PASS'
