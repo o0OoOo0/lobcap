@@ -20,7 +20,7 @@ from lobcap.backtest.artifacts import ArtifactSink
 from lobcap.backtest.engine import run
 from lobcap.backtest.replay import prepare_sample, load_sample, iter_events, write_json
 from lobcap.backtest.types import jsonable
-from lobcap.config.backtest import load_backtest_config, variant, STRATEGIES, DECIMALS, INTS
+from lobcap.config.backtest import load_backtest_config, variant, STRATEGIES, BASELINE_STRATEGIES, STRINGS, DECIMALS, INTS
 from lobcap.config.experiment import write_run_manifest
 
 _RUN_LOCK=threading.Lock()
@@ -42,9 +42,10 @@ def config_document(config):
         seconds,fraction=divmod(ns,1_000_000_000)
         return datetime.fromtimestamp(seconds,timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")+(f".{fraction:09d}" if fraction else "")+"Z"
     return {"schema_version":1,"sample":{"id":config.sample.sample_id,"start":iso(config.sample.start_ns),
-        "end":iso(config.sample.end_ns),"warmup_seconds":config.sample.warmup_ns//1_000_000_000},
+        "end":iso(config.sample.end_ns),"warmup_seconds":config.sample.warmup_ns//1_000_000_000,
+        "normalization_version":config.sample.normalization_version},
         "data_root":str(config.data_root),"output_path":str(config.output_path),
-        "settings":{k:jsonable(getattr(config,k)) for k in sorted(DECIMALS|INTS|{"strategy"})}}
+        "settings":{k:jsonable(getattr(config,k)) for k in sorted(DECIMALS|INTS|STRINGS)}}
 
 
 def _run_one(config, sample_path=None):
@@ -61,7 +62,10 @@ def _run_one(config, sample_path=None):
     write_json(output/"resolved_config.json",config.resolved())
     status,error,result="FAIL",None,None
     try:
-        result=run(config,initial,iter_events(sample_path),sink)
+        result=run(config,initial,iter_events(sample_path),sink,bootstrap_receive_ns=sample_manifest.get("bootstrap_receive_ns"))
+        sink.close()
+        from lobcap.backtest.diagnostics import build_diagnostics
+        build_diagnostics(output,config)
         status="PASS"
     except BaseException as exc:
         status="CANCELED" if isinstance(exc,KeyboardInterrupt) else "FAIL"
@@ -103,8 +107,11 @@ def comparison_row(config,result,sample_hash):
     fields=("net_pnl","gross_pnl","fees","spread_capture","inventory_mtm","ending_inventory",
             "fill_rate","partial_fill_rate","full_fill_rate","max_abs_inventory","max_drawdown")
     return {"run_id":result.output_dir.name,"sample_sha256":sample_hash,"strategy":config.strategy,
-        "fill_model":config.model.name,"alpha":config.alpha,"entry_ms":config.entry_ms,"cancel_ms":config.cancel_ms,
+        "fill_model":config.model.name,"alpha":config.alpha,"clock_mode":config.clock_mode,"report_ms":config.report_ms,
+        "entry_ms":config.entry_ms,"cancel_ms":config.cancel_ms,
         "maker_bps":config.maker_bps,"half_spread_ticks":config.half_spread_ticks,"inventory_skew_ticks":config.inventory_skew_ticks,
+        "max_trade_participation":config.max_trade_participation,"impact_stress_bps":config.impact_stress_bps,
+        "stress_adjusted_net_pnl":json.loads((result.output_dir/"diagnostics.json").read_text())["stress_adjusted_net_pnl"],
         "effective_config_sha256":config.effective_sha256,"deterministic_digest":result.digest,
         **{k:result.summary[k] for k in fields}}
 
@@ -143,7 +150,7 @@ def run_sweep(config, changes, sample_path=None, progress=None):
     finally:_RUN_LOCK.release()
 
 
-def core_matrix():return [{"strategy":s,"alpha":a} for s in STRATEGIES for a in ("0","0.5","1",None)]
+def core_matrix():return [{"strategy":s,"alpha":a} for s in BASELINE_STRATEGIES for a in ("0","0.5","1",None)]
 
 
 def main(argv=None):
@@ -152,7 +159,7 @@ def main(argv=None):
     parser.add_argument("--config",required=True)
     parser.add_argument("--sample")
     parser.add_argument("--set",action="append",default=[],metavar="KEY=VALUE")
-    parser.add_argument("--parameter",choices=sorted(DECIMALS|INTS|{"strategy"}))
+    parser.add_argument("--parameter",choices=sorted(DECIMALS|INTS|STRINGS))
     parser.add_argument("--values",help="Comma-separated values; use null for TOUCH_FILL")
     parser.add_argument("--core-matrix",action="store_true")
     args=parser.parse_args(argv)

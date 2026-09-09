@@ -13,7 +13,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from lobcap.backtest.types import (BookSnapshot, Depletion, ReplayEvent, NS, ZERO,
-                                  NORMALIZATION_VERSION, jsonable)
+                                  NORMALIZATION_VERSION, ARRIVAL_NORMALIZATION_VERSION, jsonable)
 from lobcap.binance_protocol import payload, recv_ns, first_event_covers_snapshot, event_is_older_than_snapshot
 from lobcap.config.common import sha256_file
 from lobcap.l2.schema import L2LevelUpdate, L2Trade, decimal_value, assert_blinded_mapping
@@ -211,6 +211,9 @@ def prepare_sample(config):
         break
     if first is None or first[0] > warmup or book.crossed() or not book.bids or not book.asks:
         raise ValueError("invalid or insufficient snapshot warmup")
+    bootstrap_receive=max(recv_ns(initial_record),recv_ns(first[3]))
+    if config.sample.normalization_version==ARRIVAL_NORMALIZATION_VERSION and bootstrap_receive>warmup:
+        raise ValueError("bootstrap not received before feature warmup")
     initial = BookSnapshot(
         tuple((Decimal(p)*book.tick, Decimal(q)*book.lot) for p,q in sorted(book.bids.items(), reverse=True)),
         tuple((Decimal(p)*book.tick, Decimal(q)*book.lot) for p,q in sorted(book.asks.items())),
@@ -226,6 +229,8 @@ def prepare_sample(config):
         write_json(destination / "initial_book.json", initial)
         with gzip.GzipFile(filename=str(destination / "events.jsonl.gz"), mode="wb", mtime=0) as output:
             for event in normalize(book, initial, depth, trades, stats, shadows):
+                if config.sample.normalization_version==ARRIVAL_NORMALIZATION_VERSION and event.receive_ns<event.time_ns:
+                    raise ValueError("negative capture delay; resolve exchange/capture clock alignment")
                 if config.sample.start_ns <= event.time_ns < config.sample.end_ns:
                     counts[event.kind] += len(event.source_refs)
                     max_receive_delay[event.kind] = max(max_receive_delay[event.kind], event.receive_ns-event.time_ns)
@@ -244,11 +249,14 @@ def prepare_sample(config):
         validation = {"status": "PASS", "stats": dict(stats), "trading_counts": dict(counts),
                       "max_receive_delay_ns": dict(max_receive_delay), "bootstrap_sequence": initial.sequence,
                       "snapshot_matches": stats["snapshot_matches"], "gaps": 0, "crossed": 0}
+        if config.sample.normalization_version==ARRIVAL_NORMALIZATION_VERSION:
+            validation["bootstrap_receive_ns"]=bootstrap_receive
         write_json(destination / "validation.json", validation)
         files = {name: sha256_file(destination/name) for name in ("initial_book.json", "events.jsonl.gz", "validation.json")}
         sample_hash = sample_fingerprint(files,config.sample)
         write_json(destination / "sample_manifest.json", {"status":"PASS", "sample": config.sample,
-            "instrument":config.instrument, "input_artifacts":inputs, "files":files, "sample_sha256":sample_hash})
+            "instrument":config.instrument, "input_artifacts":inputs, "files":files, "sample_sha256":sample_hash,
+            **({"bootstrap_receive_ns":bootstrap_receive} if config.sample.normalization_version==ARRIVAL_NORMALIZATION_VERSION else {})})
         return destination
     except Exception as exc:
         write_json(destination / "sample_manifest.json", {"status":"FAIL", "error":str(exc)})
@@ -260,7 +268,7 @@ def load_sample(path, config=None):
     manifest = json.loads((path / "sample_manifest.json").read_text())
     if manifest["status"] != "PASS":
         raise ValueError("sample preparation did not pass; use a new sample id after correcting inputs")
-    if manifest["sample"]["normalization_version"] != NORMALIZATION_VERSION:
+    if manifest["sample"]["normalization_version"] not in {NORMALIZATION_VERSION,ARRIVAL_NORMALIZATION_VERSION}:
         raise ValueError("normalization version mismatch")
     if config is not None and (manifest["sample"] != jsonable(config.sample) or manifest["instrument"] != jsonable(config.instrument)):
         raise ValueError("sample configuration mismatch")
@@ -272,6 +280,10 @@ def load_sample(path, config=None):
     if set(manifest["files"])!={"initial_book.json","events.jsonl.gz","validation.json"} or sample_fingerprint(manifest["files"],manifest["sample"])!=manifest["sample_sha256"]:
         raise ValueError("sample manifest fingerprint mismatch")
     row = json.loads((path / "initial_book.json").read_text())
+    if manifest["sample"]["normalization_version"]==ARRIVAL_NORMALIZATION_VERSION:
+        validation=json.loads((path/"validation.json").read_text())
+        if manifest.get("bootstrap_receive_ns")!=validation.get("bootstrap_receive_ns") or type(manifest.get("bootstrap_receive_ns")) is not int:
+            raise ValueError("bootstrap receipt evidence mismatch")
     row["bids"] = tuple(tuple(Decimal(x) for x in pair) for pair in row["bids"])
     row["asks"] = tuple(tuple(Decimal(x) for x in pair) for pair in row["asks"])
     row["coverage_bid"], row["coverage_ask"] = Decimal(row["coverage_bid"]), Decimal(row["coverage_ask"])

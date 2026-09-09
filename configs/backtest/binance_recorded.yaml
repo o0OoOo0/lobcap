@@ -1,0 +1,22 @@
+schema_version: 1
+sample:
+  id: binance_btcusdt_20260906_1410_1420_arrival
+  start: "2026-09-06T14:10:00Z"
+  end: "2026-09-06T14:20:00Z"
+  warmup_seconds: 30
+  normalization_version: binance-net-depletion-arrival-v2
+data_root: /data
+output_path: artifacts/backtest
+settings:
+  strategy: fixed_spread
+  clock_mode: recorded
+  report_ms: 20
+  entry_ms: 10
+  cancel_ms: 10
+  alpha: "0.5"
+  size: "0.001"
+  half_spread_ticks: "0.5"
+  max_inventory: "0.01"
+  max_trade_participation: "0.1"
+  maker_bps: "0"
+  impact_stress_bps: "0"

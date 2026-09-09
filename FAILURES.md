@@ -2,6 +2,13 @@
 
 Nothing is silently excluded.
 
+## 2026-09-09 — Recorded-arrival extension development
+
+- A late-fill test initially expired its order before the intended fill. Set its explicit test maximum age to 10 seconds; engine semantics unchanged.
+- The zero-fill participation test initially indexed an absent in-memory `fills` channel. Corrected the assertion to accept an absent channel.
+- Capacity stress now rounds its per-trade cap down to instrument lots, preventing the stress overlay from creating sub-lot fills. Baseline participation=1 retains established queue semantics.
+- No raw data, collector state, or accepted v1 artifacts were changed or excluded.
+
 ## 2026-09-09 — Backtest MVP implementation validation
 
 **Component:** bounded backtest lab, isolated feature worktree.

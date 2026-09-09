@@ -4,7 +4,7 @@ from __future__ import annotations
 import heapq
 from collections import Counter
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, ROUND_FLOOR
 
 from lobcap.backtest.types import (OrderRecord, FillEvent, PortfolioView, ZERO, jsonable)
 from lobcap.l2.fill_models import advance_queue
@@ -138,6 +138,13 @@ class Execution:
             if tr is not None and tr.maker_side==side and (tr.price<=order.price if side=="buy" else tr.price>=order.price):
                 executable=tr.size
             transition=advance_queue(order.queue,order.remaining,nontrade,executable,self.config.model)
+            cap=executable*self.config.max_trade_participation
+            if self.config.max_trade_participation<1:
+                cap=(cap/self.config.instrument.lot).to_integral_value(rounding=ROUND_FLOOR)*self.config.instrument.lot
+            if transition.filled>cap:
+                from dataclasses import replace
+                self.stats["participation_capped_quantity"]+=transition.filled-cap
+                transition=replace(transition,filled=cap,remaining=order.remaining-cap)
             if nontrade or executable:
                 self.sink.write("execution", {"time_ns":event.time_ns,"replay_index":event.replay_index,
                     "order_id":order.order_id,"queue_before":order.queue,"queue_after":transition.queue,

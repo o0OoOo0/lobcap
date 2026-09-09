@@ -17,17 +17,33 @@ class StrategyParameters:
     signal_strength: Decimal
     max_inventory: Decimal
     tick: Decimal
+    maker_bps: Decimal = ZERO
+    flow_threshold: Decimal = Decimal("0.6")
+    flow_min_volume: Decimal = Decimal("0.005")
+    volatility_spread_multiplier: Decimal = Decimal(1)
 
     @classmethod
     def from_config(cls, config):
         return cls(config.strategy,config.size,config.half_spread_ticks,config.inventory_skew_ticks,
-                   config.signal_strength,config.max_inventory,config.instrument.tick)
+                   config.signal_strength,config.max_inventory,config.instrument.tick,config.maker_bps,
+                   config.flow_threshold,config.flow_min_volume,config.volatility_spread_multiplier)
 
 
 class Features:
     def __init__(self):
         self.mids=deque(maxlen=31)
         self.volatility=None
+        self.trades=deque()
+
+    def observe_trade(self,event,now):
+        if event.trade is not None and now-event.time_ns<=1_000_000_000:
+            self.trades.append((now,event.trade.size,1 if event.trade.maker_side=="sell" else -1))
+
+    def flow(self,now):
+        while self.trades and self.trades[0][0]<=now-1_000_000_000:self.trades.popleft()
+        volume=sum((row[1] for row in self.trades),ZERO)
+        signed=sum((row[1]*row[2] for row in self.trades),ZERO)
+        return (signed/volume if volume else None),volume
 
     def on_second(self, now, mid, fresh):
         self.mids.append(float(mid) if fresh else None)
@@ -48,6 +64,16 @@ def decide(config, market, portfolio):
     elif config.strategy=="microprice":
         center+=config.signal_strength*(market.microprice-market.mid)
     half=config.half_spread_ticks*config.tick
+    if config.strategy=="flow_guard":
+        if market.volatility_bps is None:return DesiredQuotes(None,None,"volatility_warmup")
+        center=market.microprice-config.inventory_skew_ticks*config.tick*portfolio.inventory/config.max_inventory
+        half=max(half,market.mid*(max(ZERO,config.maker_bps)+Decimal(str(market.volatility_bps))*config.volatility_spread_multiplier)/10000)
+        bid=Quote("buy",min(market.bid,_round(center-half,config.tick,True)),config.size)
+        ask=Quote("sell",max(market.ask,_round(center+half,config.tick,False)),config.size)
+        if market.trade_imbalance is not None and market.trade_volume>=config.flow_min_volume:
+            if market.trade_imbalance>=config.flow_threshold:return DesiredQuotes(bid,None,"buy_flow_suppress_ask")
+            if market.trade_imbalance<=-config.flow_threshold:return DesiredQuotes(None,ask,"sell_flow_suppress_bid")
+        return DesiredQuotes(bid,ask,"flow_guard")
     return DesiredQuotes(
         Quote("buy",min(market.bid,_round(center-half,config.tick,True)),config.size),
         Quote("sell",max(market.ask,_round(center+half,config.tick,False)),config.size))

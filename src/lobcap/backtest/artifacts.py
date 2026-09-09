@@ -25,7 +25,7 @@ class MemorySink:
 
 
 class ArtifactSink:
-    JSONL={"decisions","orders","fills","ledger","execution"}
+    JSONL={"decisions","orders","fills","ledger","execution","timeline","observations"}
     CSV={"timeseries","markouts"}
 
     def __init__(self,path):

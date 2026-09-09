@@ -7,7 +7,7 @@ from dataclasses import dataclass, replace
 from decimal import Decimal
 from pathlib import Path
 
-from lobcap.backtest.types import InstrumentSpec, SampleSpec, NS, jsonable
+from lobcap.backtest.types import InstrumentSpec, SampleSpec, NS, jsonable, NORMALIZATION_VERSION, ARRIVAL_NORMALIZATION_VERSION
 from lobcap.config.common import load_yaml_with_hashes
 from lobcap.config.experiment import ConfigError, ROOT
 from lobcap.l2.fill_models import ModelSpec
@@ -35,6 +35,13 @@ class BacktestConfig:
     stale_book_ms: int = 500
     entry_ms: int = 0
     cancel_ms: int = 0
+    clock_mode: str = "exchange"
+    report_ms: int = 0
+    max_trade_participation: Decimal = Decimal(1)
+    impact_stress_bps: Decimal = Decimal(0)
+    flow_threshold: Decimal = Decimal("0.6")
+    flow_min_volume: Decimal = Decimal("0.005")
+    volatility_spread_multiplier: Decimal = Decimal(1)
     alpha: Decimal | None = Decimal("0.5")
     maker_bps: Decimal = Decimal(0)
     taker_bps: Decimal = Decimal(0)
@@ -66,14 +73,18 @@ class BacktestConfig:
 
 
 DECIMALS = {"size", "half_spread_ticks", "inventory_skew_ticks", "signal_strength", "max_inventory", "min_spread_ticks", "alpha", "maker_bps", "taker_bps", "initial_cash", "initial_inventory", "volatility_widen_bps", "volatility_reduce_bps", "volatility_stop_bps"}
+DECIMALS |= {"max_trade_participation","impact_stress_bps","flow_threshold","flow_min_volume","volatility_spread_multiplier"}
 OPTIONAL = {"alpha", "volatility_widen_bps", "volatility_reduce_bps", "volatility_stop_bps"}
-INTS = {"decision_ms", "max_age_ms", "stale_book_ms", "entry_ms", "cancel_ms"}
-STRATEGIES = ("fixed_spread", "inventory_skew", "microprice")
+INTS = {"decision_ms", "max_age_ms", "stale_book_ms", "entry_ms", "cancel_ms", "report_ms"}
+STRINGS = {"strategy","clock_mode"}
+BASELINE_STRATEGIES = ("fixed_spread", "inventory_skew", "microprice")
+STRATEGIES = BASELINE_STRATEGIES + ("flow_guard",)
 
 
 def validate(config: BacktestConfig) -> BacktestConfig:
     if config.strategy not in STRATEGIES:
         raise ConfigError("unknown strategy")
+    if config.clock_mode not in {"exchange","recorded"}:raise ConfigError("unknown clock mode")
     for name in DECIMALS:
         value = getattr(config, name)
         if value is None and name in OPTIONAL:
@@ -82,7 +93,7 @@ def validate(config: BacktestConfig) -> BacktestConfig:
             raise ConfigError(f"{name} must be a finite Decimal")
     for name in INTS:
         value = getattr(config, name)
-        if type(value) is not int or value < (0 if name in {"entry_ms", "cancel_ms"} else 1):
+        if type(value) is not int or value < (0 if name in {"entry_ms", "cancel_ms", "report_ms"} else 1):
             raise ConfigError(f"invalid {name}")
     for name in ("size", "max_inventory", "initial_cash"):
         if getattr(config, name) <= 0:
@@ -94,11 +105,15 @@ def validate(config: BacktestConfig) -> BacktestConfig:
         raise ConfigError("alpha must be in [0,1]")
     if abs(config.initial_inventory) > config.max_inventory:
         raise ConfigError("initial inventory exceeds limit")
+    if not 0 < config.max_trade_participation <= 1:raise ConfigError("participation must be in (0,1]")
+    if not 0 <= config.flow_threshold <= 1:raise ConfigError("flow threshold must be in [0,1]")
+    if min(config.impact_stress_bps,config.flow_min_volume,config.volatility_spread_multiplier)<0:
+        raise ConfigError("stress/flow/volatility controls must be nonnegative")
     return config
 
 
 def variant(config: BacktestConfig, **changes) -> BacktestConfig:
-    allowed = DECIMALS | INTS | {"strategy"}
+    allowed = DECIMALS | INTS | STRINGS
     if set(changes) - allowed:
         raise ConfigError(f"unknown variant fields: {sorted(set(changes)-allowed)}")
     try:
@@ -115,8 +130,10 @@ def load_backtest_config(path: str | Path) -> BacktestConfig:
         if set(row) != allowed or row["schema_version"] != 1:
             raise ConfigError("expected schema_version=1 and sample/data_root/output_path/settings")
         s = row["sample"]
-        if set(s) != {"id", "start", "end", "warmup_seconds"}:
+        if set(s)-{"id", "start", "end", "warmup_seconds","normalization_version"} or not {"id", "start", "end", "warmup_seconds"}<=set(s):
             raise ConfigError("invalid sample fields")
+        normalization=s.get("normalization_version",NORMALIZATION_VERSION)
+        if normalization not in {NORMALIZATION_VERSION,ARRIVAL_NORMALIZATION_VERSION}:raise ConfigError("unknown normalization")
         if not isinstance(s["id"], str) or not s["id"] or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for c in s["id"]):
             raise ConfigError("sample id must be a safe filename")
         start, end = timestamp_ns(s["start"]), timestamp_ns(s["end"])
@@ -129,7 +146,7 @@ def load_backtest_config(path: str | Path) -> BacktestConfig:
             if key in DECIMALS and isinstance(value,float):
                 raise ConfigError(f"quote decimal setting {key} in YAML to preserve precision")
         config = BacktestConfig(path, raw_sha, canonical_sha,
-            SampleSpec(s["id"], start, end, s["warmup_seconds"] * NS),
+            SampleSpec(s["id"], start, end, s["warmup_seconds"] * NS,normalization_version=normalization),
             resolve(row["data_root"]), resolve(row["output_path"]))
         return variant(config, **row["settings"])
     except ConfigError:

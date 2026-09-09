@@ -11,6 +11,7 @@ from lobcap.l2.schema import L2LevelUpdate, L2Trade
 ZERO = Decimal(0)
 NS = 1_000_000_000
 NORMALIZATION_VERSION = "binance-net-depletion-v1"
+ARRIVAL_NORMALIZATION_VERSION = "binance-net-depletion-arrival-v2"
 ASSUMPTIONS = (
     "Exchange-time simulation; zero feed and fill-notification latency.",
     "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
@@ -110,6 +111,8 @@ class MarketView:
     book_age_ns: int
     coverage_bid: Decimal
     coverage_ask: Decimal
+    trade_imbalance: Decimal | None = None
+    trade_volume: Decimal = ZERO
 
 
 @dataclass(frozen=True, slots=True)

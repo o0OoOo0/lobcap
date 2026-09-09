@@ -61,3 +61,16 @@ def test_reader_rejects_hidden_nested_trade_fields(sample):
     row["trade"]["maker_order_id"]="hidden"
     with gzip.open(path/"events.jsonl.gz","wt") as f:f.write(json.dumps(row)+"\n")
     with pytest.raises(ValueError,match="trade fields"):list(iter_events(path))
+
+
+def test_cost_stress_is_explicit_and_does_not_change_execution(sample):
+    config,path=sample
+    config=variant(config,alpha=None,stale_book_ms=100000)
+    base=run_one(config,path)
+    stressed=run_one(variant(config,impact_stress_bps='5'),path)
+    assert base.digest==stressed.digest
+    diagnostics=json.loads((stressed.output_dir/'diagnostics.json').read_text())
+    cost=D(diagnostics['turnover_notional'])*D(5)/10000
+    assert D(diagnostics['hypothetical_impact_cost'])==cost
+    assert D(diagnostics['stress_adjusted_net_pnl'])==D(stressed.summary['net_pnl'])-cost
+    assert D(diagnostics['pnl_components']['spread_capture'])+D(diagnostics['pnl_components']['inventory_mtm'])==D(stressed.summary['gross_pnl'])
