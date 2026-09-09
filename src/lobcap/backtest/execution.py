@@ -50,7 +50,7 @@ class Execution:
         return self.heap[0][0] if self.heap else None
 
     def _emit(self, order, now, event):
-        self.sink.write("orders", {**jsonable(order.record()),"time_ns":now,"event":event})
+        self.sink.write("orders", {**jsonable(order.record()),"time_ns":now,"event":event,"modeled_queue":order.queue})
 
     def submit(self, quote, now, decision):
         if quote.side in self.orders:
@@ -133,6 +133,13 @@ class Execution:
             if tr is not None and tr.maker_side==side and (tr.price<=order.price if side=="buy" else tr.price>=order.price):
                 executable=tr.size
             transition=advance_queue(order.queue,order.remaining,nontrade,executable,self.config.model)
+            if nontrade or executable:
+                self.sink.write("execution", {"time_ns":event.time_ns,"replay_index":event.replay_index,
+                    "order_id":order.order_id,"queue_before":order.queue,"queue_after":transition.queue,
+                    "remaining_before":order.remaining,"remaining_after":transition.remaining,
+                    "nontrade_depletion":nontrade,"nontrade_reduction":transition.nontrade_reduction,
+                    "trade_volume":executable,"trade_queue_reduction":transition.trade_reduction,
+                    "fill_quantity":transition.filled,"source_refs":event.source_refs})
             order.queue,order.remaining=transition.queue,transition.remaining
             if transition.filled:
                 self.stats["filled_quantity"] += transition.filled
@@ -166,4 +173,3 @@ class Execution:
     def finish(self, now):
         for order in tuple(self.orders.values()):
             self._finish(order,now,"CENSORED","sample_end_pending" if order.activation_ns is None else "sample_end_active")
-

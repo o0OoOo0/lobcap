@@ -73,7 +73,8 @@ def run(config, initial, events, sink, strategy=None):
             while event is not None and event.time_ns==now:
                 book.apply(event)
                 if portfolio is not None:
-                    portfolio.mark(book.mid,now,event.replay_index)
+                    change=portfolio.mark(book.mid,now,event.replay_index)
+                    if change is not None:metrics.on_mark(*change)
                     for fill in execution.on_event(event):
                         row=portfolio.apply_fill(fill,book.view(now,features.volatility))
                         metrics.on_fill(fill,row,book.view(now,features.volatility))
