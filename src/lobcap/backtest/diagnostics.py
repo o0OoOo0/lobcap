@@ -50,7 +50,7 @@ def build_diagnostics(path,config):
             "stress_adjusted_net_pnl":pnl["net_pnl"]-stress,
             "impact_note":"Uncalibrated fixed-notional cost stress, NOT endogenous market impact. Historical prices/depth remain unchanged.",
             "max_trade_participation":config.max_trade_participation,
-            "validation_scope":"Accounting/source consistency verified; fill realism has not been calibrated against actual own-order logs.",
+            "validation_scope":"Engine accounting and execution invariants checked. Source-linked evidence is available; independent source audit is a separate validation step. Fill realism is uncalibrated.",
             "markouts":summary["markouts"],"sample_minutes":(config.sample.end_ns-config.sample.start_ns)/60_000_000_000}
         write_json(path/"diagnostics.json",output)
         return output

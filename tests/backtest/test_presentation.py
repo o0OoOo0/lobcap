@@ -1,0 +1,67 @@
+import json
+from dataclasses import replace
+from decimal import Decimal
+from pathlib import Path
+import pytest
+from lobcap.backtest.presentation import (saved_runs,config_from_run,comparison_differences,
+    applicable_parameters,sweep_variants,result_message)
+from lobcap.backtest.replay import write_json
+from lobcap.config.backtest import load_backtest_config,variant
+from lobcap.config.experiment import ROOT
+
+
+def config():return load_backtest_config(ROOT/'configs/backtest/binance_recorded.yaml')
+
+
+def manifest(c,**extras):
+    return {'sample_id':c.sample.sample_id,'sample_sha256':'hash','run_id':'one','resolved_config':c.resolved(),**extras}
+
+
+def test_saved_configuration_is_restored_exactly_and_wrong_sample_rejected():
+    c=config();changed=variant(c,entry_ms=123,alpha='.501',maker_bps='2')
+    assert config_from_run(c,manifest(changed)).effective_sha256==changed.effective_sha256
+    with pytest.raises(ValueError,match='다른 표본'):config_from_run(c,manifest(c,sample_id='different'))
+
+
+def test_compare_checks_all_settings_and_sample_identity():
+    a=manifest(config());b=manifest(variant(config(),max_trade_participation='.01',impact_stress_bps='2'),run_id='two')
+    assert len(comparison_differences([a,b]))==2
+    assert comparison_differences([a,a])==[]
+    b['sample_sha256']='different'
+    with pytest.raises(ValueError,match='체크섬'):comparison_differences([a,b])
+
+
+def test_sweep_rejects_inactive_empty_duplicate_or_unbounded_variants():
+    c=config()
+    assert 'inventory_skew_ticks' not in applicable_parameters(c.strategy)
+    for key,text in [('signal_strength','0,1'),('alpha','0,'),('alpha','.5,0.50'),('entry_ms',','.join(map(str,range(25))))]:
+        with pytest.raises(ValueError):sweep_variants(c,key,text)
+    assert sweep_variants(c,'alpha','.501,.502,null')==[{'alpha':'.501'},{'alpha':'.502'},{'alpha':None}]
+
+
+def test_corrupted_and_incomplete_runs_do_not_hide_valid_runs(tmp_path):
+    folder=tmp_path/'runs';folder.mkdir()
+    for name in ('good','bad','partial'):(folder/name).mkdir()
+    (folder/'bad/run_manifest.json').write_text('{truncated')
+    c=config()
+    write_json(folder/'partial/run_manifest.json',manifest(c,status='FAIL',error='interrupted'))
+    write_json(folder/'good/run_manifest.json',manifest(c,status='PASS'))
+    for name in ('summary.json','config.yaml','timeseries.csv.gz'):(folder/'good'/name).touch()
+    runs,issues=saved_runs(tmp_path,c.sample.sample_id)
+    assert list(runs)==['good'] and len(issues)==2
+
+
+def test_atomic_json_failure_keeps_previous_complete_file(tmp_path,monkeypatch):
+    import os
+    path=tmp_path/'manifest.json';write_json(path,{'status':'RUNNING'})
+    def fail(*args):raise OSError('simulated replacement failure')
+    monkeypatch.setattr(os,'replace',fail)
+    with pytest.raises(OSError):write_json(path,{'status':'PASS'})
+    assert json.loads(path.read_text())=={'status':'RUNNING'}
+    assert list(tmp_path.iterdir())==[path]
+
+
+def test_zero_fill_and_rebate_interpretation():
+    assert '체결 0건' in result_message({'execution':{}})
+    summary={'execution':{'fill_events':1},'spread_capture':'-2','inventory_mtm':'0','fees':'-1','net_pnl':'-1'}
+    assert '스프레드 기여' in result_message(summary)

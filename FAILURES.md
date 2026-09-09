@@ -2,6 +2,13 @@
 
 Nothing is silently excluded.
 
+## 2026-09-09 — Strict lab usability and integrity review
+
+- Review found that sensitivity silently used the last submitted scenario, and retained results across catalogue changes. Replaced this with explicit saved-run/default selection and dataset-scoped state.
+- A new regression test exposed that decimal strings `.5` and `0.50` have different historical configuration fingerprints. Duplicate sweep values now compare typed numeric values, without rewriting accepted provenance.
+- The local environment has no Streamlit installation. UI tests run in the existing Ubuntu web environment; no Windows research portability changes were made.
+- Ordinary run diagnostics overstated independent source verification. Their wording now distinguishes engine invariants from a separate source audit.
+
 ## 2026-09-09 — Recorded-arrival extension development
 
 - Updating Streamlit source while its Python process retained the old imported configuration module produced `ImportError: cannot import name 'STRINGS'`. Restarted only the identified lab process; subsequent fresh browser connections use the new modules. The collector was not restarted.

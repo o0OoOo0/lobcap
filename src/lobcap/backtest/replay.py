@@ -21,7 +21,19 @@ from lobcap.rebuild import OrderBook, first_top_mismatch
 
 
 def write_json(path, value):
-    Path(path).write_text(json.dumps(jsonable(value), sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    # Readers must see either the previous complete manifest or the new one.
+    import os
+    import tempfile
+    path=Path(path)
+    name=None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w",encoding="utf-8",dir=path.parent,
+                                         prefix=".json-",delete=False) as stream:
+            name=stream.name
+            stream.write(json.dumps(jsonable(value),sort_keys=True,indent=2)+"\n")
+        os.replace(name,path)
+    finally:
+        if name is not None and os.path.exists(name):os.unlink(name)
 
 
 def sample_fingerprint(files, sample):
