@@ -1,5 +1,9 @@
 # Market-Making Backtest Lab MVP v1
 
+Measured acceptance results and the task report are in
+[BACKTEST_MVP_COMPLETION.md](BACKTEST_MVP_COMPLETION.md), with compact
+[validation evidence](BACKTEST_MVP_VALIDATION.json).
+
 The lab replays one immutable Binance USD-M BTCUSDT sample under three simple
 market-making strategies, configurable L2 fill assumptions, entry/cancel
 latencies, and signed maker fees. It is a diagnostic research demo, not a

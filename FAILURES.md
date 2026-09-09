@@ -41,6 +41,11 @@ Final acceptance evidence is recorded in
 report constitutes acceptance. Full Linux regression at `ee839ac` passed:
 **95 tests in 49.23 seconds**.
 
+Final follow-up: **102 Linux tests passed in 47.57 seconds**. Acceptance 004
+passed 51 runs after revalidating completed groups. Maximum run time was
+33.274 seconds and worker peak RSS was 36.918 MiB. The independent audit
+verified 14,103 source-linked fills; final preparation was byte-identical.
+
 ## Entry template
 
 ### YYYY-MM-DDTHH:MM:SSZ — title
