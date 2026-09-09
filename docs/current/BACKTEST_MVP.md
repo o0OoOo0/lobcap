@@ -220,6 +220,10 @@ sign changes only bracket observed break-even regions.
 .venv/bin/python scripts/validate_backtest_bounded.py \
   --config configs/backtest/binance_demo.yaml \
   --output artifacts/backtest/validation/run-001
+.venv/bin/python scripts/audit_backtest_evidence.py \
+  --config configs/backtest/binance_demo.yaml \
+  --acceptance-report artifacts/backtest/validation/run-001/report.json \
+  --output artifacts/backtest/validation/run-001/source_audit.json
 ```
 
 The full research tests require the existing ignored Coinbase raw slice at
@@ -233,6 +237,9 @@ independently reconciles every ledger and fill inventory. It asserts a
 60-second prepared-run limit and 512 MiB process peak RSS limit on Linux,
 and verifies the collector stays active. Detailed evidence is preserved in
 the requested output directory. Failures retain their reports.
+The independent source audit checks every fill against normalized public
+trade side, timestamp, price and normal quantity; checks activation and
+termination bounds, signed fees, and visible end-of-sample censorship.
 
 Official references: [Binance book synchronization](https://developers.binance.com/en/docs/products/derivatives-trading-usds-futures/websocket-market-streams/How-to-manage-a-local-order-book-correctly),
 [depth fields](https://developers.binance.info/en/docs/catalog/core-trading-derivatives-trading-usd-s-m-futures/api/ws-streams/public),
