@@ -201,3 +201,23 @@ def test_final_known_book_preserves_receipt_sequence_and_exchange_age(monkeypatc
     assert dict(final["bids"]) == {D(98): D(1)}
     assert final["time_ns"] == 2
     assert dict(final_book("sample", 4, "exchange")["bids"]) == {D(98): D(1)}
+
+
+def test_identical_one_lot_execution_explains_unexercised_partial_policy(tmp_path):
+    a, b = fixture(tmp_path / "a"), fixture(tmp_path / "b", "b")
+    for path, policy in ((a, "keep_remaining"), (b, "reset_target")):
+        manifest = json.loads((path / "run_manifest.json").read_text(encoding="utf-8"))
+        manifest["resolved_config"].update(size=".001", partial_fill_policy=policy)
+        write_json(path / "run_manifest.json", manifest)
+    result = compare_runs(a, b)
+    assert result["guard"]["comparable"]
+    relationship = result["behavior_relationship"]
+    assert relationship["desired_identical"] and relationship["actions_identical"]
+    assert relationship["partial_fill_policy_exercised"] is False
+    assert any("One-lot" in warning for warning in result["warnings"])
+
+
+def test_legacy_trace_absence_does_not_claim_identical_behavior(tmp_path):
+    result = compare_runs(fixture(tmp_path / "a", trace=False), fixture(tmp_path / "b", "b", trace=False))
+    assert result["behavior_relationship"]["desired_identical"] is None
+    assert result["behavior_relationship"]["actions_identical"] is None

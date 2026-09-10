@@ -4,8 +4,9 @@ import json
 from pathlib import Path
 import subprocess
 from decimal import Decimal
+from dataclasses import replace
 
-from lobcap.config.backtest import load_backtest_config
+from lobcap.config.backtest import load_backtest_config,variant
 from lobcap.backtest.diagnostics import read_rows
 from lobcap.backtest.replay import write_json
 from lobcap.backtest.workspace.contracts import StrategyDraft,fingerprint,config_from_run_spec
@@ -75,7 +76,26 @@ def main():
         for comparison in report['behavior_comparisons'].values():
             assert comparison['guard']['comparable'],comparison['guard']
             assert comparison['pnl_delta_identity']['reconciled']
-        assert report['behavior_comparisons']['E2']['first_action_divergence'] is not None
+        # At one lot there cannot be a sub-lot partial fill. Equality is evidence,
+        # not a reason to silently alter the baseline experiment.
+        report['one_lot_policy_note']='E1/E2 may have identical behavior because fills are integer lots.'
+        partial_draft=replace(draft,config=variant(config,strategy='join_bbo',size='0.003',partial_fill_policy='keep_remaining'),
+            name='3 lot 부분 체결 정책 확인',hypothesis='부분 체결이 가능한 3 lot에서 잔량 유지와 재설정은 다른 주문 행동을 만드는가?')
+        partial_spec=build_experiment(partial_draft,'strategy_compare','partial_fill_policy',
+            ['keep_remaining','reset_target'],sample_path=sample)
+        partial_job=store.submit(partial_spec,'three-lot-policy-acceptance')
+        run_pending(store.root,wait_for_lock=True)
+        partial_state=store.get_job(partial_job)
+        assert partial_state['status']=='COMPLETED',partial_state
+        partial_paths=[]
+        for row in partial_spec['runs']:
+            path=Path(partial_state['completed'][row['variant_id']]['output_dir'])
+            audit_run(path,config_from_run_spec(row),sample)
+            assert explain_run(path)['identity']['reconciled']
+            partial_paths.append(path)
+        report['partial_policy_experiment']={'job_id':partial_job,'paths':[str(p) for p in partial_paths],
+            'comparison':compare_runs(*partial_paths)}
+        assert report['partial_policy_experiment']['comparison']['first_action_divergence'] is not None
         cloned=clone_for_next(first['E1']['output_dir'],'부분 체결 후 재설정만 바꾸면 어떤 차이가 생기는가?',{'partial_fill_policy':'reset_target'})
         assert cloned.parent_run_id==Path(first['E1']['output_dir']).name
         save_conclusion(store,cloned.parent_run_id,'needs_more_data','행동 차이를 확인했고 손익 기여는 표본 내 설명이다.',cloned.hypothesis,{'partial_fill_policy':'reset_target'})

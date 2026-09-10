@@ -210,14 +210,30 @@ def compare_runs(left_dir, right_dir, allow_scenario_change=False):
     warnings = left["warnings"] + right["warnings"]
     if not traces:
         warnings.append("Legacy decision traces missing: earliest behavioral divergence cannot be reconstructed.")
+    desired_divergence = _first_divergence(left_dir, right_dir, "risk_limited_target") if traces else None
+    action_divergence = _first_divergence(left_dir, right_dir, "actions") if traces else None
+    relationship = {"desired_identical": desired_divergence is None if traces else None,
+                    "actions_identical": action_divergence is None if traces else None,
+                    "partial_fill_policy_exercised": None, "explanation": None}
+    if traces and desired_divergence is None and action_divergence is None:
+        relationship["explanation"] = "Observed desired quotes and actions are identical on this sample; different settings did not establish a distinct strategy behavior."
+        warnings.append(relationship["explanation"])
+        a, b = run_record(left_dir)["config"], run_record(right_dir)["config"]
+        changed = {key for key in set(a) | set(b) if a.get(key) != b.get(key)}
+        one_lot = all(config.get("size") is not None and config.get("instrument", {}).get("lot") is not None
+                      and D(str(config["size"])) == D(str(config["instrument"]["lot"])) for config in (a, b))
+        if changed == {"partial_fill_policy"} and one_lot:
+            relationship["partial_fill_policy_exercised"] = False
+            warnings.append("One-lot order size cannot partially fill under integer-lot execution. The changed partial-fill policy was not exercised; use a separately labeled larger-size experiment to test it.")
     return {"guard": guard, "contribution_rows": rows,
             "pnl_delta_identity": {"net_delta": str(delta) if delta is not None else None,
                                    "spread_delta": rows[0]["delta"], "inventory_mtm_delta": rows[1]["delta"],
                                    "fee_contribution_delta": rows[2]["delta"],
                                    "residual": str(residual) if residual is not None else None,
                                    "reconciled": residual == ZERO if residual is not None else False},
-            "first_desired_divergence": _first_divergence(left_dir, right_dir, "risk_limited_target") if traces else None,
-            "first_action_divergence": _first_divergence(left_dir, right_dir, "actions") if traces else None,
+            "first_desired_divergence": desired_divergence,
+            "first_action_divergence": action_divergence,
+            "behavior_relationship": relationship,
             "warnings": warnings}
 
 
