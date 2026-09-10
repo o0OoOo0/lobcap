@@ -1,6 +1,7 @@
 """Single-threaded exchange-time scheduler with explicit market-first ties."""
 from __future__ import annotations
 
+from dataclasses import replace
 from decimal import Decimal, localcontext
 
 from lobcap.backtest.execution import Execution
@@ -82,6 +83,7 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
             # Every market event at this timestamp precedes every internal action.
             while event is not None and event.time_ns==now:
                 book.apply(event)
+                features.observe_trade(event, now)
                 if portfolio is not None:
                     change=portfolio.mark(book.mid,now,event.replay_index)
                     if change is not None:metrics.on_mark(*change)
@@ -94,12 +96,16 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
                 portfolio=Portfolio(config,book.mid,sink)
                 portfolio.mark(book.mid,now,0)
             market=book.view(now,features.volatility)
-            execution.advance(now,market,book)
+            # Age requests precede decisions, but their newly-created
+            # zero-delay cancellations take effect in the post-decision drain.
+            execution.advance(now,market,book,defer_new_cancels=True)
             if now==next_second:
                 features.on_second(now,book.mid,market.book_age_ns<=config.stale_book_ms*1_000_000)
                 market=book.view(now,features.volatility)
                 next_second+=NS
             if now==next_decision:
+                flow, volume = features.flow(now)
+                market = replace(market, trade_imbalance=flow, trade_volume=volume)
                 view=PortfolioView(portfolio.cash,portfolio.inventory,portfolio.equity,
                     execution.exposure("buy"),execution.exposure("sell"),
                     tuple((s,o.status) for s,o in sorted(execution.orders.items())))
@@ -108,10 +114,10 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
                 decision=decision_context(config,market,view,desired)
                 sink.write("decisions",decision)
                 execution.reconcile(desired,now,decision)
-                execution.advance(now,market,book)
-                execution.assert_inventory(portfolio.inventory)
                 next_decision+=config.decision_ms*1_000_000
+            execution.advance(now,market,book)
             if portfolio is not None:
+                execution.assert_inventory(portfolio.inventory)
                 metrics.observe(now,portfolio,book,features.volatility)
             previous_time=now
         if portfolio is None:raise ValueError("sample has no trading interval")

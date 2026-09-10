@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import heapq
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import Decimal, ROUND_FLOOR
 
 from lobcap.backtest.types import (OrderRecord, FillEvent, PortfolioView, ZERO, jsonable)
@@ -25,6 +25,7 @@ class _Order:
     terminal_ns: int | None = None
     reason: str = ""
     queue: Decimal = ZERO
+    eligible_trade_volume: Decimal = ZERO
     terminal: bool = False
 
     def record(self):
@@ -40,7 +41,6 @@ class Execution:
         self.ordinal = self.next_id = 0
         self.replacement_wait = {}
         self.stats = Counter()
-        self.enforce_lots = False  # Research policy opts in; preserve legacy queue semantics.
         self.stats.update({k:ZERO for k in ("activated_quantity","filled_quantity","skipped_nontrade_quantity","order_lifetime_ns")})
 
     def _schedule(self, t, kind, order):
@@ -91,9 +91,18 @@ class Execution:
                 self.stats["full_orders" if order.remaining==0 else "partial_orders"] += 1
         self._emit(order,now,"terminal")
 
-    def advance(self, now, market, book):
+    def advance(self, now, market, book, *, defer_new_cancels=False):
+        # Age requests are issued before strategy evaluation, but their newly
+        # scheduled zero-delay effects belong to the post-decision drain. Keep
+        # previously scheduled cancel/entry deadlines eligible in this pass.
+        initial_ordinal=self.ordinal
+        deferred=[]
         while self.heap and self.heap[0][0] <= now:
-            t,_,_,_,_,kind,order=heapq.heappop(self.heap)
+            item=heapq.heappop(self.heap)
+            t,_,_,_,ordinal,kind,order=item
+            if defer_new_cancels and kind=="cancel" and ordinal>initial_ordinal:
+                deferred.append(item)
+                continue
             if order.terminal:
                 if kind=="cancel" and order.status=="FILLED":
                     self.stats["cancel_after_fill_noop"] += 1
@@ -120,6 +129,8 @@ class Execution:
                     self._schedule(t+self.config.max_age_ms*1_000_000,"age",order)
             else:
                 self.request_cancel(order,t,"max_order_age")
+        for item in deferred:
+            heapq.heappush(self.heap,item)
 
     def on_event(self, event):
         fills=[]
@@ -138,26 +149,43 @@ class Execution:
             executable=ZERO
             if tr is not None and tr.maker_side==side and (tr.price<=order.price if side=="buy" else tr.price>=order.price):
                 executable=tr.size
-            transition=advance_queue(order.queue,order.remaining,nontrade,executable,self.config.model)
-            cap=executable*self.config.max_trade_participation
-            if self.config.max_trade_participation<1:
-                cap=(cap/self.config.instrument.lot).to_integral_value(rounding=ROUND_FLOOR)*self.config.instrument.lot
+            # Strict price penetration is evidence that the modeled queue at the
+            # better price was traversed. It is NOT unlimited own liquidity:
+            # fills still consume at most this event's normal trade volume.
+            through=bool(executable and tr.price!=order.price)
+            bypass=order.queue if through else ZERO
+            budget_before=max(ZERO,order.eligible_trade_volume*self.config.max_trade_participation
+                              -(order.quantity-order.remaining))
+            order.eligible_trade_volume+=executable
+            transition=advance_queue(ZERO if through else order.queue,order.remaining,nontrade,executable,self.config.model)
+            raw_fill=transition.filled
+            # Causal order-lifetime capacity retains fractional lot entitlement.
+            # It never transfers to a replacement and cannot create a fill on a
+            # later depth-only event. Packet boundaries may still change timing.
+            budget=max(ZERO,order.eligible_trade_volume*self.config.max_trade_participation
+                       -(order.quantity-order.remaining))
+            cap=min(executable,budget)
+            capped=rounded_off=ZERO
             if transition.filled>cap:
-                from dataclasses import replace
-                self.stats["participation_capped_quantity"]+=transition.filled-cap
+                capped=transition.filled-cap
+                self.stats["participation_capped_quantity"]+=capped
                 transition=replace(transition,filled=cap,remaining=order.remaining-cap)
-            if self.enforce_lots:
-                rounded=(transition.filled/self.config.instrument.lot).to_integral_value(rounding=ROUND_FLOOR)*self.config.instrument.lot
-                if rounded!=transition.filled:
-                    from dataclasses import replace
-                    self.stats["lot_rounded_quantity"]+=transition.filled-rounded
-                    transition=replace(transition,filled=rounded,remaining=order.remaining-rounded)
+            rounded=(transition.filled/self.config.instrument.lot).to_integral_value(rounding=ROUND_FLOOR)*self.config.instrument.lot
+            if rounded!=transition.filled:
+                rounded_off=transition.filled-rounded
+                self.stats["lot_rounded_quantity"]+=rounded_off
+                transition=replace(transition,filled=rounded,remaining=order.remaining-rounded)
+            self.stats["trade_through_queue_bypass"]+=bypass
             if nontrade or executable:
                 self.sink.write("execution", {"time_ns":event.time_ns,"replay_index":event.replay_index,
                     "order_id":order.order_id,"queue_before":order.queue,"queue_after":transition.queue,
                     "remaining_before":order.remaining,"remaining_after":transition.remaining,
                     "nontrade_depletion":nontrade,"nontrade_reduction":transition.nontrade_reduction,
                     "trade_volume":executable,"trade_queue_reduction":transition.trade_reduction,
+                    "trade_through_queue_bypass":bypass,"eligible_trade_volume":order.eligible_trade_volume,
+                    "participation_budget_before":budget_before,"participation_budget_after":budget-transition.filled,
+                    "fill_before_limits":raw_fill,"participation_capped_quantity":capped,
+                    "lot_rounded_quantity":rounded_off,
                     "fill_quantity":transition.filled,"source_refs":event.source_refs})
             order.queue,order.remaining=transition.queue,transition.remaining
             if transition.filled:

@@ -52,13 +52,15 @@ def test_research_lot_rounding_does_not_change_legacy_queue_arithmetic():
     from test_execution import market
     c=config(alpha='0',stale_book_ms=10000)
     book=MarketBook(initial())
-    for strict,expected in ((False,D('.0005')),(True,D(0))):
-        engine=Execution(c,MemorySink());engine.enforce_lots=strict
-        engine.submit(Quote('buy',D(100),D('.001')),0,{})
-        engine.advance(0,market(0),book)
-        engine.orders['buy'].queue=D('.0005')
-        fills=engine.on_event(trade(1,1,size='.001'))
-        assert sum((f.quantity for f in fills),D(0))==expected
+    from lobcap.l2.fill_models import advance_queue
+    # Research estimates retain continuous quantities; executable own fills do not.
+    assert advance_queue(D('.0005'),D('.001'),D(0),D('.001'),c.model).filled==D('.0005')
+    engine=Execution(c,MemorySink())
+    engine.submit(Quote('buy',D(100),D('.001')),0,{})
+    engine.advance(0,market(0),book)
+    engine.orders['buy'].queue=D('.0005')
+    assert not engine.on_event(trade(1,1,size='.001'))
+    assert engine.orders['buy'].remaining==D('.001')
 
 
 def test_hedge_waits_for_terminal_and_executes_depth_with_delay_and_no_reuse():

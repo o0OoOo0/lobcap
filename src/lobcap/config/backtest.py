@@ -66,7 +66,9 @@ class BacktestConfig:
                          interpretation="uncalibrated depletion assumption")
 
     def resolved(self):
+        from lobcap.backtest.types import EXECUTION_CONTRACT_VERSION
         row = jsonable(self)
+        row["execution_contract_version"] = EXECUTION_CONTRACT_VERSION
         for key in ("config_path", "raw_file_sha256", "canonical_config_sha256", "output_path", "data_root"):
             row.pop(key)
         # Preserve established identities when the new language is inactive/default.

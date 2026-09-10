@@ -127,3 +127,19 @@ keep / exclude interval / exclude day
 - The first cancellation integration trial stopped during warmup. Strengthened the script to wait until trading and require non-null inventory; rerun passed with -0.004 BTC retained and no liquidation.
 - Initial commit attempts failed because this worktree had no Git author identity. Used the repository's established recent author identity as command-local Git options; global configuration was not changed.
 - Temporary staging-app cleanup first failed because PowerShell expanded a remote readlink substitution locally. Reissued with a literal single-quoted remote command, checked the exact staging PID cwd and stopped only the temporary 8502 app. Release health and collector stayed active.
+
+### 2026-09-10 — HftBacktest documentation review tooling
+- Read-only broad rg encountered existing temporary-directory ACL denials; narrowed searches to the active checkout. A literal wildcard path also caused Windows OS error 123; used directory searches with -g.
+- Windows default python resolved the Store alias. Used the bundled Python runtime. BeautifulSoup was unavailable; the crawler was rewritten with the standard library.
+- The documentation crawl wrote all 45 successful records before console title output hit cp949 UnicodeEncodeError. Verified the persisted UTF-8 inventory instead; no downloaded page was lost or excluded.
+- A guessed contents.html URL could not be opened. Crawled actual linked latest documentation instead. No engine tests, market-data changes or service operations were performed in this review.
+
+### 2026-09-10 — LP engine hardening v2 validation
+- Default sandbox SSH resolved a deny shim; used the approved escalated SSH tool path. Read attempts for guessed workspace/ui.py, test_workspace.py and conftest.py found no file; located actual modules with rg.
+- Bundled Python lacked pytest. Focused Windows tests used the existing venv but temporary-directory ACL errors prevented tmp_path cases; authoritative validation moved to Ubuntu without research portability edits.
+- First isolated Ubuntu suite: 235 passed, 3 failed, 2 errors. Four failures/errors required frozen virtual_truth fixtures; one mock run lacked the newly required manifest. Updated the mock and supplied existing immutable fixtures.
+- Second suite: 237 passed, 1 failed, 2 errors. Symlink-resolved truth paths violated the research repository-relative provenance contract; replaced only the staging symlink with a copied fixture. The affected 25 research tests then passed.
+- A transient local patch indentation error in the test mock was corrected before transfer/testing.
+- Initial external HftBacktest 2.4.4 comparison failed two partial-fill position cases. Added separate order-leaves evidence; order execution matches, while position remains zero. Retain ACCOUNTING_DISCREPANCY, not parity PASS.
+- Validation agent source URL guesses returned 404/safe-open errors; used actual linked published source. No source issue was hidden or converted to a passing external comparison.
+- A read-only glob for staging data paths matched no directory; existing sample links were found under artifacts/backtest instead.

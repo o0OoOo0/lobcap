@@ -16,6 +16,7 @@ def comparison_spec(rows, jobs, mode, scenario, strategy_id, minimum, sort, axes
     if len({r['sample_sha256'] for r in rows}) != 1:
         raise ValueError("동일 표본의 결과만 저장할 수 있습니다.")
     return {"schema_version":1, "type":"ComparisonSpec", "job_ids":list(jobs),
+            "execution_contract_version":rows[0].get('execution_contract_version','legacy-v1'),
             "sample_sha256":rows[0]['sample_sha256'], "mode":mode, "scenario_hash":scenario,
             "strategy_id":strategy_id, "minimum_filled_orders":int(minimum), "sort":sort,
             "sort_ascending":sort in ('fees','max_drawdown'), "heatmap_axes":axes,
@@ -67,6 +68,11 @@ def render_results(store):
     if not rows:
         st.info("아직 정상 완료된 실행이 없습니다. 진행 중·중단·실패 결과는 정상 성과 순위에 섞지 않습니다.")
         return
+    versions=sorted({r.get('execution_contract_version','legacy-v1') for r in rows})
+    if len(versions)>1:
+        engine_version=st.selectbox('체결 엔진 버전',versions,index=versions.index(restore['execution_contract_version']) if restore.get('execution_contract_version') in versions else 0)
+        rows=[r for r in rows if r.get('execution_contract_version','legacy-v1')==engine_version]
+        st.caption('체결 규칙이 바뀐 이전 결과는 별도로 보존하며 같은 순위에 섞지 않습니다.')
     modes = ["같은 체결 가정에서 전략 비교", "같은 전략의 비용·체결 민감도"]
     mode = st.radio("비교 목적", modes, index=modes.index(restore['mode']) if restore.get('mode') in modes else 0, horizontal=True)
     scenario = None
@@ -157,6 +163,22 @@ def render_results(store):
         st.write("기준 → 선택한 실행의 설정 차이")
         st.json(setting_diff(baseline['submitted_settings'], row['submitted_settings']))
     path = Path(row["output_dir"])
+    diagnostic_file=path/'diagnostics.json'
+    if diagnostic_file.is_file():
+        diagnostic=read_json(diagnostic_file)
+        with st.expander('체결 규칙과 전략 경로 진단',expanded=True):
+            st.write('체결 모델 버전:',row.get('execution_contract_version','legacy-v1'))
+            if row.get('execution_contract_version')=='binance-own-orders-v2':
+                st.caption('가격 관통은 추정 대기량을 해소하지만 관측 거래량 이상을 체결시키지 않습니다. 참여율은 주문별 누적 예산이며 실제 시장 충격 측정값이 아닙니다.')
+            else:
+                st.caption('이전 체결 규칙으로 생성된 결과입니다. 새 규칙 적용은 복제 후 재실행해야 합니다.')
+            quote=diagnostic.get('quote_research',{})
+            st.json(quote)
+            digest=quote.get('quote_path_sha256')
+            matches=[r['run_id'] for r in filtered if digest and r.get('quote_path_sha256')==digest]
+            if len(matches)>1:
+                st.info(f'이 표본에서 동일한 희망 호가 경로를 만든 실행 {len(matches)}개입니다. 파라미터 수와 실질적으로 다른 전략 수를 구분하세요.')
+            st.json(diagnostic.get('execution_contract',{}))
     with st.expander("정확한 설정 · 진단", expanded=True):
         st.json(row)
     series_file = path / "timeseries.csv.gz"
@@ -175,7 +197,7 @@ def render_results(store):
         st.success("전략 편집에 원본 설정을 그대로 가져왔습니다. 수정 후 새 초안을 저장하세요.")
         st.rerun()
     with st.expander("원장 · 주문 · 체결 근거 다운로드"):
-        for name in ("run_manifest.json","config.yaml","summary.json","invariants.json","decisions.jsonl.gz","orders.jsonl.gz","fills.jsonl.gz","ledger.jsonl.gz","markouts.csv.gz","risk.jsonl.gz"):
+        for name in ("run_manifest.json","config.yaml","summary.json","invariants.json","diagnostics.json","execution.jsonl.gz","decisions.jsonl.gz","orders.jsonl.gz","fills.jsonl.gz","ledger.jsonl.gz","markouts.csv.gz","risk.jsonl.gz"):
             file = path / name
             if file.is_file():
                 st.download_button(name, file.read_bytes(), name, key="ws_evidence_"+selected_id+name)

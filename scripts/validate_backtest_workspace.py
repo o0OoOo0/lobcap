@@ -4,13 +4,13 @@ Use --mode smoke for one grid point and one expression, or --mode matrix for
 the 3x3 inventory grid plus expression. Both repeat in reverse submission order.
 """
 import argparse
-from collections import defaultdict
 from decimal import Decimal as D, localcontext
 import json
 from pathlib import Path
 import subprocess
 
 from lobcap.backtest.diagnostics import read_rows
+from lobcap.backtest.evidence_audit import MakerCapacityAudit
 from lobcap.backtest.replay import iter_events, load_sample, write_json
 from lobcap.backtest.workspace.contracts import StrategyDraft, config_from_run_spec
 from lobcap.backtest.workspace.resolve import resolve_experiment
@@ -26,7 +26,8 @@ def audit_run(folder, config, sample):
     public = {e.replay_index: e for e in iter_events(sample)}
     orders = {r['order_id']: r for r in read_rows(folder / 'orders.jsonl.gz')}
     fills = list(read_rows(folder / 'fills.jsonl.gz'))
-    used = defaultdict(D)
+    capacity = MakerCapacityAudit(public.values(), config.max_trade_participation,
+        config.instrument.lot, manifest.get('resolved_config', {}).get('execution_contract_version'))
     with localcontext() as ctx:
         ctx.prec = 50
         cash, inventory, fees = config.initial_cash, config.initial_inventory, D(0)
@@ -47,8 +48,7 @@ def audit_run(folder, config, sample):
                 order = orders[fill['order_id']]
                 assert order['activation_ns'] < fill['time_ns'] <= order['terminal_ns']
                 assert price == D(order['price'])
-                used[source.replay_index] += quantity
-                assert used[source.replay_index] <= source.trade.size * config.max_trade_participation
+                capacity.check(fill, order, source)
             else:
                 assert fill['role'] == 'taker'
                 assert sign * inventory < 0 and quantity <= abs(inventory)

@@ -43,6 +43,7 @@ def test_draft_revision_idempotent_submit_cancel_resume_and_clone(sample, tmp_pa
         output = tmp_path/f"run{len(called)}"
         output.mkdir()
         (output/"summary.json").write_text('{"net_pnl":"1"}')
+        (output/"run_manifest.json").write_text(json.dumps({"resolved_config":config.resolved()}))
         if len(called) == 1:
             store.request_cancel(job)
         return SimpleNamespace(output_dir=output, digest=str(config.half_spread_ticks), summary={"net_pnl": "1"})

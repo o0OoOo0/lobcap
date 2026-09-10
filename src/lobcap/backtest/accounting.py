@@ -50,6 +50,14 @@ class Portfolio:
         return None
 
     def apply_fill(self,fill,market):
+        # Reject malformed execution evidence before changing either balances
+        # or the audit stream. A bad side must never silently become a sell.
+        if fill.side not in {"buy", "sell"}:
+            raise ValueError("unknown execution side")
+        if not fill.price.is_finite() or fill.price <= ZERO:
+            raise ValueError("execution price must be finite and positive")
+        if not fill.quantity.is_finite() or fill.quantity <= ZERO:
+            raise ValueError("execution quantity must be finite and positive")
         sign=1 if fill.side=="buy" else -1
         before_inventory=self.inventory
         if fill.role not in {"maker", "taker"}:

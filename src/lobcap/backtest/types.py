@@ -12,6 +12,7 @@ ZERO = Decimal(0)
 NS = 1_000_000_000
 NORMALIZATION_VERSION = "binance-net-depletion-v1"
 ARRIVAL_NORMALIZATION_VERSION = "binance-net-depletion-arrival-v2"
+EXECUTION_CONTRACT_VERSION = "binance-own-orders-v2"
 ASSUMPTIONS = (
     "Exchange-time simulation; zero feed and fill-notification latency.",
     "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",

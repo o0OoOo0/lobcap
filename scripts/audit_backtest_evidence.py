@@ -3,11 +3,11 @@ import argparse
 import csv
 import gzip
 import json
-from collections import defaultdict
 from decimal import Decimal
 from pathlib import Path
 
 from lobcap.backtest.replay import iter_events, load_sample, write_json
+from lobcap.backtest.evidence_audit import MakerCapacityAudit
 from lobcap.config.backtest import load_backtest_config
 from lobcap.config.common import sha256_file
 from lobcap.config.experiment import ROOT
@@ -47,7 +47,9 @@ def audit(config,report_path):
         order_states={}
         for order in rows(path/"orders.jsonl.gz"):
             order_states[order["order_id"]]=order
-        used=defaultdict(Decimal)
+        resolved=manifest['resolved_config']
+        capacity=MakerCapacityAudit(trades.values(), resolved.get('max_trade_participation','1'),
+            resolved['instrument']['lot'], resolved.get('execution_contract_version'))
         for fill in rows(path/"fills.jsonl.gz"):
             source=trades[fill["replay_index"]]
             quantity,price=Decimal(fill["quantity"]),Decimal(fill["price"])
@@ -60,9 +62,7 @@ def audit(config,report_path):
             assert price==Decimal(state["price"])
             expected_fee=price*quantity*Decimal(manifest["resolved_config"]["maker_bps"])/10000
             assert Decimal(fill["fee"])==expected_fee
-            used[source.replay_index]+=quantity
-            assert used[source.replay_index]<=source.trade.size, "historical trade volume reused"
-            assert used[source.replay_index]<=source.trade.size*Decimal(manifest['resolved_config'].get('max_trade_participation','1'))
+            capacity.check(fill,state,source)
             fill_count+=1
         if (path/"markouts.csv.gz").exists():
             with gzip.open(path/"markouts.csv.gz","rt") as stream:

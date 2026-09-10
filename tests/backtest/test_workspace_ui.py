@@ -50,9 +50,10 @@ def test_simple_axis_rejects_missing_values():
 
 def test_comparison_snapshot_keeps_explicit_filters_and_axes():
     import pytest
-    row = {'sample_sha256':'sample','run_id':'run1','variant_id':'v1','effective_hash':'exact'}
+    row = {'sample_sha256':'sample','run_id':'run1','variant_id':'v1','effective_hash':'exact','execution_contract_version':'binance-own-orders-v2'}
     spec = comparison_spec([row],['job1'],'strategy','scenario',None,3,'net_pnl',['x','y'],{'z':'2'},['run1'])
     assert spec['runs'] == [{'run_id':'run1','variant_id':'v1','effective_hash':'exact'}]
+    assert spec['execution_contract_version']=='binance-own-orders-v2'
     assert spec['fixed_axis_values'] == {'z':'2'} and spec['minimum_filled_orders'] == 3
     assert spec['overlay_run_ids'] == ['run1'] and spec['sort_ascending'] is False
     with pytest.raises(ValueError):

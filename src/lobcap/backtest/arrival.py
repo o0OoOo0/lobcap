@@ -59,7 +59,6 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
         if research_policy is not None:
             from lobcap.backtest.research_execution import ResearchControl
             control=ResearchControl(config,research_policy,sink)
-            execution.enforce_lots=True
         features=Features()
         parameters=StrategyParameters.from_config(config)
         metrics=Metrics(config,sink)

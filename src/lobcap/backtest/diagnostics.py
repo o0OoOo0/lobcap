@@ -1,11 +1,35 @@
 """Bounded post-run explanations; diagnostic costs never silently alter the ledger."""
 import gzip
+import hashlib
 import json
 from collections import Counter
 from decimal import Decimal, localcontext
 
 from lobcap.backtest.replay import write_json
-from lobcap.backtest.types import ZERO
+from lobcap.backtest.types import ZERO, EXECUTION_CONTRACT_VERSION
+
+
+def quote_path_diagnostics(rows):
+    """Compare actual desired quotes, excluding strategy names and explanations."""
+    digest=hashlib.sha256()
+    count=changed=at_bbo=quoted_sides=0
+    previous=None
+    for row in rows:
+        quotes=tuple(row.get(k) for k in ("buy_price","buy_quantity","sell_price","sell_quantity"))
+        # Normalize Decimal spelling so economically equal quotes have equal IDs.
+        quotes=tuple(format(Decimal(str(v)).normalize(),"f") if v is not None else None for v in quotes)
+        digest.update((json.dumps([row["time_ns"],*quotes],separators=(",", ":"))+"\n").encode())
+        count+=1
+        changed+=int(previous is not None and previous!=quotes)
+        previous=quotes
+        for price,bbo in (("buy_price","bid"),("sell_price","ask")):
+            if row.get(price) is not None:
+                quoted_sides+=1
+                at_bbo+=int(Decimal(str(row[price]))==Decimal(str(row[bbo])))
+    return {"quote_path_sha256":digest.hexdigest(),"decision_count":count,
+            "quote_changes":changed,"quoted_sides":quoted_sides,"at_bbo_sides":at_bbo,
+            "at_bbo_fraction":Decimal(at_bbo)/quoted_sides if quoted_sides else None,
+            "note":"Identical desired-quote paths on this sample are not independent strategies. At-BBO share is not a measured clamp rate."}
 
 
 def read_rows(path):
@@ -36,6 +60,12 @@ def build_diagnostics(path,config):
         driver=min(components,key=components.get) if pnl["net_pnl"]<0 else ("positive_sample_result" if pnl["net_pnl"]>0 else "zero_sample_result")
         stress=notional*config.impact_stress_bps/10000
         output={"status":"PASS","clock_mode":config.clock_mode,"report_ms":config.report_ms,
+            "execution_contract_version":EXECUTION_CONTRACT_VERSION,
+            "execution_contract":{"own_fill_lots":"instrument lot on every path",
+                "trade_through":"clear inferred ahead queue; cap fills by current normal trade volume",
+                "participation":"cumulative eligible volume per own order; no transfer to replacement",
+                "bbo_only_fill":False,"empirical_fill_calibration":False},
+            "quote_research":quote_path_diagnostics(read_rows(path/"decisions.jsonl.gz")),
             "primary_loss_component":driver,"pnl_components":pnl,"filled_quantity":quantity,
             "turnover_notional":notional,"negative_capture_fills":negative_capture_count,
             "negative_capture_quantity":negative_capture_quantity,"fill_reasons":dict(fill_reasons),
