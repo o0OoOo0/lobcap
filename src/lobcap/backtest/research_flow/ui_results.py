@@ -1,5 +1,6 @@
 """Unified legacy/current evidence, explanation, and baseline comparison."""
 from decimal import Decimal
+from datetime import datetime, timezone
 from pathlib import Path
 import json
 
@@ -8,6 +9,68 @@ from .ui import update_context, navigate, active_fields
 
 def _table(rows):
     return [{k:json.dumps(v,ensure_ascii=False,default=str) if isinstance(v,(dict,list,tuple)) else v for k,v in r.items()} for r in rows]
+
+
+def utc_display(ns):
+    if ns is None: return '미기록'
+    seconds,remainder=divmod(int(ns),1_000_000_000)
+    return datetime.fromtimestamp(seconds,timezone.utc).strftime('%Y-%m-%d %H:%M:%S')+f'.{remainder//1_000_000:03d} UTC'
+
+
+def number_display(value,places=6,percent=False):
+    if value is None: return '미기록'
+    value=Decimal(str(value))*(100 if percent else 1)
+    return f'{value:.{places}f}'+('%' if percent else '')
+
+
+def compact_timeline(rows,order_id):
+    """Display only the selected order; raw evidence remains in the audit view."""
+    channels={'decision_traces':'전략 결정','orders':'주문 상태','execution':'체결 모델 관측','fills':'체결·회계','timeline':'시계·통보'}
+    events={'submit':'신규 제출','retain':'유지','cancel':'취소 결정','activate':'거래소 활성',
+            'terminal':'주문 종료','partial_fill':'부분 체결','full_fill':'전체 체결',
+            'cancel_request':'취소 요청','submit_send':'제출 전송','cancel_send':'취소 전송',
+            'fill_received':'체결 통보 수신','activate_received':'활성 통보 수신',
+            'terminal_received':'종료 통보 수신','none':'행동 없음'}
+    sides={r.get('order_id'):r.get('side') for r in rows if r.get('side')}
+    out=[]
+    for row in rows:
+        channel=row.get('channel','')
+        if channel=='decision_traces':
+            records=[]
+            for action in row.get('actions',[]):
+                if action.get('order_id')!=order_id: continue
+                side=action.get('side')
+                quote=(row.get('risk_limited_target') or {}).get('bid' if side=='buy' else 'ask') or {}
+                records.append({**action,'price':quote.get('price'),'display_quantity':quote.get('quantity'),
+                                'quantity_kind':'목표','decision_id':row.get('decision_id')})
+        else:
+            if row.get('order_id')!=order_id: continue
+            quantity=row.get('fill_quantity') if channel=='execution' else row.get('quantity') if channel=='fills' or row.get('event') in {'fill_received','submit_send'} else row.get('remaining',row.get('remaining_after',row.get('remaining_known')))
+            kind='제출' if row.get('event')=='submit_send' else '체결' if channel in {'execution','fills'} or row.get('event')=='fill_received' else '잔량'
+            records=[{**row,'display_quantity':quantity,'quantity_kind':kind}]
+        for record in records:
+            action=record.get('action',record.get('event','관측'))
+            side=record.get('side') or sides.get(order_id)
+            out.append({'시각 (UTC, ms)':utc_display(row.get('time_ns')),
+                        '기록 의미':channels.get(channel,channel),'행동·이벤트':events.get(action,action),
+                        '방향':{'buy':'매수','sell':'매도'}.get(side,'미기록'),
+                        '가격 USDT':record.get('price') or '미기록',
+                        '수량 BTC':number_display(record.get('display_quantity')),
+                        '수량 의미':record['quantity_kind'],'사유':record.get('reason') or '미기록',
+                        '결정 ID':record.get('decision_id') or row.get('decision_id') or '미기록'})
+    return out
+
+
+def representative_table(rows):
+    names={'favorable_spread_at_fill':'체결 시점 기여가 유리한 사례','adverse_spread_at_fill':'체결 시점 기여가 불리한 사례',
+           'cancel_pending_fill':'취소 대기 중 체결','rejected_order':'거절 주문','unfilled_terminal_order':'미체결 종료',
+           'largest_absolute_spread_at_fill':'체결 시점 절대 기여가 큰 사례'}
+    return [{'검토 사례':names.get(r.get('selection_reason'),r.get('selection_reason','체결 사례')),
+             '주문 ID':r['order_id'],'시각 (UTC, ms)':utc_display(r.get('time_ns')),
+             '방향':{'buy':'매수','sell':'매도'}.get(r.get('side'),'미기록'),
+             '기록 수량 BTC':number_display(r.get('quantity')),
+             '체결 시점 기여 USDT':number_display(r.get('spread_contribution')),
+             '수수료 USDT':number_display(r.get('fee')),'사유':r.get('reason') or '미기록'} for r in rows]
 
 
 def _label(row):
@@ -75,7 +138,7 @@ def render_results(store,base,context):
     if explanation['trace_status']=='legacy_missing': st.info('이전 실행: 정책 단계 추적 미기록. 당시 의도를 새로 추정해 채우지 않습니다.')
     st.write(f"종료 재고 {summary.get('ending_inventory','미기록')} BTC · 최대 재고 {summary.get('max_abs_inventory','미기록')} BTC · 최대 낙폭 {summary.get('max_drawdown','미기록')} USDT")
     exposure=explanation.get('inventory_exposure',{})
-    st.write(f"시간가중 절대 재고 {exposure.get('time_weighted_absolute_inventory','미기록')} BTC · 한도 80% 이상 체류 비율 {exposure.get('near_limit_time_fraction','미기록')}")
+    st.write(f"시간가중 절대 재고 {number_display(exposure.get('time_weighted_absolute_inventory'))} BTC · 한도 80% 이상 체류 비율 {number_display(exposure.get('near_limit_time_fraction'),2,percent=True)}")
     st.caption('샤프: 10분 표본에서는 정보 부족으로 제공하지 않습니다. 체결 이벤트 수는 독립 표본 수가 아닙니다.')
     with st.expander('가격 경로와 markout'):
         import pandas as pd
@@ -101,13 +164,15 @@ def render_results(store,base,context):
         st.caption('원래 체결·원장을 바꾸지 않는 즉시 정리 참고값입니다. 취소 경쟁과 주문 도착을 재생한 실제 청산 경로가 아닙니다.')
     st.subheader('대표 체결과 주문 한 건 추적')
     st.caption('검토 사례이며 전체 성과의 대표성 보장이 아닙니다. 미체결·거절 주문도 아래 목록에서 선택할 수 있습니다.')
-    st.dataframe(_table(explanation['representative_orders']),hide_index=True)
+    st.dataframe(representative_table(explanation['representative_orders']),hide_index=True)
     order_ids=list(dict.fromkeys(r['order_id'] for r in iter_rows(row['output_dir'],'orders') if r.get('order_id')))
     if order_ids:
         order_id=st.selectbox('추적할 주문',order_ids)
         detail=order_drilldown(row['output_dir'],order_id)
         st.caption('거래소 상태와 modeled queue는 사후 진단 전용입니다. 전략이 알던 값은 client/decision 기록으로 구분합니다.')
-        st.dataframe(_table(detail['timeline']),hide_index=True)
+        st.dataframe(compact_timeline(detail['timeline'],order_id),hide_index=True)
+        with st.expander('주문 시간축 원본 · 전체 필드'):
+            st.dataframe(_table(detail['timeline']),hide_index=True)
         if detail['truncated']: st.warning('화면 행 수 제한입니다. 전체 기록은 실행 근거에서 내려받으세요.')
         if detail['missing']: st.info('미기록: '+', '.join(detail['missing']))
     with st.expander('저장된 결정 시점 · 관측 입력과 정책 단계'):
@@ -116,7 +181,7 @@ def render_results(store,base,context):
             decisions.append(decision)
             if len(decisions)>=200: break
         if decisions:
-            index=st.selectbox('저장된 관측 시각',range(len(decisions)),format_func=lambda i:str(decisions[i]['time_ns']))
+            index=st.selectbox('저장된 관측 시각',range(len(decisions)),format_func=lambda i:utc_display(decisions[i]['time_ns']))
             decision=decisions[index]
             fields=('time_ns','bid','ask','mid','microprice','imbalance','volatility_bps','inventory','trade_imbalance','trade_volume','observed_book_exchange_ns','observed_book_receive_ns')
             st.dataframe(_table([{k:decision[k] for k in fields if k in decision}]),hide_index=True)
@@ -193,13 +258,25 @@ def render_comparison(store,base,context):
         st.warning('같은 조건의 직접 비교로 묶을 수 없습니다.')
         for reason in guard['reasons']: st.write(reason)
         return
+    if guard.get('code_compatibility'):
+        st.info('코드 버전은 다르지만 Git 차이를 확인해 화면·기록 읽기 변경만 있음을 확인했습니다. 실행·회계 코드는 같습니다.')
+        with st.expander('코드 호환성 검사 근거'): st.json(guard['code_compatibility'])
     result=compare_runs(left['output_dir'],right['output_dir'],allow_scenario_change=sensitivity)
     st.subheader('기준 대비 손익과 행동 변화')
     st.dataframe(_table(result['contribution_rows']),hide_index=True)
-    for warning in result['warnings']: st.info(warning)
+    relationship=result.get('behavior_relationship',{})
+    if relationship.get('desired_identical') is True and relationship.get('actions_identical') is True:
+        st.info('이번 표본에서는 희망 호가와 주문 행동이 같습니다.')
+    if relationship.get('partial_fill_policy_exercised') is False:
+        st.info('주문 수량이 1 lot라 부분 체결이 없어 잔량 정책 차이가 작동하지 않았습니다.')
+    for warning in result['warnings']:
+        if not warning.startswith(('Observed desired quotes and actions are identical','One-lot order size cannot partially fill')):
+            st.info(warning)
+    if result['warnings']:
+        with st.expander('비교 진단 원문'): st.json(result['warnings'])
     for key,title in [('first_desired_divergence','희망 호가의 첫 차이'),('first_action_divergence','주문 행동의 첫 차이')]:
         point=result[key]
-        st.write(title+(': '+str(point['time_ns'])+' ns' if point else ': 기록 범위에서 차이 없음 또는 미기록'))
+        st.write(title+(': '+utc_display(point['time_ns']) if point else ': 기록 범위에서 차이 없음 또는 미기록'))
         if point:
             with st.expander(title+' 근거'): st.dataframe(_table([{'방향':'기준','기록':point['left']},{'방향':'변경','기록':point['right']}]),hide_index=True)
     st.dataframe([{'지표':key,'기준':str(left['summary'].get(key,'미기록')),'변경':str(right['summary'].get(key,'미기록'))}

@@ -131,4 +131,27 @@ def test_legacy_result_without_workspace_jobs_or_trace_is_visible(sample):
     assert widget(app.selectbox,'실행 이력 · 이전 실행 포함').value=='legacy-readable'
     assert any('미기록' in item.value for item in app.info)
     assert any('Saved negative conclusion' in item.value for item in app.markdown)
+    compact=[table.value for table in app.dataframe if '행동·이벤트' in table.value.columns]
+    assert compact and '시각 (UTC, ms)' in compact[0].columns
+    assert not {'observable_market','observable_portfolio','actions','source_refs'} & set(compact[0].columns)
+    assert '주문 시간축 원본 · 전체 필드' in [e.label for e in app.expander]
     assert not store.list_jobs() and original==(legacy/'summary.json').read_bytes()
+
+
+def test_order_timeline_is_flat_selected_order_and_display_precision():
+    from lobcap.backtest.research_flow.ui_results import compact_timeline,number_display,utc_display,representative_table
+    trace={'channel':'decision_traces','time_ns':1_123_999_999,'decision_id':'decision-1',
+           'observable_market':{'private':'not a display column'},
+           'risk_limited_target':{'bid':{'price':'100','quantity':'.001'},'ask':{'price':'101','quantity':'.002'}},
+           'actions':[{'side':'buy','order_id':'buy-1','action':'submit','reason':'new_target'},
+                      {'side':'sell','order_id':'sell-2','action':'cancel','reason':'replace'}]}
+    rows=compact_timeline([trace],'buy-1')
+    assert len(rows)==1 and rows[0]['방향']=='매수'
+    assert rows[0]['행동·이벤트']=='신규 제출' and rows[0]['수량 의미']=='목표'
+    assert rows[0]['수량 BTC']=='0.001000' and rows[0]['결정 ID']=='decision-1'
+    assert utc_display(1_123_999_999)=='1970-01-01 00:00:01.123 UTC'
+    assert number_display('0.000123456789123456789')=='0.000123'
+    assert number_display('0.123456789',2,percent=True)=='12.35%'
+    assert number_display(None)=='미기록'
+    example=representative_table([{'order_id':'buy-1','selection_reason':'cancel_pending_fill','time_ns':0}])[0]
+    assert example['검토 사례']=='취소 대기 중 체결'

@@ -221,3 +221,24 @@ def test_legacy_trace_absence_does_not_claim_identical_behavior(tmp_path):
     result = compare_runs(fixture(tmp_path / "a", trace=False), fixture(tmp_path / "b", "b", trace=False))
     assert result["behavior_relationship"]["desired_identical"] is None
     assert result["behavior_relationship"]["actions_identical"] is None
+
+
+def test_code_compatibility_requires_actual_display_only_git_diff(monkeypatch,tmp_path):
+    from types import SimpleNamespace
+    from lobcap.backtest.research_flow import catalog
+    a=run_record(fixture(tmp_path/'a'))
+    b=deepcopy(a)
+    a['manifest']['code_version']='a'*40
+    b['manifest']['code_version']='b'*40
+    for changed,expected in [('src/lobcap/backtest/research_flow/ui_results.py\ndocs/current/example.md\n',True),
+                             ('src/lobcap/backtest/execution.py\n',False),
+                             ('src/lobcap/backtest/research_flow/analysis.py\n',False),
+                             ('pyproject.toml\n',False)]:
+        catalog.display_only_compatibility.cache_clear()
+        monkeypatch.setattr(catalog.subprocess,'run',lambda *args,**kwargs:SimpleNamespace(stdout=changed))
+        assert comparison_guard(a,b)['comparable'] is expected
+    catalog.display_only_compatibility.cache_clear()
+    def unavailable(*args,**kwargs):raise OSError('git objects unavailable')
+    monkeypatch.setattr(catalog.subprocess,'run',unavailable)
+    assert not comparison_guard(a,b)['comparable']
+    catalog.display_only_compatibility.cache_clear()

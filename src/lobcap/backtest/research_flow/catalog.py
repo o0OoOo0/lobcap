@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from functools import lru_cache
+import re
+import subprocess
 
 
 def read_object(path):
@@ -139,8 +142,37 @@ def index_runs(output_root, workspace_root=None):
     return sorted(records.values(), key=lambda r: (r["created_at"], r["run_id"]), reverse=True)
 
 
+@lru_cache(maxsize=128)
+def display_only_compatibility(left_code, right_code):
+    """Attest a narrow display-only diff using the actual immutable Git objects.
+
+    Never infer compatibility from equal version labels alone. Unknown objects,
+    dependency changes and any execution/config/data/analysis change fail closed.
+    """
+    if not all(isinstance(v,str) and re.fullmatch(r'[0-9a-f]{40}',v) for v in (left_code,right_code)):
+        return None
+    from lobcap.config.experiment import ROOT
+    try:
+        result=subprocess.run(['git','diff','--name-only','--no-renames',
+            left_code+'^{commit}',right_code+'^{commit}','--'],cwd=ROOT,
+            text=True,capture_output=True,timeout=3,check=True)
+    except (OSError,subprocess.SubprocessError):
+        return None
+    paths=result.stdout.splitlines()
+    allowed={'apps/backtest_lab.py','README_FIRST.md','FAILURES.md',
+        'src/lobcap/backtest/research_flow/ui.py',
+        'src/lobcap/backtest/research_flow/ui_experiment.py',
+        'src/lobcap/backtest/research_flow/ui_results.py',
+        'src/lobcap/backtest/research_flow/catalog.py'}
+    if any(path not in allowed and not path.startswith(('tests/','docs/')) for path in paths):
+        return None
+    return {'kind':'verified_display_only_git_diff','left_code':left_code,
+            'right_code':right_code,'changed_paths':paths}
+
+
 def comparison_guard(left, right, allow_scenario_change=False):
     reasons = []
+    compatibility = None
     for row in (left, right):
         if not row.get("rankable"):
             reasons.append(f"Execution {row.get('run_id')} is incomplete, failed, canceled, or missing evidence.")
@@ -165,7 +197,9 @@ def comparison_guard(left, right, allow_scenario_change=False):
     if unverified_code(code_a) or unverified_code(code_b):
         reasons.append("Known clean code versions are required; unknown or dirty code cannot certify direct comparison.")
     elif code_a != code_b:
-        reasons.append("Code versions differ; no explicit compatibility declaration is available.")
+        compatibility=display_only_compatibility(code_a,code_b)
+        if compatibility is None:
+            reasons.append("Code versions differ; no verified display-only compatibility is available.")
     if not allow_scenario_change:
         for key in ("clock_mode", "alpha", "entry_ms", "cancel_ms", "report_ms", "maker_bps", "taker_bps", "max_trade_participation"):
             if key not in a or key not in b or a[key] != b[key]:
@@ -178,4 +212,5 @@ def comparison_guard(left, right, allow_scenario_change=False):
             if key not in scenario and a.get(key) != b.get(key):
                 reasons.append(f"Sensitivity must freeze strategy and policy setting {key}.")
     return {"comparable": not reasons, "reasons": list(dict.fromkeys(reasons)),
+            "code_compatibility": compatibility,
             "mode": "scenario_sensitivity" if allow_scenario_change else "strategy_comparison"}
