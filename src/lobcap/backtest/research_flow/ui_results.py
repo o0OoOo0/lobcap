@@ -91,7 +91,13 @@ def render_results(store,base,context):
         if st.button('종료 시점 깊이로 참고 평가 계산'):
             sample_id=config.get('sample',{}).get('sample_id',base.sample.sample_id)
             result=reference_from_run(row['output_dir'],base.output_path/'samples'/sample_id)
+            from lobcap.backtest.workspace.store import atomic_json
+            from lobcap.backtest.workspace.contracts import fingerprint
+            reference_path=store.path('references',row['run_id'],fingerprint(result)+'.json')
+            with store.transaction():
+                if not reference_path.exists(): atomic_json(reference_path,result)
             st.dataframe(_table([result]),hide_index=True)
+            st.caption('원본 실행 밖의 연구 기록에 참고 평가를 저장했습니다.')
         st.caption('원래 체결·원장을 바꾸지 않는 즉시 정리 참고값입니다. 취소 경쟁과 주문 도착을 재생한 실제 청산 경로가 아닙니다.')
     st.subheader('대표 체결과 주문 한 건 추적')
     st.caption('검토 사례이며 전체 성과의 대표성 보장이 아닙니다. 미체결·거절 주문도 아래 목록에서 선택할 수 있습니다.')
