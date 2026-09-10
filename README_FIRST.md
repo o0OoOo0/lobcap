@@ -2,7 +2,11 @@
 
 ## Market-Making Backtest Lab
 
-The default **Research Workspace** supports restricted signal formulas, exact
+The default app now follows **전략 → 실험 → 결과 → 비교**, with observable
+decision traces, a shared legacy/current run history, and one-change follow-ups:
+[research flow v1](docs/current/RESEARCH_FLOW_V1.md).
+
+The underlying **Research Workspace** supports restricted signal formulas, exact
 parameter grids, durable serial jobs, comparison, cloning and research notes:
 [workspace guide](docs/current/BACKTEST_RESEARCH_WORKSPACE.md) and
 [Ubuntu acceptance evidence](docs/current/BACKTEST_RESEARCH_WORKSPACE_COMPLETION.md).

@@ -1,137 +1,134 @@
+"""Acceptance checks for the single four-page research workflow."""
 from pathlib import Path
-from types import SimpleNamespace
+import shutil
 import pytest
-from lobcap.config.experiment import ROOT
-
-
-def app_test():
-    pytest.importorskip('streamlit')
-    from streamlit.testing.v1 import AppTest
-    app=AppTest.from_file(str(ROOT/'apps/backtest_lab.py')).run(timeout=30)
-    # These are regression tests for the retained legacy setup, not the new landing page.
-    return next(item for item in app.radio if item.label=='작업').set_value('시작·설정').run(timeout=30)
+from test_runner import sample
+from lobcap.backtest.runner import config_document
+from lobcap.backtest.workspace.store import WorkspaceStore
 
 
 def widget(elements,label):
     return next(item for item in elements if item.label==label)
 
 
-def test_navigation_is_lazy_and_never_runs_a_simulation(monkeypatch):
-    import lobcap.backtest.runner as runner
-    import lobcap.backtest.presentation as presentation
-    def unexpected(*args,**kwargs):raise AssertionError('Navigation must not simulate')
-    monkeypatch.setattr(runner,'run_one',unexpected)
-    monkeypatch.setattr(runner,'run_sweep',unexpected)
-    monkeypatch.setattr(presentation,'saved_runs',lambda *args:({},[]))
-    app=app_test()
+def app_for(config):
+    pytest.importorskip('streamlit')
+    from streamlit.testing.v1 import AppTest
+    script = '''
+from lobcap.backtest.workspace.contracts import config_from_document
+from lobcap.backtest.research_flow.ui import render_platform
+render_platform(config_from_document(DOCUMENT))
+'''.replace('DOCUMENT',repr(config_document(config)))
+    return AppTest.from_string(script)
+
+
+def test_navigation_is_lazy_and_active_fields_are_relevant(sample,monkeypatch):
+    config,_=sample
+    def forbidden(*args,**kwargs): raise AssertionError('Navigation must not submit')
+    monkeypatch.setattr(WorkspaceStore,'submit',forbidden)
+    app=app_for(config).run(timeout=30)
+    assert not app.exception and not app.error
+    assert widget(app.radio,'작업').options==['전략','실험','결과','비교']
+    assert not app.tabs
+    assert '신호 배수' not in [x.label for x in app.text_input]
+    for page in ['실험','결과','비교','전략']:
+        widget(app.radio,'작업').set_value(page).run(timeout=30)
+        assert not app.exception and not app.error
+    widget(app.selectbox,'행동 정책').set_value('no_trade').run(timeout=30)
+    assert '기본 주문 수량 (BTC)' not in [x.label for x in app.text_input]
     assert not app.exception
-    for name in ('실행 결과','실행 비교','민감도 실험','주문 추적','근거·용어','10분 연구·후보 검토','시작·설정'):
-        widget(app.radio,'작업').set_value(name).run(timeout=30)
-        assert not app.exception
 
 
-def test_form_submission_resolves_same_default_as_cli(monkeypatch):
-    from lobcap.config.backtest import load_backtest_config
-    import lobcap.backtest.runner as runner
-    import lobcap.backtest.presentation as presentation
-    calls=[]
-    def capture(config):
-        calls.append(config)
-        return SimpleNamespace(output_dir=Path('synthetic-form-result'))
-    monkeypatch.setattr(runner,'run_one',capture)
-    monkeypatch.setattr(presentation,'saved_runs',lambda *args:({},[]))
-    app=app_test()
-    assert not calls and not app.exception
-    widget(app.button,'백테스트 실행').click().run(timeout=30)
-    assert not app.exception and len(calls)==1
-    assert calls[0].effective_sha256==load_backtest_config(ROOT/'configs/backtest/binance_recorded.yaml').effective_sha256
+def test_saved_revision_survives_navigation_and_new_browser_session(sample):
+    config,_=sample
+    app=app_for(config).run(timeout=30)
+    widget(app.text_input,'전략 이름').set_value('durable strategy')
+    widget(app.text_area,'검증할 시장 가설').set_value('same policy should preserve exact known state')
+    widget(app.button,'초안 저장').click().run(timeout=30)
+    assert not app.exception and not app.error
+    widget(app.radio,'작업').set_value('실험').run(timeout=30)
+    restored=app_for(config).run(timeout=30)
+    assert widget(restored.radio,'작업').value=='실험'
+    assert any('durable strategy' in c.value for c in restored.caption)
+    assert len(WorkspaceStore(config.output_path/'workspace').list_jobs())==0
+
+
+def test_save_submit_results_compare_and_next_clone(sample,monkeypatch):
+    config,path=sample
+    target=config.output_path/'samples'/config.sample.sample_id
+    target.parent.mkdir(parents=True)
+    shutil.copytree(path,target)
+    import lobcap.backtest.workspace.jobs as jobs
+    launched=[]
+    monkeypatch.setattr(jobs,'launch_worker',lambda root:launched.append(root))
+    app=app_for(config).run(timeout=30)
+    widget(app.button,'초안 저장').click().run(timeout=30)
+    widget(app.radio,'작업').set_value('실험').run(timeout=30)
+    widget(app.selectbox,'실험 유형').set_value('baseline_suite').run(timeout=30)
+    widget(app.button,'실행 설정 확인').click().run(timeout=30)
+    assert not app.error and not app.exception
+    store=WorkspaceStore(config.output_path/'workspace')
+    assert not store.list_jobs() and not launched
+    widget(app.button,'확인한 설정으로 실행 제출').click().run(timeout=30)
+    assert len(store.list_jobs())==1 and len(launched)==1
     app.run(timeout=30)
-    assert not app.exception and len(calls)==1
+    assert len(store.list_jobs())==1 and len(launched)==1
+    from lobcap.backtest.workspace.worker import run_pending
+    run_pending(store.root)
+    widget(app.radio,'작업').set_value('결과').run(timeout=30)
+    assert not app.exception and not app.error
+    assert len(widget(app.selectbox,'실행 이력 · 이전 실행 포함').options)==5
+    widget(app.text_area,'관찰한 사실과 근거').set_value('No candidate: a development sample cannot establish profitability.')
+    widget(app.button,'연구 결론 저장').click().run(timeout=30)
+    assert list((store.root/'conclusions').rglob('*.json'))
+    widget(app.button,'이 실행을 기준으로 비교').click().run(timeout=30)
+    assert not app.exception and not app.error
+    assert widget(app.radio,'작업').value=='비교'
+    widget(app.button,'변경 실행의 주문 근거 열기').click().run(timeout=30)
+    widget(app.selectbox,'복제하며 바꿀 한 요소').set_value('partial_fill_policy').run(timeout=30)
+    widget(app.text_input,'새 값').set_value('reset_target')
+    widget(app.text_area,'다음 실험에서 확인할 질문').set_value('Does changing only partial retention reduce replacement?')
+    widget(app.button,'다음 실험용 전략 복제').click().run(timeout=30)
+    assert not app.exception and not app.error
+    assert widget(app.radio,'작업').value=='전략'
+    assert len(store.list_drafts())==2 and len(store.list_jobs())==1
+    copied=store.load_draft(store.list_drafts()[0]['draft_id'])
+    assert copied.config.partial_fill_policy=='reset_target' and copied.parent_run_id
 
 
-def test_strategy_change_does_not_execute_and_hides_unused_controls(monkeypatch):
-    import lobcap.backtest.runner as runner
-    def unexpected(*args,**kwargs):raise AssertionError('Selection must not simulate')
-    monkeypatch.setattr(runner,'run_one',unexpected)
-    app=app_test()
-    assert '호가 신호 배수' not in [item.label for item in app.text_input]
-    widget(app.selectbox,'전략').set_value('microprice').run(timeout=30)
-    assert not app.exception
-    assert '호가 신호 배수' in [item.label for item in app.text_input]
-    assert '최대 재고일 때 중심 이동 (tick)' not in [item.label for item in app.text_input]
+def test_strategy_fields_and_synthetic_preview_contract(sample):
+    from lobcap.backtest.research_flow.ui import active_fields,synthetic_preview
+    from lobcap.config.backtest import variant
+    config,_=sample
+    assert active_fields('no_trade')==()
+    assert active_fields('join_bbo')==('size',)
+    assert active_fields('inventory_size')==('size',)
+    assert active_fields('flow_withdraw')==('size','flow_min_volume')
+    rows=synthetic_preview(variant(config,strategy='no_trade'))
+    assert all(r['위험 제한 후 수량']=='0' for r in rows)
 
 
-def test_sensitivity_uses_explicit_saved_config_not_previous_session(monkeypatch):
-    import lobcap.backtest.runner as runner
-    import lobcap.backtest.presentation as presentation
-    import lobcap.backtest.replay as replay
-    from lobcap.config.backtest import load_backtest_config,variant
-    base=load_backtest_config(ROOT/'configs/backtest/binance_recorded.yaml')
-    prior=variant(base,entry_ms=99,maker_bps='2')
-    manifest={'sample_id':base.sample.sample_id,'sample_sha256':'test','resolved_config':prior.resolved(),'run_id':'prior'}
-    monkeypatch.setattr(presentation,'saved_runs',lambda *args:({'prior':(Path('/unused'),manifest)},[]))
-    monkeypatch.setattr(replay,'load_sample',lambda *args:(None,{'sample_sha256':'test'}))
-    calls=[]
-    def capture(config,changes,**kwargs):
-        calls.append((config,changes))
-        raise RuntimeError('captured without running')
-    monkeypatch.setattr(runner,'run_sweep',capture)
-    app=app_test()
-    app.session_state['scenario_changes']={'maker_bps':'99'}
-    widget(app.radio,'작업').set_value('민감도 실험').run(timeout=30)
-    widget(app.selectbox,'실험 기준').set_value('prior').run(timeout=30)
-    widget(app.selectbox,'바꿀 변수').set_value('report_ms').run(timeout=30)
-    assert widget(app.text_input,'비교할 값 (쉼표로 구분)').value=='0, 20, 100'
-    widget(app.button,'민감도 실험 실행').click().run(timeout=30)
-    assert not app.exception and len(calls)==1
-    assert calls[0][0].effective_sha256==prior.effective_sha256
-    assert calls[0][1]==[{'report_ms':0},{'report_ms':20},{'report_ms':100}]
-
-
-def test_dataset_switch_clears_experiment_context(monkeypatch):
-    import lobcap.backtest.presentation as presentation
-    monkeypatch.setattr(presentation,'saved_runs',lambda *args:({},[]))
-    app=app_test()
-    app.session_state['lab_comparison']={'path':'must_not_be_read'}
-    other=ROOT/'configs/backtest/binance_demo.yaml'
-    widget(app.selectbox,'데이터·기본 설정').set_value(other).run(timeout=30)
-    assert not app.exception and 'lab_comparison' not in app.session_state
-    widget(app.radio,'작업').set_value('민감도 실험').run(timeout=30)
-    assert not app.exception
-
-
-def test_selected_run_survives_pages_without_the_run_selector(monkeypatch,tmp_path):
-    import lobcap.backtest.presentation as presentation
-    from lobcap.config.backtest import load_backtest_config
-    c=load_backtest_config(ROOT/'configs/backtest/binance_recorded.yaml')
-    runs={}
-    for name in ('newer','older'):
-        path=tmp_path/name;path.mkdir();(path/'config.yaml').write_text('settings: {}')
-        runs[name]=(path,{'run_id':name,'sample_id':c.sample.sample_id,'sample_sha256':'test','resolved_config':c.resolved()})
-    monkeypatch.setattr(presentation,'saved_runs',lambda *args:(runs,[]))
-    app=app_test()
-    widget(app.radio,'작업').set_value('주문 추적').run(timeout=30)
-    widget(app.selectbox,'확인할 실행').set_value('older').run(timeout=30)
-    widget(app.radio,'작업').set_value('민감도 실험').run(timeout=30)
-    widget(app.radio,'작업').set_value('주문 추적').run(timeout=30)
-    assert not app.exception
-    assert widget(app.selectbox,'확인할 실행').value=='older'
-
-
-def test_research_submission_uses_shared_cli_plan_and_requires_submit(monkeypatch):
-    import lobcap.backtest.research_ui as research_ui
-    from lobcap.backtest.research import make_plan
-    from lobcap.config.backtest import load_backtest_config
-    calls=[]
-    def capture(base,sample,strategies,hypothesis,**kwargs):
-        calls.append(make_plan(base,strategies,hypothesis))
-        raise RuntimeError('captured research submission')
-    monkeypatch.setattr(research_ui,'run_research',capture)
-    app=app_test()
-    widget(app.radio,'작업').set_value('10분 연구·후보 검토').run(timeout=30)
-    assert not calls and not app.exception
-    widget(app.button,'설정 동결 후 연구 실행').click().run(timeout=30)
-    assert not app.exception and len(calls)==1
-    assert calls[0]==make_plan(load_backtest_config(ROOT/'configs/backtest/binance_recorded.yaml'))
-    app.run(timeout=30)
-    assert len(calls)==1
+def test_legacy_result_without_workspace_jobs_or_trace_is_visible(sample):
+    import json
+    from lobcap.backtest.runner import run_one
+    from lobcap.backtest.research_flow.experiments import save_conclusion,save_context
+    config,path=sample
+    result=run_one(config,path)
+    legacy=config.output_path/'runs'/'legacy-readable'
+    legacy.mkdir()
+    for file in result.output_dir.iterdir():
+        if file.name not in {'decision_traces.jsonl.gz','run_manifest.json'}:
+            shutil.copyfile(file,legacy/file.name)
+    manifest=json.loads((result.output_dir/'run_manifest.json').read_text())
+    manifest['run_id']='legacy-readable'
+    (legacy/'run_manifest.json').write_text(json.dumps(manifest))
+    original=(legacy/'summary.json').read_bytes()
+    store=WorkspaceStore(config.output_path/'workspace')
+    save_context(store,{'route':'결과','run_id':'legacy-readable'})
+    save_conclusion(store,'legacy-readable','no_candidate','Saved negative conclusion remains visible.')
+    app=app_for(config).run(timeout=30)
+    assert not app.exception and not app.error
+    assert widget(app.selectbox,'실행 이력 · 이전 실행 포함').value=='legacy-readable'
+    assert any('미기록' in item.value for item in app.info)
+    assert any('Saved negative conclusion' in item.value for item in app.markdown)
+    assert not store.list_jobs() and original==(legacy/'summary.json').read_bytes()

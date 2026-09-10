@@ -24,13 +24,22 @@ class StrategyParameters:
     signal_expression: str = ""
     expression_parameters: tuple = ()
     max_signal_ticks: Decimal = Decimal(10)
+    lot: Decimal = Decimal('.001')
 
     @classmethod
     def from_config(cls, config):
         return cls(config.strategy,config.size,config.half_spread_ticks,config.inventory_skew_ticks,
                    config.signal_strength,config.max_inventory,config.instrument.tick,config.maker_bps,
                    config.flow_threshold,config.flow_min_volume,config.volatility_spread_multiplier,
-                   config.signal_expression,config.expression_parameters,config.max_signal_ticks)
+                   config.signal_expression,config.expression_parameters,config.max_signal_ticks,config.instrument.lot)
+
+
+class StrategyPolicy:
+    """Per-run causal strategy memory. Contains no simulator or queue handles."""
+    def __init__(self):self.withdraw_side=None
+
+    def decide(self, config, market, portfolio, trace=None):
+        return decide(config,market,portfolio,trace=trace,state=self)
 
 
 class Features:
@@ -38,15 +47,20 @@ class Features:
         self.mids=deque(maxlen=31)
         self.volatility=None
         self.trades=deque()
+        self.delivered_trades=deque()
 
     def observe_trade(self,event,now):
+        if event.trade is not None:
+            self.delivered_trades.append((now,event.trade.size,1 if event.trade.maker_side=="sell" else -1))
         if event.trade is not None and now-event.time_ns<=1_000_000_000:
             self.trades.append((now,event.trade.size,1 if event.trade.maker_side=="sell" else -1))
 
-    def flow(self,now):
+    def flow(self,now,include_late=False):
         while self.trades and self.trades[0][0]<=now-1_000_000_000:self.trades.popleft()
-        volume=sum((row[1] for row in self.trades),ZERO)
-        signed=sum((row[1]*row[2] for row in self.trades),ZERO)
+        while self.delivered_trades and self.delivered_trades[0][0]<=now-1_000_000_000:self.delivered_trades.popleft()
+        trades=self.delivered_trades if include_late else self.trades
+        volume=sum((row[1] for row in trades),ZERO)
+        signed=sum((row[1]*row[2] for row in trades),ZERO)
         return (signed/volume if volume else None),volume
 
     def on_second(self, now, mid, fresh):
@@ -61,7 +75,40 @@ def _round(price,tick,buy):
     return (price/tick).to_integral_value(rounding=ROUND_FLOOR if buy else ROUND_CEILING)*tick
 
 
-def decide(config, market, portfolio):
+def decide(config, market, portfolio, trace=None, state=None):
+    def targets(bid,ask,reason):
+        raw=DesiredQuotes(bid,ask,reason)
+        rounded=[];limited=[]
+        for side,q in (('buy',bid),('sell',ask)):
+            if q is None:rounded.append(None);limited.append(None);continue
+            price=_round(q.price,config.tick,side=='buy')
+            size=(q.quantity/config.lot).to_integral_value(rounding=ROUND_FLOOR)*config.lot
+            r=Quote(side,price,size) if size>0 else None
+            rounded.append(r)
+            p=min(price,market.bid) if side=='buy' else max(price,market.ask)
+            limited.append(Quote(side,p,size) if size>0 else None)
+        result=DesiredQuotes(*limited,reason)
+        if trace is not None:trace.update(raw_target=raw,tick_rounded_target=DesiredQuotes(*rounded,reason),policy_limited_target=result)
+        return result
+    if config.strategy=='no_trade':return targets(None,None,'no_trade')
+    if config.strategy in {'join_bbo','inventory_size','flow_withdraw'}:
+        buy=sell=config.size
+        reason=config.strategy
+        if config.strategy=='inventory_size':
+            ratio=portfolio.inventory/config.max_inventory
+            if ratio>=Decimal('.6'):buy=max(ZERO,buy-config.lot);reason='long_inventory_reduce_buy'
+            elif ratio<=Decimal('-.6'):sell=max(ZERO,sell-config.lot);reason='short_inventory_reduce_sell'
+        if config.strategy=='flow_withdraw':
+            state=state if state is not None else StrategyPolicy()
+            flow=market.trade_imbalance
+            if flow is None or market.trade_volume<config.flow_min_volume:state.withdraw_side=None
+            elif flow>=Decimal('.6'):state.withdraw_side='sell'
+            elif flow<=Decimal('-.6'):state.withdraw_side='buy'
+            elif state.withdraw_side=='sell' and flow<Decimal('.3'):state.withdraw_side=None
+            elif state.withdraw_side=='buy' and flow>Decimal('-.3'):state.withdraw_side=None
+            if state.withdraw_side=='buy':buy=ZERO;reason='flow_withdraw_buy'
+            elif state.withdraw_side=='sell':sell=ZERO;reason='flow_withdraw_sell'
+        return targets(Quote('buy',market.bid,buy),Quote('sell',market.ask,sell),reason)
     center=market.mid
     reason="quote"
     if config.strategy=="expression":
@@ -74,7 +121,7 @@ def decide(config, market, portfolio):
         try:
             signal=compile_expression(config.signal_expression,tuple(name for name,_ in config.expression_parameters)).evaluate(values)
         except FeatureUnavailable:
-            return DesiredQuotes(None,None,"feature_unavailable")
+            return targets(None,None,"feature_unavailable")
         bounded=min(max(signal,-config.max_signal_ticks),config.max_signal_ticks)
         center+=config.tick*bounded
         if bounded!=signal:reason="signal_clipped"
@@ -84,21 +131,19 @@ def decide(config, market, portfolio):
         center+=config.signal_strength*(market.microprice-market.mid)
     half=config.half_spread_ticks*config.tick
     if config.strategy=="volatility_adaptive":
-        if market.volatility_bps is None:return DesiredQuotes(None,None,"volatility_warmup")
+        if market.volatility_bps is None:return targets(None,None,"volatility_warmup")
         half=max(half,market.mid*Decimal(str(market.volatility_bps))*config.volatility_spread_multiplier/10000)
     if config.strategy=="flow_guard":
-        if market.volatility_bps is None:return DesiredQuotes(None,None,"volatility_warmup")
+        if market.volatility_bps is None:return targets(None,None,"volatility_warmup")
         center=market.microprice-config.inventory_skew_ticks*config.tick*portfolio.inventory/config.max_inventory
         half=max(half,market.mid*(max(ZERO,config.maker_bps)+Decimal(str(market.volatility_bps))*config.volatility_spread_multiplier)/10000)
-        bid=Quote("buy",min(market.bid,_round(center-half,config.tick,True)),config.size)
-        ask=Quote("sell",max(market.ask,_round(center+half,config.tick,False)),config.size)
+        bid=Quote("buy",center-half,config.size)
+        ask=Quote("sell",center+half,config.size)
         if market.trade_imbalance is not None and market.trade_volume>=config.flow_min_volume:
-            if market.trade_imbalance>=config.flow_threshold:return DesiredQuotes(bid,None,"buy_flow_suppress_ask")
-            if market.trade_imbalance<=-config.flow_threshold:return DesiredQuotes(None,ask,"sell_flow_suppress_bid")
-        return DesiredQuotes(bid,ask,"flow_guard")
-    return DesiredQuotes(
-        Quote("buy",min(market.bid,_round(center-half,config.tick,True)),config.size),
-        Quote("sell",max(market.ask,_round(center+half,config.tick,False)),config.size),reason)
+            if market.trade_imbalance>=config.flow_threshold:return targets(bid,None,"buy_flow_suppress_ask")
+            if market.trade_imbalance<=-config.flow_threshold:return targets(None,ask,"sell_flow_suppress_bid")
+        return targets(bid,ask,"flow_guard")
+    return targets(Quote("buy",center-half,config.size),Quote("sell",center+half,config.size),reason)
 
 
 def risk_control(config, market, portfolio, desired):

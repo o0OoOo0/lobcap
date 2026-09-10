@@ -173,6 +173,7 @@ class FillEvent:
     reason: str = "trade"
     cancel_pending: bool = False
     decision: tuple[tuple[str, Any], ...] = ()
+    decision_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

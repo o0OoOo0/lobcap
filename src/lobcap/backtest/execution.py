@@ -52,7 +52,8 @@ class Execution:
         return self.heap[0][0] if self.heap else None
 
     def _emit(self, order, now, event):
-        self.sink.write("orders", {**jsonable(order.record()),"time_ns":now,"event":event,"modeled_queue":order.queue})
+        self.sink.write("orders", {**jsonable(order.record()),"time_ns":now,"event":event,"modeled_queue":order.queue,
+            "decision_id":dict(order.decision).get('decision_id')})
 
     def submit(self, quote, now, decision):
         if quote.side in self.orders:
@@ -80,7 +81,7 @@ class Execution:
         order.terminal, order.terminal_ns, order.status, order.reason=True,now,status,reason
         if self.orders.get(order.side) is order:
             del self.orders[order.side]
-        if status=="CANCELED" and reason=="replace":
+        if status=="CANCELED" and reason in {"replace","target_size_changed"}:
             self.replacement_wait.setdefault(order.side,now)
         self.stats[status.lower()] += 1
         filled=order.quantity-order.remaining
@@ -195,19 +196,20 @@ class Execution:
                 self.stats["cancel_pending_fills"] += int(pending)
                 fills.append(FillEvent(order.order_id,event.time_ns,event.replay_index,side,order.price,
                     transition.filled,event.source_refs,reason="same_price" if tr.price==order.price else "trade_through",
-                    cancel_pending=pending,decision=order.decision))
+                    cancel_pending=pending,decision=order.decision,decision_id=dict(order.decision).get('decision_id')))
                 self._emit(order,event.time_ns,"partial_fill" if order.remaining else "full_fill")
                 if not order.remaining:self._finish(order,event.time_ns,"FILLED","fully_filled")
         return fills
 
-    def reconcile(self, desired, now, decision):
-        for side,quote in (("buy",desired.bid),("sell",desired.ask)):
-            order=self.orders.get(side)
-            if order is not None:
-                if quote is None or quote.price!=order.price or quote.quantity!=order.remaining:
-                    self.request_cancel(order,now,desired.reason if quote is None else "replace")
-            elif quote is not None:
-                self.submit(quote,now,decision)
+    def reconcile(self, desired, now, decision, actions=None):
+        from lobcap.backtest.quote_policy import plan_actions
+        if actions is None:
+            actions=plan_actions(self.config,desired,{s:jsonable(o.record()) for s,o in self.orders.items()},now,
+                                 next_order_id=self.next_id)
+        for action in actions:
+            side=action['side']
+            if action['action']=='cancel':self.request_cancel(self.orders[side],now,action['reason'])
+            elif action['action']=='submit':self.submit(desired.bid if side=='buy' else desired.ask,now,decision)
 
     def exposure(self, side):
         order=self.orders.get(side)

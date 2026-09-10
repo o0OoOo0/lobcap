@@ -8,7 +8,8 @@ from lobcap.backtest.accounting import Portfolio
 from lobcap.backtest.engine import MarketBook
 from lobcap.backtest.execution import Execution
 from lobcap.backtest.metrics import Metrics
-from lobcap.backtest.strategies import Features, StrategyParameters, decide, risk_control, decision_context
+from lobcap.backtest.strategies import Features, StrategyParameters, StrategyPolicy, risk_control, decision_context
+from lobcap.backtest.quote_policy import plan_actions, make_trace, custom_stages
 from lobcap.backtest.types import NS, ZERO, PortfolioView, RunResult, ASSUMPTIONS, jsonable
 
 
@@ -61,6 +62,9 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
             control=ResearchControl(config,research_policy,sink)
         features=Features()
         parameters=StrategyParameters.from_config(config)
+        policy=StrategyPolicy()
+        decision_ordinal=0
+        last_source=None
         metrics=Metrics(config,sink)
         client_orders={}
         handles={}
@@ -171,6 +175,7 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                     if observed is None:raise AssertionError("delivery before bootstrap")
                     observed.apply(incoming)
                     features.observe_trade(incoming,delivered)
+                    last_source=incoming
                     if incoming.kind=="depth":last_observed_receive=delivered
                     stats["observed_"+incoming.kind]+=1
             receive_reports(now)
@@ -187,12 +192,13 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                 next_second+=NS
             if now==next_decision:
                 if observed is None:raise ValueError("no observed book at trading start")
-                flow,volume=features.flow(now)
+                flow,volume=features.flow(now,include_late=config.strategy=='flow_withdraw')
                 market=replace(observed.view(now,features.volatility),trade_imbalance=flow,trade_volume=volume)
                 view=PortfolioView(client_cash,client_inventory,client_cash+client_inventory*observed.mid,
                     client_exposure("buy"),client_exposure("sell"),tuple((s,o["status"]) for s,o in sorted(client_orders.items())))
                 try:
-                    desired=strategy(market,view) if strategy else decide(parameters,market,view)
+                    stages={}
+                    desired=strategy(market,view) if strategy else policy.decide(parameters,market,view,stages)
                 except Exception as exc:
                     from lobcap.backtest.workspace.expressions import ExpressionError
                     if isinstance(exc,ExpressionError):
@@ -204,6 +210,7 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                     control.kill(now,"strategy_exception:"+type(exc).__name__)
                     from lobcap.backtest.types import DesiredQuotes
                     desired=DesiredQuotes(None,None,control.kill_reason)
+                if not stages:stages=custom_stages(desired)
                 signal_reason=desired.reason
                 desired=risk_control(config,market,view,desired)
                 if control is not None:desired=control.quotes(now,market,view,desired)
@@ -215,18 +222,24 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                     decision["signal_reason"]=signal_reason
                     stats["signal_clipped_decisions"]+=int(signal_reason=="signal_clipped")
                     stats["feature_unavailable_decisions"]+=int(signal_reason=="feature_unavailable")
+                decision_ordinal+=1
+                actions=plan_actions(config,desired,client_orders,now,market,view,execution.next_id)
+                trace=make_trace(config,decision_ordinal,market,view,stages,desired,actions,last_source,
+                    {'withdraw_side':policy.withdraw_side})
+                decision['decision_id']=trace['decision_id']
                 sink.write("decisions",decision)
-                for side,quote in (("buy",desired.bid),("sell",desired.ask)):
-                    current=client_orders.get(side)
-                    if current:
-                        if quote is None or Decimal(current["price"])!=quote.price or Decimal(current["remaining"])!=quote.quantity:
-                            cancel(side,now,desired.reason if quote is None else "replace")
-                    elif quote is not None:
+                sink.write("decision_traces",trace)
+                for action in actions:
+                    side=action['side']
+                    quote=desired.bid if side=='buy' else desired.ask
+                    if action['action']=='cancel':cancel(side,now,action['reason'])
+                    elif action['action']=='submit':
                         execution.submit(quote,now,decision)
                         order=execution.orders[side]
                         handles[order.order_id]=order
                         client_orders[side]=jsonable(order.record())
                         sink.write("timeline",{"time_ns":now,"actor":"client","event":"submit_send",
+                            "decision_id":decision['decision_id'],
                             "order_id":order.order_id,"price":quote.price,"quantity":quote.quantity,
                             "observed_bid":market.bid,"observed_ask":market.ask,"observed_book_exchange_ns":observed.time_ns})
                 execution.advance(now,truth.view(now),truth)

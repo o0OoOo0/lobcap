@@ -51,7 +51,8 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
     # Lazy imports keep the execution and public contracts independently usable.
     from lobcap.backtest.accounting import Portfolio
     from lobcap.backtest.metrics import Metrics
-    from lobcap.backtest.strategies import Features, StrategyParameters, decide, risk_control, decision_context
+    from lobcap.backtest.strategies import Features, StrategyParameters, StrategyPolicy, risk_control, decision_context
+    from lobcap.backtest.quote_policy import plan_actions, make_trace, custom_stages
 
     with localcontext() as context:
         context.prec=50
@@ -59,6 +60,9 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
         execution=Execution(config,sink)
         features=Features()
         parameters=StrategyParameters.from_config(config)
+        policy=StrategyPolicy()
+        decision_ordinal=0
+        last_source=None
         portfolio=None
         metrics=Metrics(config,sink)
         iterator=iter(events)
@@ -84,6 +88,7 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
             while event is not None and event.time_ns==now:
                 book.apply(event)
                 features.observe_trade(event, now)
+                last_source=event
                 if portfolio is not None:
                     change=portfolio.mark(book.mid,now,event.replay_index)
                     if change is not None:metrics.on_mark(*change)
@@ -104,16 +109,24 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
                 market=book.view(now,features.volatility)
                 next_second+=NS
             if now==next_decision:
-                flow, volume = features.flow(now)
+                flow, volume = features.flow(now,include_late=config.strategy=='flow_withdraw')
                 market = replace(market, trade_imbalance=flow, trade_volume=volume)
                 view=PortfolioView(portfolio.cash,portfolio.inventory,portfolio.equity,
                     execution.exposure("buy"),execution.exposure("sell"),
                     tuple((s,o.status) for s,o in sorted(execution.orders.items())))
-                desired=(strategy(market,view) if strategy is not None else decide(parameters,market,view))
+                stages={}
+                desired=(strategy(market,view) if strategy is not None else policy.decide(parameters,market,view,stages))
+                if not stages:stages=custom_stages(desired)
                 desired=risk_control(config,market,view,desired)
                 decision=decision_context(config,market,view,desired)
+                decision_ordinal+=1
+                actions=plan_actions(config,desired,{s:jsonable(o.record()) for s,o in execution.orders.items()},now,market,view,execution.next_id)
+                trace=make_trace(config,decision_ordinal,market,view,stages,desired,actions,last_source,
+                                 {'withdraw_side':policy.withdraw_side})
+                decision['decision_id']=trace['decision_id']
                 sink.write("decisions",decision)
-                execution.reconcile(desired,now,decision)
+                sink.write("decision_traces",trace)
+                execution.reconcile(desired,now,decision,actions)
                 next_decision+=config.decision_ms*1_000_000
             execution.advance(now,market,book)
             if portfolio is not None:
