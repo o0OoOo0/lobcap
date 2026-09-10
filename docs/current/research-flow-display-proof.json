@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "baseline": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-e8c381ee",
+  "new_run": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-515e081a",
+  "job_id": "dc980301bb34453e8cb861685c4a6c8d",
+  "same_digest": true,
+  "comparison": {
+    "guard": {
+      "comparable": true,
+      "reasons": [],
+      "code_compatibility": {
+        "kind": "verified_display_only_git_diff",
+        "left_code": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+        "right_code": "292301e9111a0de2fe149cffd5c7e4dea47b8cee",
+        "changed_paths": [
+          "src/lobcap/backtest/research_flow/catalog.py",
+          "src/lobcap/backtest/research_flow/ui_results.py",
+          "tests/backtest/test_app.py",
+          "tests/backtest/test_research_flow_analysis.py"
+        ]
+      },
+      "mode": "strategy_comparison"
+    },
+    "contribution_rows": [
+      {
+        "component": "spread_capture",
+        "left": "-0.028850",
+        "right": "-0.028850",
+        "delta": "0.000000"
+      },
+      {
+        "component": "inventory_mtm",
+        "left": "-1.277200",
+        "right": "-1.277200",
+        "delta": "0.000000"
+      },
+      {
+        "component": "fees",
+        "left": "0.000000",
+        "right": "0.000000",
+        "delta": "0.000000"
+      }
+    ],
+    "pnl_delta_identity": {
+      "net_delta": "0.000000",
+      "spread_delta": "0.000000",
+      "inventory_mtm_delta": "0.000000",
+      "fee_contribution_delta": "0.000000",
+      "residual": "0.000000",
+      "reconciled": true
+    },
+    "first_desired_divergence": null,
+    "first_action_divergence": null,
+    "behavior_relationship": {
+      "desired_identical": true,
+      "actions_identical": true,
+      "partial_fill_policy_exercised": null,
+      "explanation": "Observed desired quotes and actions are identical on this sample; different settings did not establish a distinct strategy behavior."
+    },
+    "warnings": [
+      "Observed desired quotes and actions are identical on this sample; different settings did not establish a distinct strategy behavior."
+    ]
+  }
+}

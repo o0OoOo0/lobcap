@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "old_pid": 443936,
+  "new_pid": 445838,
+  "staging_pid": 445778,
+  "release": "/home/0woo/lobcap-research-flow-v1-ui",
+  "health": true,
+  "collector_before": "MainPID=608\nNRestarts=0\nActiveState=active",
+  "collector_after": "MainPID=608\nNRestarts=0\nActiveState=active",
+  "collector_unchanged": true,
+  "bind": "127.0.0.1:8501",
+  "git_commit": "292301e9111a0de2fe149cffd5c7e4dea47b8cee"
+}

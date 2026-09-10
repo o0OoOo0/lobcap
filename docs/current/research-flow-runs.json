@@ -1,0 +1,3395 @@
+{
+  "behavior_comparisons": {
+    "E0": {
+      "behavior_relationship": {
+        "actions_identical": false,
+        "desired_identical": false,
+        "explanation": null,
+        "partial_fill_policy_exercised": null
+      },
+      "contribution_rows": [
+        {
+          "component": "spread_capture",
+          "delta": "0.028850",
+          "left": "-0.028850",
+          "right": "0"
+        },
+        {
+          "component": "inventory_mtm",
+          "delta": "1.277200",
+          "left": "-1.277200",
+          "right": "0.00"
+        },
+        {
+          "component": "fees",
+          "delta": "0.000000",
+          "left": "0.000000",
+          "right": "0"
+        }
+      ],
+      "first_action_divergence": {
+        "left": {
+          "actions": [
+            {
+              "action": "submit",
+              "order_id": "order-00000001",
+              "reason": "new_target",
+              "side": "buy"
+            },
+            {
+              "action": "submit",
+              "order_id": "order-00000002",
+              "reason": "new_target",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703800000000000
+        },
+        "left_behavior": {
+          "actions": [
+            {
+              "action": "submit",
+              "side": "buy"
+            },
+            {
+              "action": "submit",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703800000000000
+        },
+        "right": {
+          "actions": [
+            {
+              "action": "none",
+              "order_id": null,
+              "reason": "no_target",
+              "side": "buy"
+            },
+            {
+              "action": "none",
+              "order_id": null,
+              "reason": "no_target",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703800000000000
+        },
+        "right_behavior": {
+          "actions": [
+            {
+              "action": "none",
+              "side": "buy"
+            },
+            {
+              "action": "none",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703800000000000
+        },
+        "time_ns": 1788703800000000000
+      },
+      "first_desired_divergence": {
+        "left": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79726.40",
+              "quantity": "0.001",
+              "side": "sell"
+            },
+            "bid": {
+              "price": "79726.30",
+              "quantity": "0.001",
+              "side": "buy"
+            },
+            "reason": "join_bbo"
+          },
+          "time_ns": 1788703800000000000
+        },
+        "left_behavior": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79726.4",
+              "quantity": "0.001"
+            },
+            "bid": {
+              "price": "79726.3",
+              "quantity": "0.001"
+            }
+          },
+          "time_ns": 1788703800000000000
+        },
+        "right": {
+          "risk_limited_target": {
+            "ask": null,
+            "bid": null,
+            "reason": "no_trade"
+          },
+          "time_ns": 1788703800000000000
+        },
+        "right_behavior": {
+          "risk_limited_target": {
+            "ask": null,
+            "bid": null
+          },
+          "time_ns": 1788703800000000000
+        },
+        "time_ns": 1788703800000000000
+      },
+      "guard": {
+        "comparable": true,
+        "mode": "strategy_comparison",
+        "reasons": []
+      },
+      "pnl_delta_identity": {
+        "fee_contribution_delta": "0.000000",
+        "inventory_mtm_delta": "1.277200",
+        "net_delta": "1.306050",
+        "reconciled": true,
+        "residual": "0.000000",
+        "spread_delta": "0.028850"
+      },
+      "warnings": []
+    },
+    "E2": {
+      "behavior_relationship": {
+        "actions_identical": true,
+        "desired_identical": true,
+        "explanation": "Observed desired quotes and actions are identical on this sample; different settings did not establish a distinct strategy behavior.",
+        "partial_fill_policy_exercised": false
+      },
+      "contribution_rows": [
+        {
+          "component": "spread_capture",
+          "delta": "0.000000",
+          "left": "-0.028850",
+          "right": "-0.028850"
+        },
+        {
+          "component": "inventory_mtm",
+          "delta": "0.000000",
+          "left": "-1.277200",
+          "right": "-1.277200"
+        },
+        {
+          "component": "fees",
+          "delta": "0.000000",
+          "left": "0.000000",
+          "right": "0.000000"
+        }
+      ],
+      "first_action_divergence": null,
+      "first_desired_divergence": null,
+      "guard": {
+        "comparable": true,
+        "mode": "strategy_comparison",
+        "reasons": []
+      },
+      "pnl_delta_identity": {
+        "fee_contribution_delta": "0.000000",
+        "inventory_mtm_delta": "0.000000",
+        "net_delta": "0.000000",
+        "reconciled": true,
+        "residual": "0.000000",
+        "spread_delta": "0.000000"
+      },
+      "warnings": [
+        "Observed desired quotes and actions are identical on this sample; different settings did not establish a distinct strategy behavior.",
+        "One-lot order size cannot partially fill under integer-lot execution. The changed partial-fill policy was not exercised; use a separately labeled larger-size experiment to test it."
+      ]
+    },
+    "E3": {
+      "behavior_relationship": {
+        "actions_identical": false,
+        "desired_identical": false,
+        "explanation": null,
+        "partial_fill_policy_exercised": null
+      },
+      "contribution_rows": [
+        {
+          "component": "spread_capture",
+          "delta": "0.004300",
+          "left": "-0.028850",
+          "right": "-0.024550"
+        },
+        {
+          "component": "inventory_mtm",
+          "delta": "-0.052000",
+          "left": "-1.277200",
+          "right": "-1.329200"
+        },
+        {
+          "component": "fees",
+          "delta": "0.000000",
+          "left": "0.000000",
+          "right": "0.000000"
+        }
+      ],
+      "first_action_divergence": {
+        "left": {
+          "actions": [
+            {
+              "action": "retain",
+              "order_id": "order-00000036",
+              "reason": "unchanged",
+              "side": "buy"
+            },
+            {
+              "action": "submit",
+              "order_id": "order-00000037",
+              "reason": "new_target",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703839750000000
+        },
+        "left_behavior": {
+          "actions": [
+            {
+              "action": "retain",
+              "side": "buy"
+            },
+            {
+              "action": "submit",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703839750000000
+        },
+        "right": {
+          "actions": [
+            {
+              "action": "retain",
+              "order_id": "order-00000036",
+              "reason": "unchanged",
+              "side": "buy"
+            },
+            {
+              "action": "none",
+              "order_id": null,
+              "reason": "no_target",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703839750000000
+        },
+        "right_behavior": {
+          "actions": [
+            {
+              "action": "retain",
+              "side": "buy"
+            },
+            {
+              "action": "none",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703839750000000
+        },
+        "time_ns": 1788703839750000000
+      },
+      "first_desired_divergence": {
+        "left": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79720.30",
+              "quantity": "0.001",
+              "side": "sell"
+            },
+            "bid": {
+              "price": "79720.20",
+              "quantity": "0.001",
+              "side": "buy"
+            },
+            "reason": "join_bbo"
+          },
+          "time_ns": 1788703839750000000
+        },
+        "left_behavior": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79720.3",
+              "quantity": "0.001"
+            },
+            "bid": {
+              "price": "79720.2",
+              "quantity": "0.001"
+            }
+          },
+          "time_ns": 1788703839750000000
+        },
+        "right": {
+          "risk_limited_target": {
+            "ask": null,
+            "bid": {
+              "price": "79720.20",
+              "quantity": "0.001",
+              "side": "buy"
+            },
+            "reason": "short_inventory_reduce_sell"
+          },
+          "time_ns": 1788703839750000000
+        },
+        "right_behavior": {
+          "risk_limited_target": {
+            "ask": null,
+            "bid": {
+              "price": "79720.2",
+              "quantity": "0.001"
+            }
+          },
+          "time_ns": 1788703839750000000
+        },
+        "time_ns": 1788703839750000000
+      },
+      "guard": {
+        "comparable": true,
+        "mode": "strategy_comparison",
+        "reasons": []
+      },
+      "pnl_delta_identity": {
+        "fee_contribution_delta": "0.000000",
+        "inventory_mtm_delta": "-0.052000",
+        "net_delta": "-0.047700",
+        "reconciled": true,
+        "residual": "0.000000",
+        "spread_delta": "0.004300"
+      },
+      "warnings": []
+    },
+    "E4": {
+      "behavior_relationship": {
+        "actions_identical": false,
+        "desired_identical": false,
+        "explanation": null,
+        "partial_fill_policy_exercised": null
+      },
+      "contribution_rows": [
+        {
+          "component": "spread_capture",
+          "delta": "0.027300",
+          "left": "-0.028850",
+          "right": "-0.001550"
+        },
+        {
+          "component": "inventory_mtm",
+          "delta": "1.189600",
+          "left": "-1.277200",
+          "right": "-0.087600"
+        },
+        {
+          "component": "fees",
+          "delta": "0.000000",
+          "left": "0.000000",
+          "right": "0.000000"
+        }
+      ],
+      "first_action_divergence": {
+        "left": {
+          "actions": [
+            {
+              "action": "submit",
+              "order_id": "order-00000001",
+              "reason": "new_target",
+              "side": "buy"
+            },
+            {
+              "action": "submit",
+              "order_id": "order-00000002",
+              "reason": "new_target",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703800000000000
+        },
+        "left_behavior": {
+          "actions": [
+            {
+              "action": "submit",
+              "side": "buy"
+            },
+            {
+              "action": "submit",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703800000000000
+        },
+        "right": {
+          "actions": [
+            {
+              "action": "none",
+              "order_id": null,
+              "reason": "no_target",
+              "side": "buy"
+            },
+            {
+              "action": "submit",
+              "order_id": "order-00000001",
+              "reason": "new_target",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703800000000000
+        },
+        "right_behavior": {
+          "actions": [
+            {
+              "action": "none",
+              "side": "buy"
+            },
+            {
+              "action": "submit",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703800000000000
+        },
+        "time_ns": 1788703800000000000
+      },
+      "first_desired_divergence": {
+        "left": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79726.40",
+              "quantity": "0.001",
+              "side": "sell"
+            },
+            "bid": {
+              "price": "79726.30",
+              "quantity": "0.001",
+              "side": "buy"
+            },
+            "reason": "join_bbo"
+          },
+          "time_ns": 1788703800000000000
+        },
+        "left_behavior": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79726.4",
+              "quantity": "0.001"
+            },
+            "bid": {
+              "price": "79726.3",
+              "quantity": "0.001"
+            }
+          },
+          "time_ns": 1788703800000000000
+        },
+        "right": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79726.40",
+              "quantity": "0.001",
+              "side": "sell"
+            },
+            "bid": null,
+            "reason": "flow_withdraw_buy"
+          },
+          "time_ns": 1788703800000000000
+        },
+        "right_behavior": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79726.4",
+              "quantity": "0.001"
+            },
+            "bid": null
+          },
+          "time_ns": 1788703800000000000
+        },
+        "time_ns": 1788703800000000000
+      },
+      "guard": {
+        "comparable": true,
+        "mode": "strategy_comparison",
+        "reasons": []
+      },
+      "pnl_delta_identity": {
+        "fee_contribution_delta": "0.000000",
+        "inventory_mtm_delta": "1.189600",
+        "net_delta": "1.216900",
+        "reconciled": true,
+        "residual": "0.000000",
+        "spread_delta": "0.027300"
+      },
+      "warnings": []
+    }
+  },
+  "collector": "active",
+  "determinism": "PASS",
+  "jobs": [
+    "3fc323c74bc9436cb1d464e05600fab7",
+    "f36b838a80304c22a552d1187bebcc05"
+  ],
+  "one_lot_policy_note": "E1/E2 may have identical behavior because fills are integer lots.",
+  "partial_policy_experiment": {
+    "comparison": {
+      "behavior_relationship": {
+        "actions_identical": false,
+        "desired_identical": false,
+        "explanation": null,
+        "partial_fill_policy_exercised": null
+      },
+      "contribution_rows": [
+        {
+          "component": "spread_capture",
+          "delta": "-0.000200",
+          "left": "-0.051000",
+          "right": "-0.051200"
+        },
+        {
+          "component": "inventory_mtm",
+          "delta": "-0.006400",
+          "left": "-3.102400",
+          "right": "-3.108800"
+        },
+        {
+          "component": "fees",
+          "delta": "0.000000",
+          "left": "0.000000",
+          "right": "0.000000"
+        }
+      ],
+      "first_action_divergence": {
+        "left": {
+          "actions": [
+            {
+              "action": "retain",
+              "order_id": "order-00000090",
+              "reason": "unchanged",
+              "side": "buy"
+            },
+            {
+              "action": "retain",
+              "order_id": "order-00000091",
+              "reason": "keep_partial",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703989250000000
+        },
+        "left_behavior": {
+          "actions": [
+            {
+              "action": "retain",
+              "side": "buy"
+            },
+            {
+              "action": "retain",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703989250000000
+        },
+        "right": {
+          "actions": [
+            {
+              "action": "retain",
+              "order_id": "order-00000090",
+              "reason": "unchanged",
+              "side": "buy"
+            },
+            {
+              "action": "cancel",
+              "order_id": "order-00000091",
+              "reason": "target_size_changed",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703989250000000
+        },
+        "right_behavior": {
+          "actions": [
+            {
+              "action": "retain",
+              "side": "buy"
+            },
+            {
+              "action": "cancel",
+              "side": "sell"
+            }
+          ],
+          "time_ns": 1788703989250000000
+        },
+        "time_ns": 1788703989250000000
+      },
+      "first_desired_divergence": {
+        "left": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79707.80",
+              "quantity": "0.003",
+              "side": "sell"
+            },
+            "bid": {
+              "price": "79707.70",
+              "quantity": "0.003",
+              "side": "buy"
+            },
+            "reason": "join_bbo"
+          },
+          "time_ns": 1788704025750000000
+        },
+        "left_behavior": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79707.8",
+              "quantity": "0.003"
+            },
+            "bid": {
+              "price": "79707.7",
+              "quantity": "0.003"
+            }
+          },
+          "time_ns": 1788704025750000000
+        },
+        "right": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79707.80",
+              "quantity": "0.003",
+              "side": "sell"
+            },
+            "bid": {
+              "price": "79707.70",
+              "quantity": "0.001",
+              "side": "buy"
+            },
+            "reason": "join_bbo"
+          },
+          "time_ns": 1788704025750000000
+        },
+        "right_behavior": {
+          "risk_limited_target": {
+            "ask": {
+              "price": "79707.8",
+              "quantity": "0.003"
+            },
+            "bid": {
+              "price": "79707.7",
+              "quantity": "0.001"
+            }
+          },
+          "time_ns": 1788704025750000000
+        },
+        "time_ns": 1788704025750000000
+      },
+      "guard": {
+        "comparable": true,
+        "mode": "strategy_comparison",
+        "reasons": []
+      },
+      "pnl_delta_identity": {
+        "fee_contribution_delta": "0.000000",
+        "inventory_mtm_delta": "-0.006400",
+        "net_delta": "-0.006600",
+        "reconciled": true,
+        "residual": "0.000000",
+        "spread_delta": "-0.000200"
+      },
+      "warnings": []
+    },
+    "job_id": "f387c5048a10497e91dffd04ecc872b1",
+    "paths": [
+      "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/673aeb982ace-20089f14",
+      "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/2176d3014922-65c21cae"
+    ]
+  },
+  "runs": [
+    {
+      "audit": {
+        "ending_inventory": "0",
+        "fills": 0,
+        "ledger_rows": 213,
+        "performance": {
+          "cpu_seconds": 8.840462248,
+          "output_bytes": 495244,
+          "process_peak_rss_mib": 38.09375,
+          "sample_preparation_seconds": 5.51203265786171e-06,
+          "wall_seconds": 8.964057164033875
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "ea3e5093a57fc7cc5e0718ba076b14f28a51e881149939f5d429e8d7ec7c9bd5",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "0",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.00",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 0,
+          "ledger_rows": 213
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "0.00",
+          "net_pnl": "0.00",
+          "reconciled": true,
+          "residual": "0.00"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 0,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0",
+          "time_weighted_absolute_inventory": "0"
+        },
+        "representative_orders": [],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 0.0,
+            "sell": 0.0
+          },
+          "client_orders_at_end": [],
+          "clock_diagnostics": {
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "100000",
+          "ending_equity": "100000.00",
+          "ending_inventory": "0",
+          "ending_known_cash": "100000",
+          "ending_known_inventory": "0",
+          "entry_pending_seconds": {
+            "buy": 0.0,
+            "sell": 0.0
+          },
+          "execution": {
+            "activated_quantity": "0",
+            "filled_quantity": "0",
+            "order_lifetime_ns": "0",
+            "skipped_nontrade_quantity": "0"
+          },
+          "fee_charges": "0",
+          "fees": "0",
+          "fill_rate": null,
+          "full_fill_rate": null,
+          "gross_pnl": "0.00",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "0.00",
+          "markouts": {
+            "100": {
+              "coverage": null,
+              "drift_value": "0",
+              "markout_value": "0",
+              "observations": 0,
+              "quantity": "0",
+              "valid": 0,
+              "volume_weighted_markout": null,
+              "volume_weighted_midpoint_drift": null
+            },
+            "1000": {
+              "coverage": null,
+              "drift_value": "0",
+              "markout_value": "0",
+              "observations": 0,
+              "quantity": "0",
+              "valid": 0,
+              "volume_weighted_markout": null,
+              "volume_weighted_midpoint_drift": null
+            },
+            "5000": {
+              "coverage": null,
+              "drift_value": "0",
+              "markout_value": "0",
+              "observations": 0,
+              "quantity": "0",
+              "valid": 0,
+              "volume_weighted_markout": null,
+              "volume_weighted_midpoint_drift": null
+            }
+          },
+          "max_abs_inventory": "0",
+          "max_drawdown": "0",
+          "max_unreported_inventory": "0",
+          "mean_inventory": "0",
+          "net_pnl": "0.00",
+          "partial_fill_rate": null,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": null,
+          "quote_availability": {
+            "buy": 0.0,
+            "sell": 0.0
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 0.0,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "0",
+          "spread_capture_bps": null,
+          "spread_capture_per_unit": null
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E0",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/87f44e11f723-263a9104",
+      "performance": {
+        "cpu_seconds": 8.840462248,
+        "output_bytes": 495244,
+        "process_peak_rss_mib": 38.09375,
+        "sample_preparation_seconds": 5.51203265786171e-06,
+        "wall_seconds": 8.964057164033875
+      },
+      "repeat": 0,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0",
+        "fee": "0",
+        "levels": [],
+        "midpoint_adjustment": "0",
+        "net_pnl_reference": "0.00",
+        "original_net_pnl": "0.00",
+        "reason": "no_inventory",
+        "reference_only": true,
+        "requested_quantity": "0",
+        "residual_quantity": "0",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": null
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "0.0010",
+        "fills": 151,
+        "ledger_rows": 364,
+        "performance": {
+          "cpu_seconds": 10.520741804,
+          "output_bytes": 818291,
+          "process_peak_rss_mib": 41.1953125,
+          "sample_preparation_seconds": 4.326982889324427e-06,
+          "wall_seconds": 10.540563079994172
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "5e4b838d0fd267157df265ea4862c0dc76f4bcbf225fdd6d29145282c5d72436",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "-0.028850",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "-1.277200",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.000000",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 151,
+          "ledger_rows": 364
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\uac00\uc7a5 \ud070 \uc74c\uc218 \ud56d\ubaa9\uc740 \uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec (-1.277200 USDT)\uc785\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
+          "\ucde8\uc18c\u00b7\uac70\uc808\u00b7\ud45c\ubcf8 \uc885\ub8cc \uc8fc\ubb38\ub3c4 \uc0c1\ud0dc\ubcc4 \uccab \uc0ac\ub840\ub97c \ucd94\uac00\ud574 \ubbf8\uccb4\uacb0 \uc774\uc720\ub97c \ucd94\uc801\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "-1.306050",
+          "net_pnl": "-1.306050",
+          "reconciled": true,
+          "residual": "0.000000"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 259810000000,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0.43301666666666666666666666666666666666666666666667",
+          "time_weighted_absolute_inventory": "0.0064054083333333333333333333333333333333333333333333"
+        },
+        "representative_orders": [
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000006",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "favorable_spread_at_fill",
+            "side": "sell",
+            "spread_contribution": "0.00005",
+            "time_ns": 1788703812770000000
+          },
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000245",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "adverse_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "-0.01315",
+            "time_ns": 1788704222923000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000001",
+            "quantity": "0.001",
+            "reason": "max_order_age",
+            "selection_reason": "unfilled_terminal_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "CANCELED",
+            "time_ns": 1788703805020000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000016",
+            "quantity": "0.001",
+            "reason": "post_only_marketable",
+            "selection_reason": "rejected_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "REJECTED",
+            "time_ns": 1788703822510000000
+          }
+        ],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 1.44,
+            "sell": 0.86
+          },
+          "client_orders_at_end": [
+            {
+              "activation_ns": 1788704397510000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002391",
+              "event": "activate",
+              "order_id": "order-00000391",
+              "price": "79710.60",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "sell",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704397500000000,
+              "terminal_ns": null,
+              "time_ns": 1788704397510000000
+            },
+            {
+              "activation_ns": 1788704399760000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002400",
+              "event": "activate",
+              "order_id": "order-00000392",
+              "price": "79710.50",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "buy",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704399750000000,
+              "terminal_ns": null,
+              "time_ns": 1788704399760000000
+            }
+          ],
+          "clock_diagnostics": {
+            "fill_reports_received": 151,
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "99918.988500",
+          "ending_equity": "99998.693950",
+          "ending_inventory": "0.0010",
+          "ending_known_cash": "99918.988500",
+          "ending_known_inventory": "0.0010",
+          "entry_pending_seconds": {
+            "buy": 2.27,
+            "sell": 1.65
+          },
+          "execution": {
+            "activated": 383,
+            "activated_quantity": "0.383",
+            "cancel_pending_fills": 0,
+            "cancel_requests": 230,
+            "canceled": 230,
+            "censored": 2,
+            "fill_events": 151,
+            "filled": 151,
+            "filled_quantity": "0.1510",
+            "full_orders": 151,
+            "lot_rounded_quantity": "0.0111",
+            "order_lifetime_ns": "914119000000",
+            "orders_with_fill": 151,
+            "participation_capped_quantity": "0.0099",
+            "rejected": 9,
+            "replacement_downtime_ns": 31250000000,
+            "skipped_nontrade_quantity": "225.595",
+            "submitted": 392,
+            "trade_through_queue_bypass": "141.6540"
+          },
+          "fee_charges": "0",
+          "fees": "0.000000",
+          "fill_rate": 0.39425587467362927,
+          "full_fill_rate": 0.39425587467362927,
+          "gross_pnl": "-1.306050",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "-1.277200",
+          "markouts": {
+            "100": {
+              "coverage": 1.0,
+              "drift_value": "-0.423250",
+              "markout_value": "-0.452100",
+              "observations": 151,
+              "quantity": "0.1510",
+              "valid": 151,
+              "volume_weighted_markout": "-2.9940397350993377483443708609271523178807947019868",
+              "volume_weighted_midpoint_drift": "-2.8029801324503311258278145695364238410596026490066"
+            },
+            "1000": {
+              "coverage": 0.9933774834437086,
+              "drift_value": "-0.699200",
+              "markout_value": "-0.728100",
+              "observations": 151,
+              "quantity": "0.1500",
+              "valid": 150,
+              "volume_weighted_markout": "-4.854",
+              "volume_weighted_midpoint_drift": "-4.6613333333333333333333333333333333333333333333333"
+            },
+            "5000": {
+              "coverage": 0.9933774834437086,
+              "drift_value": "-1.264050",
+              "markout_value": "-1.292950",
+              "observations": 151,
+              "quantity": "0.1500",
+              "valid": 150,
+              "volume_weighted_markout": "-8.6196666666666666666666666666666666666666666666667",
+              "volume_weighted_midpoint_drift": "-8.427"
+            }
+          },
+          "max_abs_inventory": "0.0100",
+          "max_drawdown": "1.505950",
+          "max_unreported_inventory": "0.001",
+          "mean_inventory": "-0.005382945",
+          "net_pnl": "-1.306050",
+          "partial_fill_rate": 0.0,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": 0.39425587467362927,
+          "quote_availability": {
+            "buy": 0.912955,
+            "sell": 0.6105766666666667
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 31.25,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "-0.028850",
+          "spread_capture_bps": "-0.023982819241525022792904362836432599563250739774971",
+          "spread_capture_per_unit": "-0.19105960264900662251655629139072847682119205298013"
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E1",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-e8c381ee",
+      "performance": {
+        "cpu_seconds": 10.520741804,
+        "output_bytes": 818291,
+        "process_peak_rss_mib": 41.1953125,
+        "sample_preparation_seconds": 4.326982889324427e-06,
+        "wall_seconds": 10.540563079994172
+      },
+      "repeat": 0,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0.001",
+        "fee": "0.00000",
+        "levels": [
+          {
+            "price": "79705.40",
+            "quantity": "0.001"
+          }
+        ],
+        "midpoint_adjustment": "-0.00005",
+        "net_pnl_reference": "-1.306100",
+        "original_net_pnl": "-1.306050",
+        "reason": "complete_visible_depth_reference",
+        "reference_only": true,
+        "requested_quantity": "0.0010",
+        "residual_quantity": "0.0000",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": "79705.40"
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "0.0010",
+        "fills": 151,
+        "ledger_rows": 364,
+        "performance": {
+          "cpu_seconds": 11.054204209000002,
+          "output_bytes": 818287,
+          "process_peak_rss_mib": 41.1953125,
+          "sample_preparation_seconds": 4.369998350739479e-06,
+          "wall_seconds": 11.067949184973259
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "5e4b838d0fd267157df265ea4862c0dc76f4bcbf225fdd6d29145282c5d72436",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "-0.028850",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "-1.277200",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.000000",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 151,
+          "ledger_rows": 364
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\uac00\uc7a5 \ud070 \uc74c\uc218 \ud56d\ubaa9\uc740 \uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec (-1.277200 USDT)\uc785\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
+          "\ucde8\uc18c\u00b7\uac70\uc808\u00b7\ud45c\ubcf8 \uc885\ub8cc \uc8fc\ubb38\ub3c4 \uc0c1\ud0dc\ubcc4 \uccab \uc0ac\ub840\ub97c \ucd94\uac00\ud574 \ubbf8\uccb4\uacb0 \uc774\uc720\ub97c \ucd94\uc801\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "-1.306050",
+          "net_pnl": "-1.306050",
+          "reconciled": true,
+          "residual": "0.000000"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 259810000000,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0.43301666666666666666666666666666666666666666666667",
+          "time_weighted_absolute_inventory": "0.0064054083333333333333333333333333333333333333333333"
+        },
+        "representative_orders": [
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000006",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "favorable_spread_at_fill",
+            "side": "sell",
+            "spread_contribution": "0.00005",
+            "time_ns": 1788703812770000000
+          },
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000245",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "adverse_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "-0.01315",
+            "time_ns": 1788704222923000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000001",
+            "quantity": "0.001",
+            "reason": "max_order_age",
+            "selection_reason": "unfilled_terminal_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "CANCELED",
+            "time_ns": 1788703805020000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000016",
+            "quantity": "0.001",
+            "reason": "post_only_marketable",
+            "selection_reason": "rejected_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "REJECTED",
+            "time_ns": 1788703822510000000
+          }
+        ],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 1.44,
+            "sell": 0.86
+          },
+          "client_orders_at_end": [
+            {
+              "activation_ns": 1788704397510000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002391",
+              "event": "activate",
+              "order_id": "order-00000391",
+              "price": "79710.60",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "sell",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704397500000000,
+              "terminal_ns": null,
+              "time_ns": 1788704397510000000
+            },
+            {
+              "activation_ns": 1788704399760000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002400",
+              "event": "activate",
+              "order_id": "order-00000392",
+              "price": "79710.50",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "buy",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704399750000000,
+              "terminal_ns": null,
+              "time_ns": 1788704399760000000
+            }
+          ],
+          "clock_diagnostics": {
+            "fill_reports_received": 151,
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "99918.988500",
+          "ending_equity": "99998.693950",
+          "ending_inventory": "0.0010",
+          "ending_known_cash": "99918.988500",
+          "ending_known_inventory": "0.0010",
+          "entry_pending_seconds": {
+            "buy": 2.27,
+            "sell": 1.65
+          },
+          "execution": {
+            "activated": 383,
+            "activated_quantity": "0.383",
+            "cancel_pending_fills": 0,
+            "cancel_requests": 230,
+            "canceled": 230,
+            "censored": 2,
+            "fill_events": 151,
+            "filled": 151,
+            "filled_quantity": "0.1510",
+            "full_orders": 151,
+            "lot_rounded_quantity": "0.0111",
+            "order_lifetime_ns": "914119000000",
+            "orders_with_fill": 151,
+            "participation_capped_quantity": "0.0099",
+            "rejected": 9,
+            "replacement_downtime_ns": 31250000000,
+            "skipped_nontrade_quantity": "225.595",
+            "submitted": 392,
+            "trade_through_queue_bypass": "141.6540"
+          },
+          "fee_charges": "0",
+          "fees": "0.000000",
+          "fill_rate": 0.39425587467362927,
+          "full_fill_rate": 0.39425587467362927,
+          "gross_pnl": "-1.306050",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "-1.277200",
+          "markouts": {
+            "100": {
+              "coverage": 1.0,
+              "drift_value": "-0.423250",
+              "markout_value": "-0.452100",
+              "observations": 151,
+              "quantity": "0.1510",
+              "valid": 151,
+              "volume_weighted_markout": "-2.9940397350993377483443708609271523178807947019868",
+              "volume_weighted_midpoint_drift": "-2.8029801324503311258278145695364238410596026490066"
+            },
+            "1000": {
+              "coverage": 0.9933774834437086,
+              "drift_value": "-0.699200",
+              "markout_value": "-0.728100",
+              "observations": 151,
+              "quantity": "0.1500",
+              "valid": 150,
+              "volume_weighted_markout": "-4.854",
+              "volume_weighted_midpoint_drift": "-4.6613333333333333333333333333333333333333333333333"
+            },
+            "5000": {
+              "coverage": 0.9933774834437086,
+              "drift_value": "-1.264050",
+              "markout_value": "-1.292950",
+              "observations": 151,
+              "quantity": "0.1500",
+              "valid": 150,
+              "volume_weighted_markout": "-8.6196666666666666666666666666666666666666666666667",
+              "volume_weighted_midpoint_drift": "-8.427"
+            }
+          },
+          "max_abs_inventory": "0.0100",
+          "max_drawdown": "1.505950",
+          "max_unreported_inventory": "0.001",
+          "mean_inventory": "-0.005382945",
+          "net_pnl": "-1.306050",
+          "partial_fill_rate": 0.0,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": 0.39425587467362927,
+          "quote_availability": {
+            "buy": 0.912955,
+            "sell": 0.6105766666666667
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 31.25,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "-0.028850",
+          "spread_capture_bps": "-0.023982819241525022792904362836432599563250739774971",
+          "spread_capture_per_unit": "-0.19105960264900662251655629139072847682119205298013"
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E2",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/f0c3976a252b-76fd87a7",
+      "performance": {
+        "cpu_seconds": 11.054204209000002,
+        "output_bytes": 818287,
+        "process_peak_rss_mib": 41.1953125,
+        "sample_preparation_seconds": 4.369998350739479e-06,
+        "wall_seconds": 11.067949184973259
+      },
+      "repeat": 0,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0.001",
+        "fee": "0.00000",
+        "levels": [
+          {
+            "price": "79705.40",
+            "quantity": "0.001"
+          }
+        ],
+        "midpoint_adjustment": "-0.00005",
+        "net_pnl_reference": "-1.306100",
+        "original_net_pnl": "-1.306050",
+        "reason": "complete_visible_depth_reference",
+        "reference_only": true,
+        "requested_quantity": "0.0010",
+        "residual_quantity": "0.0000",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": "79705.40"
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "0.0050",
+        "fills": 135,
+        "ledger_rows": 348,
+        "performance": {
+          "cpu_seconds": 11.072689154999996,
+          "output_bytes": 805083,
+          "process_peak_rss_mib": 41.1953125,
+          "sample_preparation_seconds": 5.534966476261616e-06,
+          "wall_seconds": 11.095040309010074
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "330c5e2870e2d9d24cb3d07c47a02e38183c6251d5817380513ee6c271b87bab",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "-0.024550",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "-1.329200",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.000000",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 135,
+          "ledger_rows": 348
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\uac00\uc7a5 \ud070 \uc74c\uc218 \ud56d\ubaa9\uc740 \uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec (-1.329200 USDT)\uc785\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
+          "\ucde8\uc18c\u00b7\uac70\uc808\u00b7\ud45c\ubcf8 \uc885\ub8cc \uc8fc\ubb38\ub3c4 \uc0c1\ud0dc\ubcc4 \uccab \uc0ac\ub840\ub97c \ucd94\uac00\ud574 \ubbf8\uccb4\uacb0 \uc774\uc720\ub97c \ucd94\uc801\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "-1.353750",
+          "net_pnl": "-1.353750",
+          "reconciled": true,
+          "residual": "0.000000"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 0,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0",
+          "time_weighted_absolute_inventory": "0.0035856666666666666666666666666666666666666666666667"
+        },
+        "representative_orders": [
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000006",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "favorable_spread_at_fill",
+            "side": "sell",
+            "spread_contribution": "0.00005",
+            "time_ns": 1788703812770000000
+          },
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000232",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "adverse_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "-0.01315",
+            "time_ns": 1788704222923000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000001",
+            "quantity": "0.001",
+            "reason": "max_order_age",
+            "selection_reason": "unfilled_terminal_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "CANCELED",
+            "time_ns": 1788703805020000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000016",
+            "quantity": "0.001",
+            "reason": "post_only_marketable",
+            "selection_reason": "rejected_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "REJECTED",
+            "time_ns": 1788703822510000000
+          }
+        ],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 1.4,
+            "sell": 0.85
+          },
+          "client_orders_at_end": [
+            {
+              "activation_ns": 1788704397510000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002391",
+              "event": "activate",
+              "order_id": "order-00000367",
+              "price": "79710.60",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "sell",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704397500000000,
+              "terminal_ns": null,
+              "time_ns": 1788704397510000000
+            },
+            {
+              "activation_ns": 1788704399760000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002400",
+              "event": "activate",
+              "order_id": "order-00000368",
+              "price": "79710.50",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "buy",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704399750000000,
+              "terminal_ns": null,
+              "time_ns": 1788704399760000000
+            }
+          ],
+          "clock_diagnostics": {
+            "fill_reports_received": 135,
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "99600.119000",
+          "ending_equity": "99998.646250",
+          "ending_inventory": "0.0050",
+          "ending_known_cash": "99600.119000",
+          "ending_known_inventory": "0.0050",
+          "entry_pending_seconds": {
+            "buy": 2.15,
+            "sell": 1.53
+          },
+          "execution": {
+            "activated": 362,
+            "activated_quantity": "0.362",
+            "cancel_pending_fills": 0,
+            "cancel_requests": 225,
+            "canceled": 225,
+            "censored": 2,
+            "fill_events": 135,
+            "filled": 135,
+            "filled_quantity": "0.1350",
+            "full_orders": 135,
+            "lot_rounded_quantity": "0.0089",
+            "order_lifetime_ns": "889262000000",
+            "orders_with_fill": 135,
+            "participation_capped_quantity": "0.0081",
+            "rejected": 6,
+            "replacement_downtime_ns": 30000000000,
+            "skipped_nontrade_quantity": "210.197",
+            "submitted": 368,
+            "trade_through_queue_bypass": "141.8975"
+          },
+          "fee_charges": "0",
+          "fees": "0.000000",
+          "fill_rate": 0.3729281767955801,
+          "full_fill_rate": 0.3729281767955801,
+          "gross_pnl": "-1.353750",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "-1.329200",
+          "markouts": {
+            "100": {
+              "coverage": 1.0,
+              "drift_value": "-0.399550",
+              "markout_value": "-0.424100",
+              "observations": 135,
+              "quantity": "0.1350",
+              "valid": 135,
+              "volume_weighted_markout": "-3.1414814814814814814814814814814814814814814814815",
+              "volume_weighted_midpoint_drift": "-2.9596296296296296296296296296296296296296296296296"
+            },
+            "1000": {
+              "coverage": 0.9925925925925926,
+              "drift_value": "-0.629000",
+              "markout_value": "-0.653600",
+              "observations": 135,
+              "quantity": "0.1340",
+              "valid": 134,
+              "volume_weighted_markout": "-4.8776119402985074626865671641791044776119402985075",
+              "volume_weighted_midpoint_drift": "-4.6940298507462686567164179104477611940298507462687"
+            },
+            "5000": {
+              "coverage": 0.9925925925925926,
+              "drift_value": "-1.146050",
+              "markout_value": "-1.170650",
+              "observations": 135,
+              "quantity": "0.1340",
+              "valid": 134,
+              "volume_weighted_markout": "-8.7361940298507462686567164179104477611940298507463",
+              "volume_weighted_midpoint_drift": "-8.5526119402985074626865671641791044776119402985075"
+            }
+          },
+          "max_abs_inventory": "0.0060",
+          "max_drawdown": "1.373300",
+          "max_unreported_inventory": "0.001",
+          "mean_inventory": "-0.00243392",
+          "net_pnl": "-1.353750",
+          "partial_fill_rate": 0.0,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": 0.3729281767955801,
+          "quote_availability": {
+            "buy": 0.898945,
+            "sell": 0.5831583333333333
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 30.0,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "-0.024550",
+          "spread_capture_bps": "-0.022826880922809503063718189874777636385992561534133",
+          "spread_capture_per_unit": "-0.18185185185185185185185185185185185185185185185185"
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E3",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/f97e4a4eb2d5-180dedec",
+      "performance": {
+        "cpu_seconds": 11.072689154999996,
+        "output_bytes": 805083,
+        "process_peak_rss_mib": 41.1953125,
+        "sample_preparation_seconds": 5.534966476261616e-06,
+        "wall_seconds": 11.095040309010074
+      },
+      "repeat": 0,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0.005",
+        "fee": "0.00000",
+        "levels": [
+          {
+            "price": "79705.40",
+            "quantity": "0.005"
+          }
+        ],
+        "midpoint_adjustment": "-0.00025",
+        "net_pnl_reference": "-1.354000",
+        "original_net_pnl": "-1.353750",
+        "reason": "complete_visible_depth_reference",
+        "reference_only": true,
+        "requested_quantity": "0.0050",
+        "residual_quantity": "0.0000",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": "79705.40"
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "-0.0050",
+        "fills": 61,
+        "ledger_rows": 274,
+        "performance": {
+          "cpu_seconds": 10.245376783999994,
+          "output_bytes": 781531,
+          "process_peak_rss_mib": 41.37109375,
+          "sample_preparation_seconds": 3.937981091439724e-06,
+          "wall_seconds": 10.259152156999335
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "979dda4deb76e4f8515810fe3bec6bed0dcb787b32f4bcfe889a9f89fb4d933d",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "-0.001550",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "-0.087600",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.000000",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 61,
+          "ledger_rows": 274
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\uac00\uc7a5 \ud070 \uc74c\uc218 \ud56d\ubaa9\uc740 \uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec (-0.087600 USDT)\uc785\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
+          "\ucde8\uc18c\u00b7\uac70\uc808\u00b7\ud45c\ubcf8 \uc885\ub8cc \uc8fc\ubb38\ub3c4 \uc0c1\ud0dc\ubcc4 \uccab \uc0ac\ub840\ub97c \ucd94\uac00\ud574 \ubbf8\uccb4\uacb0 \uc774\uc720\ub97c \ucd94\uc801\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "-0.089150",
+          "net_pnl": "-0.089150",
+          "reconciled": true,
+          "residual": "0.000000"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 88687000000,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0.14781166666666666666666666666666666666666666666667",
+          "time_weighted_absolute_inventory": "0.00433081"
+        },
+        "representative_orders": [
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000019",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "favorable_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "0.00005",
+            "time_ns": 1788703822175000000
+          },
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000426",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "adverse_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "-0.00445",
+            "time_ns": 1788704328949000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000002",
+            "quantity": "0.001",
+            "reason": "flow_withdraw_buy",
+            "selection_reason": "unfilled_terminal_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "CANCELED",
+            "time_ns": 1788703801760000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000320",
+            "quantity": "0.001",
+            "reason": "post_only_marketable",
+            "selection_reason": "rejected_order",
+            "side": "sell",
+            "spread_contribution": null,
+            "status": "REJECTED",
+            "time_ns": 1788704202510000000
+          }
+        ],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 2.32,
+            "sell": 1.91
+          },
+          "client_orders_at_end": [
+            {
+              "activation_ns": 1788704399760000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002400",
+              "event": "activate",
+              "order_id": "order-00000488",
+              "price": "79710.60",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "sell",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704399750000000,
+              "terminal_ns": null,
+              "time_ns": 1788704399760000000
+            }
+          ],
+          "clock_diagnostics": {
+            "fill_reports_received": 61,
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "100398.438100",
+          "ending_equity": "99999.910850",
+          "ending_inventory": "-0.0050",
+          "ending_known_cash": "100398.438100",
+          "ending_known_inventory": "-0.0050",
+          "entry_pending_seconds": {
+            "buy": 2.61,
+            "sell": 2.27
+          },
+          "execution": {
+            "activated": 485,
+            "activated_quantity": "0.485",
+            "cancel_pending_fills": 0,
+            "cancel_requests": 423,
+            "canceled": 423,
+            "censored": 1,
+            "fill_events": 61,
+            "filled": 61,
+            "filled_quantity": "0.0610",
+            "full_orders": 61,
+            "lot_rounded_quantity": "0.0004",
+            "order_lifetime_ns": "668854000000",
+            "orders_with_fill": 61,
+            "participation_capped_quantity": "0.0016",
+            "rejected": 3,
+            "replacement_downtime_ns": 33250000000,
+            "skipped_nontrade_quantity": "319.172",
+            "submitted": 488,
+            "trade_through_queue_bypass": "91.6295"
+          },
+          "fee_charges": "0",
+          "fees": "0.000000",
+          "fill_rate": 0.12577319587628866,
+          "full_fill_rate": 0.12577319587628866,
+          "gross_pnl": "-0.089150",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "-0.087600",
+          "markouts": {
+            "100": {
+              "coverage": 1.0,
+              "drift_value": "-0.258050",
+              "markout_value": "-0.259600",
+              "observations": 61,
+              "quantity": "0.0610",
+              "valid": 61,
+              "volume_weighted_markout": "-4.2557377049180327868852459016393442622950819672131",
+              "volume_weighted_midpoint_drift": "-4.2303278688524590163934426229508196721311475409836"
+            },
+            "1000": {
+              "coverage": 1.0,
+              "drift_value": "-0.406300",
+              "markout_value": "-0.407850",
+              "observations": 61,
+              "quantity": "0.0610",
+              "valid": 61,
+              "volume_weighted_markout": "-6.6860655737704918032786885245901639344262295081967",
+              "volume_weighted_midpoint_drift": "-6.6606557377049180327868852459016393442622950819672"
+            },
+            "5000": {
+              "coverage": 1.0,
+              "drift_value": "-0.529300",
+              "markout_value": "-0.530850",
+              "observations": 61,
+              "quantity": "0.0610",
+              "valid": 61,
+              "volume_weighted_markout": "-8.7024590163934426229508196721311475409836065573770",
+              "volume_weighted_midpoint_drift": "-8.6770491803278688524590163934426229508196721311475"
+            }
+          },
+          "max_abs_inventory": "0.0100",
+          "max_drawdown": "1.451850",
+          "max_unreported_inventory": "0.001",
+          "mean_inventory": "-0.00420098",
+          "net_pnl": "-0.089150",
+          "partial_fill_rate": 0.0,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": 0.12577319587628866,
+          "quote_availability": {
+            "buy": 0.55581,
+            "sell": 0.5589466666666667
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 33.25,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "-0.001550",
+          "spread_capture_bps": "-0.0031836666215175025809130740005918211954321038037533",
+          "spread_capture_per_unit": "-0.025409836065573770491803278688524590163934426229508"
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E4",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/2ac93b144dd9-88006414",
+      "performance": {
+        "cpu_seconds": 10.245376783999994,
+        "output_bytes": 781531,
+        "process_peak_rss_mib": 41.37109375,
+        "sample_preparation_seconds": 3.937981091439724e-06,
+        "wall_seconds": 10.259152156999335
+      },
+      "repeat": 0,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0.005",
+        "fee": "0.00000",
+        "levels": [
+          {
+            "price": "79705.50",
+            "quantity": "0.005"
+          }
+        ],
+        "midpoint_adjustment": "-0.00025",
+        "net_pnl_reference": "-0.089400",
+        "original_net_pnl": "-0.089150",
+        "reason": "complete_visible_depth_reference",
+        "reference_only": true,
+        "requested_quantity": "0.0050",
+        "residual_quantity": "0.0000",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": "79705.50"
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "-0.0050",
+        "fills": 61,
+        "ledger_rows": 274,
+        "performance": {
+          "cpu_seconds": 37.334393086999995,
+          "output_bytes": 781531,
+          "process_peak_rss_mib": 438.78515625,
+          "sample_preparation_seconds": 3.895023837685585e-06,
+          "wall_seconds": 38.603323576040566
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "979dda4deb76e4f8515810fe3bec6bed0dcb787b32f4bcfe889a9f89fb4d933d",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "-0.001550",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "-0.087600",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.000000",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 61,
+          "ledger_rows": 274
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\uac00\uc7a5 \ud070 \uc74c\uc218 \ud56d\ubaa9\uc740 \uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec (-0.087600 USDT)\uc785\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
+          "\ucde8\uc18c\u00b7\uac70\uc808\u00b7\ud45c\ubcf8 \uc885\ub8cc \uc8fc\ubb38\ub3c4 \uc0c1\ud0dc\ubcc4 \uccab \uc0ac\ub840\ub97c \ucd94\uac00\ud574 \ubbf8\uccb4\uacb0 \uc774\uc720\ub97c \ucd94\uc801\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "-0.089150",
+          "net_pnl": "-0.089150",
+          "reconciled": true,
+          "residual": "0.000000"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 88687000000,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0.14781166666666666666666666666666666666666666666667",
+          "time_weighted_absolute_inventory": "0.00433081"
+        },
+        "representative_orders": [
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000019",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "favorable_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "0.00005",
+            "time_ns": 1788703822175000000
+          },
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000426",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "adverse_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "-0.00445",
+            "time_ns": 1788704328949000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000002",
+            "quantity": "0.001",
+            "reason": "flow_withdraw_buy",
+            "selection_reason": "unfilled_terminal_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "CANCELED",
+            "time_ns": 1788703801760000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000320",
+            "quantity": "0.001",
+            "reason": "post_only_marketable",
+            "selection_reason": "rejected_order",
+            "side": "sell",
+            "spread_contribution": null,
+            "status": "REJECTED",
+            "time_ns": 1788704202510000000
+          }
+        ],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 2.32,
+            "sell": 1.91
+          },
+          "client_orders_at_end": [
+            {
+              "activation_ns": 1788704399760000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002400",
+              "event": "activate",
+              "order_id": "order-00000488",
+              "price": "79710.60",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "sell",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704399750000000,
+              "terminal_ns": null,
+              "time_ns": 1788704399760000000
+            }
+          ],
+          "clock_diagnostics": {
+            "fill_reports_received": 61,
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "100398.438100",
+          "ending_equity": "99999.910850",
+          "ending_inventory": "-0.0050",
+          "ending_known_cash": "100398.438100",
+          "ending_known_inventory": "-0.0050",
+          "entry_pending_seconds": {
+            "buy": 2.61,
+            "sell": 2.27
+          },
+          "execution": {
+            "activated": 485,
+            "activated_quantity": "0.485",
+            "cancel_pending_fills": 0,
+            "cancel_requests": 423,
+            "canceled": 423,
+            "censored": 1,
+            "fill_events": 61,
+            "filled": 61,
+            "filled_quantity": "0.0610",
+            "full_orders": 61,
+            "lot_rounded_quantity": "0.0004",
+            "order_lifetime_ns": "668854000000",
+            "orders_with_fill": 61,
+            "participation_capped_quantity": "0.0016",
+            "rejected": 3,
+            "replacement_downtime_ns": 33250000000,
+            "skipped_nontrade_quantity": "319.172",
+            "submitted": 488,
+            "trade_through_queue_bypass": "91.6295"
+          },
+          "fee_charges": "0",
+          "fees": "0.000000",
+          "fill_rate": 0.12577319587628866,
+          "full_fill_rate": 0.12577319587628866,
+          "gross_pnl": "-0.089150",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "-0.087600",
+          "markouts": {
+            "100": {
+              "coverage": 1.0,
+              "drift_value": "-0.258050",
+              "markout_value": "-0.259600",
+              "observations": 61,
+              "quantity": "0.0610",
+              "valid": 61,
+              "volume_weighted_markout": "-4.2557377049180327868852459016393442622950819672131",
+              "volume_weighted_midpoint_drift": "-4.2303278688524590163934426229508196721311475409836"
+            },
+            "1000": {
+              "coverage": 1.0,
+              "drift_value": "-0.406300",
+              "markout_value": "-0.407850",
+              "observations": 61,
+              "quantity": "0.0610",
+              "valid": 61,
+              "volume_weighted_markout": "-6.6860655737704918032786885245901639344262295081967",
+              "volume_weighted_midpoint_drift": "-6.6606557377049180327868852459016393442622950819672"
+            },
+            "5000": {
+              "coverage": 1.0,
+              "drift_value": "-0.529300",
+              "markout_value": "-0.530850",
+              "observations": 61,
+              "quantity": "0.0610",
+              "valid": 61,
+              "volume_weighted_markout": "-8.7024590163934426229508196721311475409836065573770",
+              "volume_weighted_midpoint_drift": "-8.6770491803278688524590163934426229508196721311475"
+            }
+          },
+          "max_abs_inventory": "0.0100",
+          "max_drawdown": "1.451850",
+          "max_unreported_inventory": "0.001",
+          "mean_inventory": "-0.00420098",
+          "net_pnl": "-0.089150",
+          "partial_fill_rate": 0.0,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": 0.12577319587628866,
+          "quote_availability": {
+            "buy": 0.55581,
+            "sell": 0.5589466666666667
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 33.25,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "-0.001550",
+          "spread_capture_bps": "-0.0031836666215175025809130740005918211954321038037533",
+          "spread_capture_per_unit": "-0.025409836065573770491803278688524590163934426229508"
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E4",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/2ac93b144dd9-a21eaa7c",
+      "performance": {
+        "cpu_seconds": 37.334393086999995,
+        "output_bytes": 781531,
+        "process_peak_rss_mib": 438.78515625,
+        "sample_preparation_seconds": 3.895023837685585e-06,
+        "wall_seconds": 38.603323576040566
+      },
+      "repeat": 1,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0.005",
+        "fee": "0.00000",
+        "levels": [
+          {
+            "price": "79705.50",
+            "quantity": "0.005"
+          }
+        ],
+        "midpoint_adjustment": "-0.00025",
+        "net_pnl_reference": "-0.089400",
+        "original_net_pnl": "-0.089150",
+        "reason": "complete_visible_depth_reference",
+        "reference_only": true,
+        "requested_quantity": "0.0050",
+        "residual_quantity": "0.0000",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": "79705.50"
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "0.0050",
+        "fills": 135,
+        "ledger_rows": 348,
+        "performance": {
+          "cpu_seconds": 23.374393335000008,
+          "output_bytes": 805083,
+          "process_peak_rss_mib": 438.78515625,
+          "sample_preparation_seconds": 5.900044925510883e-06,
+          "wall_seconds": 23.438964227971155
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "330c5e2870e2d9d24cb3d07c47a02e38183c6251d5817380513ee6c271b87bab",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "-0.024550",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "-1.329200",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.000000",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 135,
+          "ledger_rows": 348
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\uac00\uc7a5 \ud070 \uc74c\uc218 \ud56d\ubaa9\uc740 \uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec (-1.329200 USDT)\uc785\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
+          "\ucde8\uc18c\u00b7\uac70\uc808\u00b7\ud45c\ubcf8 \uc885\ub8cc \uc8fc\ubb38\ub3c4 \uc0c1\ud0dc\ubcc4 \uccab \uc0ac\ub840\ub97c \ucd94\uac00\ud574 \ubbf8\uccb4\uacb0 \uc774\uc720\ub97c \ucd94\uc801\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "-1.353750",
+          "net_pnl": "-1.353750",
+          "reconciled": true,
+          "residual": "0.000000"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 0,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0",
+          "time_weighted_absolute_inventory": "0.0035856666666666666666666666666666666666666666666667"
+        },
+        "representative_orders": [
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000006",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "favorable_spread_at_fill",
+            "side": "sell",
+            "spread_contribution": "0.00005",
+            "time_ns": 1788703812770000000
+          },
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000232",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "adverse_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "-0.01315",
+            "time_ns": 1788704222923000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000001",
+            "quantity": "0.001",
+            "reason": "max_order_age",
+            "selection_reason": "unfilled_terminal_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "CANCELED",
+            "time_ns": 1788703805020000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000016",
+            "quantity": "0.001",
+            "reason": "post_only_marketable",
+            "selection_reason": "rejected_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "REJECTED",
+            "time_ns": 1788703822510000000
+          }
+        ],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 1.4,
+            "sell": 0.85
+          },
+          "client_orders_at_end": [
+            {
+              "activation_ns": 1788704397510000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002391",
+              "event": "activate",
+              "order_id": "order-00000367",
+              "price": "79710.60",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "sell",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704397500000000,
+              "terminal_ns": null,
+              "time_ns": 1788704397510000000
+            },
+            {
+              "activation_ns": 1788704399760000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002400",
+              "event": "activate",
+              "order_id": "order-00000368",
+              "price": "79710.50",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "buy",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704399750000000,
+              "terminal_ns": null,
+              "time_ns": 1788704399760000000
+            }
+          ],
+          "clock_diagnostics": {
+            "fill_reports_received": 135,
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "99600.119000",
+          "ending_equity": "99998.646250",
+          "ending_inventory": "0.0050",
+          "ending_known_cash": "99600.119000",
+          "ending_known_inventory": "0.0050",
+          "entry_pending_seconds": {
+            "buy": 2.15,
+            "sell": 1.53
+          },
+          "execution": {
+            "activated": 362,
+            "activated_quantity": "0.362",
+            "cancel_pending_fills": 0,
+            "cancel_requests": 225,
+            "canceled": 225,
+            "censored": 2,
+            "fill_events": 135,
+            "filled": 135,
+            "filled_quantity": "0.1350",
+            "full_orders": 135,
+            "lot_rounded_quantity": "0.0089",
+            "order_lifetime_ns": "889262000000",
+            "orders_with_fill": 135,
+            "participation_capped_quantity": "0.0081",
+            "rejected": 6,
+            "replacement_downtime_ns": 30000000000,
+            "skipped_nontrade_quantity": "210.197",
+            "submitted": 368,
+            "trade_through_queue_bypass": "141.8975"
+          },
+          "fee_charges": "0",
+          "fees": "0.000000",
+          "fill_rate": 0.3729281767955801,
+          "full_fill_rate": 0.3729281767955801,
+          "gross_pnl": "-1.353750",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "-1.329200",
+          "markouts": {
+            "100": {
+              "coverage": 1.0,
+              "drift_value": "-0.399550",
+              "markout_value": "-0.424100",
+              "observations": 135,
+              "quantity": "0.1350",
+              "valid": 135,
+              "volume_weighted_markout": "-3.1414814814814814814814814814814814814814814814815",
+              "volume_weighted_midpoint_drift": "-2.9596296296296296296296296296296296296296296296296"
+            },
+            "1000": {
+              "coverage": 0.9925925925925926,
+              "drift_value": "-0.629000",
+              "markout_value": "-0.653600",
+              "observations": 135,
+              "quantity": "0.1340",
+              "valid": 134,
+              "volume_weighted_markout": "-4.8776119402985074626865671641791044776119402985075",
+              "volume_weighted_midpoint_drift": "-4.6940298507462686567164179104477611940298507462687"
+            },
+            "5000": {
+              "coverage": 0.9925925925925926,
+              "drift_value": "-1.146050",
+              "markout_value": "-1.170650",
+              "observations": 135,
+              "quantity": "0.1340",
+              "valid": 134,
+              "volume_weighted_markout": "-8.7361940298507462686567164179104477611940298507463",
+              "volume_weighted_midpoint_drift": "-8.5526119402985074626865671641791044776119402985075"
+            }
+          },
+          "max_abs_inventory": "0.0060",
+          "max_drawdown": "1.373300",
+          "max_unreported_inventory": "0.001",
+          "mean_inventory": "-0.00243392",
+          "net_pnl": "-1.353750",
+          "partial_fill_rate": 0.0,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": 0.3729281767955801,
+          "quote_availability": {
+            "buy": 0.898945,
+            "sell": 0.5831583333333333
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 30.0,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "-0.024550",
+          "spread_capture_bps": "-0.022826880922809503063718189874777636385992561534133",
+          "spread_capture_per_unit": "-0.18185185185185185185185185185185185185185185185185"
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E3",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/f97e4a4eb2d5-d1f95bc5",
+      "performance": {
+        "cpu_seconds": 23.374393335000008,
+        "output_bytes": 805083,
+        "process_peak_rss_mib": 438.78515625,
+        "sample_preparation_seconds": 5.900044925510883e-06,
+        "wall_seconds": 23.438964227971155
+      },
+      "repeat": 1,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0.005",
+        "fee": "0.00000",
+        "levels": [
+          {
+            "price": "79705.40",
+            "quantity": "0.005"
+          }
+        ],
+        "midpoint_adjustment": "-0.00025",
+        "net_pnl_reference": "-1.354000",
+        "original_net_pnl": "-1.353750",
+        "reason": "complete_visible_depth_reference",
+        "reference_only": true,
+        "requested_quantity": "0.0050",
+        "residual_quantity": "0.0000",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": "79705.40"
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "0.0010",
+        "fills": 151,
+        "ledger_rows": 364,
+        "performance": {
+          "cpu_seconds": 24.201172966,
+          "output_bytes": 818287,
+          "process_peak_rss_mib": 438.78515625,
+          "sample_preparation_seconds": 5.2638002671301365e-05,
+          "wall_seconds": 24.271466264966875
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "5e4b838d0fd267157df265ea4862c0dc76f4bcbf225fdd6d29145282c5d72436",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "-0.028850",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "-1.277200",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.000000",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 151,
+          "ledger_rows": 364
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\uac00\uc7a5 \ud070 \uc74c\uc218 \ud56d\ubaa9\uc740 \uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec (-1.277200 USDT)\uc785\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
+          "\ucde8\uc18c\u00b7\uac70\uc808\u00b7\ud45c\ubcf8 \uc885\ub8cc \uc8fc\ubb38\ub3c4 \uc0c1\ud0dc\ubcc4 \uccab \uc0ac\ub840\ub97c \ucd94\uac00\ud574 \ubbf8\uccb4\uacb0 \uc774\uc720\ub97c \ucd94\uc801\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "-1.306050",
+          "net_pnl": "-1.306050",
+          "reconciled": true,
+          "residual": "0.000000"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 259810000000,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0.43301666666666666666666666666666666666666666666667",
+          "time_weighted_absolute_inventory": "0.0064054083333333333333333333333333333333333333333333"
+        },
+        "representative_orders": [
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000006",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "favorable_spread_at_fill",
+            "side": "sell",
+            "spread_contribution": "0.00005",
+            "time_ns": 1788703812770000000
+          },
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000245",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "adverse_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "-0.01315",
+            "time_ns": 1788704222923000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000001",
+            "quantity": "0.001",
+            "reason": "max_order_age",
+            "selection_reason": "unfilled_terminal_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "CANCELED",
+            "time_ns": 1788703805020000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000016",
+            "quantity": "0.001",
+            "reason": "post_only_marketable",
+            "selection_reason": "rejected_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "REJECTED",
+            "time_ns": 1788703822510000000
+          }
+        ],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 1.44,
+            "sell": 0.86
+          },
+          "client_orders_at_end": [
+            {
+              "activation_ns": 1788704397510000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002391",
+              "event": "activate",
+              "order_id": "order-00000391",
+              "price": "79710.60",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "sell",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704397500000000,
+              "terminal_ns": null,
+              "time_ns": 1788704397510000000
+            },
+            {
+              "activation_ns": 1788704399760000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002400",
+              "event": "activate",
+              "order_id": "order-00000392",
+              "price": "79710.50",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "buy",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704399750000000,
+              "terminal_ns": null,
+              "time_ns": 1788704399760000000
+            }
+          ],
+          "clock_diagnostics": {
+            "fill_reports_received": 151,
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "99918.988500",
+          "ending_equity": "99998.693950",
+          "ending_inventory": "0.0010",
+          "ending_known_cash": "99918.988500",
+          "ending_known_inventory": "0.0010",
+          "entry_pending_seconds": {
+            "buy": 2.27,
+            "sell": 1.65
+          },
+          "execution": {
+            "activated": 383,
+            "activated_quantity": "0.383",
+            "cancel_pending_fills": 0,
+            "cancel_requests": 230,
+            "canceled": 230,
+            "censored": 2,
+            "fill_events": 151,
+            "filled": 151,
+            "filled_quantity": "0.1510",
+            "full_orders": 151,
+            "lot_rounded_quantity": "0.0111",
+            "order_lifetime_ns": "914119000000",
+            "orders_with_fill": 151,
+            "participation_capped_quantity": "0.0099",
+            "rejected": 9,
+            "replacement_downtime_ns": 31250000000,
+            "skipped_nontrade_quantity": "225.595",
+            "submitted": 392,
+            "trade_through_queue_bypass": "141.6540"
+          },
+          "fee_charges": "0",
+          "fees": "0.000000",
+          "fill_rate": 0.39425587467362927,
+          "full_fill_rate": 0.39425587467362927,
+          "gross_pnl": "-1.306050",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "-1.277200",
+          "markouts": {
+            "100": {
+              "coverage": 1.0,
+              "drift_value": "-0.423250",
+              "markout_value": "-0.452100",
+              "observations": 151,
+              "quantity": "0.1510",
+              "valid": 151,
+              "volume_weighted_markout": "-2.9940397350993377483443708609271523178807947019868",
+              "volume_weighted_midpoint_drift": "-2.8029801324503311258278145695364238410596026490066"
+            },
+            "1000": {
+              "coverage": 0.9933774834437086,
+              "drift_value": "-0.699200",
+              "markout_value": "-0.728100",
+              "observations": 151,
+              "quantity": "0.1500",
+              "valid": 150,
+              "volume_weighted_markout": "-4.854",
+              "volume_weighted_midpoint_drift": "-4.6613333333333333333333333333333333333333333333333"
+            },
+            "5000": {
+              "coverage": 0.9933774834437086,
+              "drift_value": "-1.264050",
+              "markout_value": "-1.292950",
+              "observations": 151,
+              "quantity": "0.1500",
+              "valid": 150,
+              "volume_weighted_markout": "-8.6196666666666666666666666666666666666666666666667",
+              "volume_weighted_midpoint_drift": "-8.427"
+            }
+          },
+          "max_abs_inventory": "0.0100",
+          "max_drawdown": "1.505950",
+          "max_unreported_inventory": "0.001",
+          "mean_inventory": "-0.005382945",
+          "net_pnl": "-1.306050",
+          "partial_fill_rate": 0.0,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": 0.39425587467362927,
+          "quote_availability": {
+            "buy": 0.912955,
+            "sell": 0.6105766666666667
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 31.25,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "-0.028850",
+          "spread_capture_bps": "-0.023982819241525022792904362836432599563250739774971",
+          "spread_capture_per_unit": "-0.19105960264900662251655629139072847682119205298013"
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E2",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/f0c3976a252b-39d8c15f",
+      "performance": {
+        "cpu_seconds": 24.201172966,
+        "output_bytes": 818287,
+        "process_peak_rss_mib": 438.78515625,
+        "sample_preparation_seconds": 5.2638002671301365e-05,
+        "wall_seconds": 24.271466264966875
+      },
+      "repeat": 1,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0.001",
+        "fee": "0.00000",
+        "levels": [
+          {
+            "price": "79705.40",
+            "quantity": "0.001"
+          }
+        ],
+        "midpoint_adjustment": "-0.00005",
+        "net_pnl_reference": "-1.306100",
+        "original_net_pnl": "-1.306050",
+        "reason": "complete_visible_depth_reference",
+        "reference_only": true,
+        "requested_quantity": "0.0010",
+        "residual_quantity": "0.0000",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": "79705.40"
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "0.0010",
+        "fills": 151,
+        "ledger_rows": 364,
+        "performance": {
+          "cpu_seconds": 25.609291654999993,
+          "output_bytes": 818291,
+          "process_peak_rss_mib": 438.78515625,
+          "sample_preparation_seconds": 4.207948222756386e-06,
+          "wall_seconds": 25.721843046019785
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "5e4b838d0fd267157df265ea4862c0dc76f4bcbf225fdd6d29145282c5d72436",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "-0.028850",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "-1.277200",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.000000",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 151,
+          "ledger_rows": 364
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\uac00\uc7a5 \ud070 \uc74c\uc218 \ud56d\ubaa9\uc740 \uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec (-1.277200 USDT)\uc785\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
+          "\ucde8\uc18c\u00b7\uac70\uc808\u00b7\ud45c\ubcf8 \uc885\ub8cc \uc8fc\ubb38\ub3c4 \uc0c1\ud0dc\ubcc4 \uccab \uc0ac\ub840\ub97c \ucd94\uac00\ud574 \ubbf8\uccb4\uacb0 \uc774\uc720\ub97c \ucd94\uc801\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "-1.306050",
+          "net_pnl": "-1.306050",
+          "reconciled": true,
+          "residual": "0.000000"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 259810000000,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0.43301666666666666666666666666666666666666666666667",
+          "time_weighted_absolute_inventory": "0.0064054083333333333333333333333333333333333333333333"
+        },
+        "representative_orders": [
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000006",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "favorable_spread_at_fill",
+            "side": "sell",
+            "spread_contribution": "0.00005",
+            "time_ns": 1788703812770000000
+          },
+          {
+            "fee": "0.00000",
+            "order_id": "order-00000245",
+            "quantity": "0.001",
+            "reason": "trade_through",
+            "selection_reason": "adverse_spread_at_fill",
+            "side": "buy",
+            "spread_contribution": "-0.01315",
+            "time_ns": 1788704222923000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000001",
+            "quantity": "0.001",
+            "reason": "max_order_age",
+            "selection_reason": "unfilled_terminal_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "CANCELED",
+            "time_ns": 1788703805020000000
+          },
+          {
+            "fee": null,
+            "order_id": "order-00000016",
+            "quantity": "0.001",
+            "reason": "post_only_marketable",
+            "selection_reason": "rejected_order",
+            "side": "buy",
+            "spread_contribution": null,
+            "status": "REJECTED",
+            "time_ns": 1788703822510000000
+          }
+        ],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 1.44,
+            "sell": 0.86
+          },
+          "client_orders_at_end": [
+            {
+              "activation_ns": 1788704397510000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002391",
+              "event": "activate",
+              "order_id": "order-00000391",
+              "price": "79710.60",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "sell",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704397500000000,
+              "terminal_ns": null,
+              "time_ns": 1788704397510000000
+            },
+            {
+              "activation_ns": 1788704399760000000,
+              "cancel_requested_ns": null,
+              "decision_id": "decision-00002400",
+              "event": "activate",
+              "order_id": "order-00000392",
+              "price": "79710.50",
+              "quantity": "0.001",
+              "reason": "",
+              "remaining": "0.001",
+              "side": "buy",
+              "status": "ACTIVE",
+              "submitted_ns": 1788704399750000000,
+              "terminal_ns": null,
+              "time_ns": 1788704399760000000
+            }
+          ],
+          "clock_diagnostics": {
+            "fill_reports_received": 151,
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "99918.988500",
+          "ending_equity": "99998.693950",
+          "ending_inventory": "0.0010",
+          "ending_known_cash": "99918.988500",
+          "ending_known_inventory": "0.0010",
+          "entry_pending_seconds": {
+            "buy": 2.27,
+            "sell": 1.65
+          },
+          "execution": {
+            "activated": 383,
+            "activated_quantity": "0.383",
+            "cancel_pending_fills": 0,
+            "cancel_requests": 230,
+            "canceled": 230,
+            "censored": 2,
+            "fill_events": 151,
+            "filled": 151,
+            "filled_quantity": "0.1510",
+            "full_orders": 151,
+            "lot_rounded_quantity": "0.0111",
+            "order_lifetime_ns": "914119000000",
+            "orders_with_fill": 151,
+            "participation_capped_quantity": "0.0099",
+            "rejected": 9,
+            "replacement_downtime_ns": 31250000000,
+            "skipped_nontrade_quantity": "225.595",
+            "submitted": 392,
+            "trade_through_queue_bypass": "141.6540"
+          },
+          "fee_charges": "0",
+          "fees": "0.000000",
+          "fill_rate": 0.39425587467362927,
+          "full_fill_rate": 0.39425587467362927,
+          "gross_pnl": "-1.306050",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "-1.277200",
+          "markouts": {
+            "100": {
+              "coverage": 1.0,
+              "drift_value": "-0.423250",
+              "markout_value": "-0.452100",
+              "observations": 151,
+              "quantity": "0.1510",
+              "valid": 151,
+              "volume_weighted_markout": "-2.9940397350993377483443708609271523178807947019868",
+              "volume_weighted_midpoint_drift": "-2.8029801324503311258278145695364238410596026490066"
+            },
+            "1000": {
+              "coverage": 0.9933774834437086,
+              "drift_value": "-0.699200",
+              "markout_value": "-0.728100",
+              "observations": 151,
+              "quantity": "0.1500",
+              "valid": 150,
+              "volume_weighted_markout": "-4.854",
+              "volume_weighted_midpoint_drift": "-4.6613333333333333333333333333333333333333333333333"
+            },
+            "5000": {
+              "coverage": 0.9933774834437086,
+              "drift_value": "-1.264050",
+              "markout_value": "-1.292950",
+              "observations": 151,
+              "quantity": "0.1500",
+              "valid": 150,
+              "volume_weighted_markout": "-8.6196666666666666666666666666666666666666666666667",
+              "volume_weighted_midpoint_drift": "-8.427"
+            }
+          },
+          "max_abs_inventory": "0.0100",
+          "max_drawdown": "1.505950",
+          "max_unreported_inventory": "0.001",
+          "mean_inventory": "-0.005382945",
+          "net_pnl": "-1.306050",
+          "partial_fill_rate": 0.0,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": 0.39425587467362927,
+          "quote_availability": {
+            "buy": 0.912955,
+            "sell": 0.6105766666666667
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 31.25,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "-0.028850",
+          "spread_capture_bps": "-0.023982819241525022792904362836432599563250739774971",
+          "spread_capture_per_unit": "-0.19105960264900662251655629139072847682119205298013"
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E1",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-21e0b886",
+      "performance": {
+        "cpu_seconds": 25.609291654999993,
+        "output_bytes": 818291,
+        "process_peak_rss_mib": 438.78515625,
+        "sample_preparation_seconds": 4.207948222756386e-06,
+        "wall_seconds": 25.721843046019785
+      },
+      "repeat": 1,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0.001",
+        "fee": "0.00000",
+        "levels": [
+          {
+            "price": "79705.40",
+            "quantity": "0.001"
+          }
+        ],
+        "midpoint_adjustment": "-0.00005",
+        "net_pnl_reference": "-1.306100",
+        "original_net_pnl": "-1.306050",
+        "reason": "complete_visible_depth_reference",
+        "reference_only": true,
+        "requested_quantity": "0.0010",
+        "residual_quantity": "0.0000",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": "79705.40"
+      },
+      "trace_count": 2400
+    },
+    {
+      "audit": {
+        "ending_inventory": "0",
+        "fills": 0,
+        "ledger_rows": 213,
+        "performance": {
+          "cpu_seconds": 20.325387218999964,
+          "output_bytes": 495244,
+          "process_peak_rss_mib": 438.78515625,
+          "sample_preparation_seconds": 3.963999915868044e-06,
+          "wall_seconds": 20.40882244799286
+        }
+      },
+      "code_version": "656f4f2ae3a3655c1fc735664c51e57d39040314",
+      "digest": "ea3e5093a57fc7cc5e0718ba076b14f28a51e881149939f5d429e8d7ec7c9bd5",
+      "explanation": {
+        "contributions": [
+          {
+            "amount": "0",
+            "component": "spread_capture",
+            "label": "\uccb4\uacb0 \uc2dc \uc911\uac04\uac00\uaca9 \ub300\ube44 \uae30\uc5ec"
+          },
+          {
+            "amount": "0.00",
+            "component": "inventory_mtm",
+            "label": "\uc7ac\uace0 \ubcf4\uc720 \uc911 \uac00\uaca9\ubcc0\ub3d9 \uae30\uc5ec"
+          },
+          {
+            "amount": "0",
+            "component": "fees",
+            "label": "\uc218\uc218\ub8cc\u00b7\ub9ac\ubca0\uc774\ud2b8 \uae30\uc5ec"
+          }
+        ],
+        "counts": {
+          "fills": 0,
+          "ledger_rows": 213
+        },
+        "findings": [
+          "\uc190\uc775 \ubd84\ud574\ub294 \uc6d0\uc7a5\uc758 \uc0b0\uc220 \uae30\uc5ec\uc774\uba70 \uc804\ub7b5 \uc131\uacfc\uc758 \uc778\uacfc\uad00\uacc4\ub97c \uc99d\uba85\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+          "\ub300\ud45c \uc8fc\ubb38\uc740 \uc808\ub300 \uc2a4\ud504\ub808\ub4dc \uae30\uc5ec\uac00 \ud070 \uccb4\uacb0\uc5d0\uc11c \uc120\ud0dd\ud569\ub2c8\ub2e4. \uc804\uccb4 \uac70\ub798\uc758 \ub300\ud45c \ud45c\ubcf8\uc740 \uc544\ub2d9\ub2c8\ub2e4."
+        ],
+        "identity": {
+          "explained_net_pnl": "0.00",
+          "net_pnl": "0.00",
+          "reconciled": true,
+          "residual": "0.00"
+        },
+        "inventory_exposure": {
+          "duration_ns": 600000000000,
+          "near_limit_duration_ns": 0,
+          "near_limit_threshold_fraction": "0.8",
+          "near_limit_time_fraction": "0",
+          "time_weighted_absolute_inventory": "0"
+        },
+        "representative_orders": [],
+        "summary": {
+          "assumptions": [
+            "recorded feed clock; private reports delayed by 20 ms.",
+            "Depth batches become observable at the latest constituent receipt; per-stream delivery preserves sequence.",
+            "Recorded collector receipt is a proxy for strategy arrival; exchange/capture clocks assumed aligned.",
+            "Separate Binance depth/trade streams have no shared exchange sequence; ties are modeled.",
+            "Net visible depletion cannot recover hidden cancellations or intra-batch replenishment.",
+            "Initial queue uses the latest published depth and may be stale.",
+            "L2 fills are approximations; Coinbase-tested arithmetic is transferred to Binance.",
+            "Alpha is a queue-depletion assumption, not a fill probability or OOS-calibrated truth.",
+            "TOUCH_FILL does not bound strategy PnL.",
+            "No market impact, funding, hedge, margin liquidation or terminal liquidation.",
+            "Cash is a synthetic linear-futures trading ledger, not an exchange wallet.",
+            "Net PnL includes modeled maker fees; taker fees are inactive in maker-only v1.",
+            "Bounded sample results are not evidence of live profitability or ETF LP economics."
+          ],
+          "cancel_pending_seconds": {
+            "buy": 0.0,
+            "sell": 0.0
+          },
+          "client_orders_at_end": [],
+          "clock_diagnostics": {
+            "max_feed_delay_ns": 2902617324,
+            "observed_depth": 6227,
+            "observed_trade": 8218,
+            "sequence_delivery_hold_ns": 0
+          },
+          "clock_mode": "recorded",
+          "ending_cash": "100000",
+          "ending_equity": "100000.00",
+          "ending_inventory": "0",
+          "ending_known_cash": "100000",
+          "ending_known_inventory": "0",
+          "entry_pending_seconds": {
+            "buy": 0.0,
+            "sell": 0.0
+          },
+          "execution": {
+            "activated_quantity": "0",
+            "filled_quantity": "0",
+            "order_lifetime_ns": "0",
+            "skipped_nontrade_quantity": "0"
+          },
+          "fee_charges": "0",
+          "fees": "0",
+          "fill_rate": null,
+          "full_fill_rate": null,
+          "gross_pnl": "0.00",
+          "initial_equity": "100000.00",
+          "inventory_mtm": "0.00",
+          "markouts": {
+            "100": {
+              "coverage": null,
+              "drift_value": "0",
+              "markout_value": "0",
+              "observations": 0,
+              "quantity": "0",
+              "valid": 0,
+              "volume_weighted_markout": null,
+              "volume_weighted_midpoint_drift": null
+            },
+            "1000": {
+              "coverage": null,
+              "drift_value": "0",
+              "markout_value": "0",
+              "observations": 0,
+              "quantity": "0",
+              "valid": 0,
+              "volume_weighted_markout": null,
+              "volume_weighted_midpoint_drift": null
+            },
+            "5000": {
+              "coverage": null,
+              "drift_value": "0",
+              "markout_value": "0",
+              "observations": 0,
+              "quantity": "0",
+              "valid": 0,
+              "volume_weighted_markout": null,
+              "volume_weighted_midpoint_drift": null
+            }
+          },
+          "max_abs_inventory": "0",
+          "max_drawdown": "0",
+          "max_unreported_inventory": "0",
+          "mean_inventory": "0",
+          "net_pnl": "0.00",
+          "partial_fill_rate": null,
+          "pending_market_deliveries": 0,
+          "pending_reports": 0,
+          "quantity_fill_rate": null,
+          "quote_availability": {
+            "buy": 0.0,
+            "sell": 0.0
+          },
+          "rebates": "0",
+          "replacement_downtime_seconds": 0.0,
+          "report_ms": 20,
+          "return_bucket_seconds": 60,
+          "return_buckets": 10,
+          "sharpe": null,
+          "sharpe_status": "Unavailable \u2014 insufficient sample",
+          "spread_capture": "0",
+          "spread_capture_bps": null,
+          "spread_capture_per_unit": null
+        },
+        "trace_status": "available",
+        "warnings": []
+      },
+      "label": "E0",
+      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/87f44e11f723-2015343e",
+      "performance": {
+        "cpu_seconds": 20.325387218999964,
+        "output_bytes": 495244,
+        "process_peak_rss_mib": 438.78515625,
+        "sample_preparation_seconds": 3.963999915868044e-06,
+        "wall_seconds": 20.40882244799286
+      },
+      "repeat": 1,
+      "terminal_reference": {
+        "book_time_ns": 1788704399901000000,
+        "coverage": "1",
+        "executable_quantity": "0",
+        "fee": "0",
+        "levels": [],
+        "midpoint_adjustment": "0",
+        "net_pnl_reference": "0.00",
+        "original_net_pnl": "0.00",
+        "reason": "no_inventory",
+        "reference_only": true,
+        "requested_quantity": "0",
+        "residual_quantity": "0",
+        "status": "COMPLETE",
+        "valuation_time_ns": 1788704400000000000,
+        "vwap": null
+      },
+      "trace_count": 2400
+    }
+  ],
+  "sample": "binance_btcusdt_20260906_1410_1420_arrival",
+  "status": "PASS"
+}

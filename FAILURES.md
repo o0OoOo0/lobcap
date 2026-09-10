@@ -147,3 +147,21 @@ keep / exclude interval / exclude day
 - An SSH transport reset interrupted an artifact transfer and the waiting session after the 24-run validator had completed. Confirmed the persisted report was PASS, retransferred only the partial temporary bundle, and enabled connection/keepalive timeouts.
 - Local Get-NetTCPConnection stalled and was canceled. A bounded HTTP check found the old SSH forward absent; restored forwarding and verified local health returned ok. No collector restart or data loss was involved.
 - Final clean-release Ubuntu suite: 249 passed; compileall and pip check passed. Twenty-four core runs and four workspace runs passed independent audits and reverse-order digest checks. Streamlit deprecation warnings remain nonfatal.
+
+### 2026-09-10 — Local app access recovery
+- User could not open the deployed app. Local health check failed with connection refused; VM 8501 health returned ok and app logs showed a running server. The tool-owned SSH tunnel had ended.
+- Started a separate hidden Windows OpenSSH process (PID 21104), with connection timeout, forwarding failure detection and keepalives. Verified local health ok and HTTP 200. No app or collector restart.
+- This connection is a background process, not reboot autostart. Machine restart or network failure can still require reconnecting.
+
+### 2026-09-10 — Research flow redesign validation
+- Initial tooling reads included a nonexistent run path and an incorrect virtual-truth tar path; corrected to `artifacts/virtual_truth`. No input artifacts were changed.
+- Two agent patch attempts used duplicate delete/add targets and were rejected before modification; corrected to update operations.
+- Initial local analysis tests imported an older editable checkout; corrected `PYTHONPATH`. Windows temporary-directory ACLs blocked five setups and symlink creation; local elevated rerun passed supported cases, and authoritative coverage moved to Ubuntu. Native Windows research portability was not changed.
+- Local UI environment lacked Streamlit; used the existing Ubuntu application environment. Initial Ubuntu focused tests passed 32 cases; initial app/workspace UI tests passed 12 cases, with two existing NumPy/Streamlit deprecation warnings.
+- Review found partial retention incorrectly accepted an increased target, and stage/divergence comparisons treated reason-only changes as behavior changes. Corrected numeric comparisons and unchanged-target semantics, with focused regression tests.
+- A follow-up patch expected an earlier terminal-reference UI line and was rejected; reread the current code and applied the corrected context. A UI-agent PowerShell regex command was rejected as an unclosed group; plain source reads recovered the inspection.
+- Local SSH-forward health returned connection refused again. Restored a hidden OpenSSH process (PID 41440), verified local health `ok`; no collector restart.
+- Actual E1/E2 one-lot baselines had identical behavior. This is expected under integer-lot fills, not a failing fill model. Preserved that result and separately exercised 3-lot partial retention/reset with observed action divergence.
+- Browser review exposed raw JSON as the default order timeline and excessively long numeric display. Replaced the default view with compact UTC/event/quantity rows and moved original rows into an audit expander. Execution outputs remain immutable.
+- Final display-checkout full suite initially reported 290 passed and 2 failed. One comparison was correctly blocked because the top-level data symlink was untracked (Git directory-only ignore rule); replaced only that verified symlink with an ignored real directory and child links, preserving all targets. The legacy timeline assertion used a fixture with a stale initial book and therefore no orders; explicitly raised that test's staleness limit to exercise actual order rows. No simulator rule was relaxed.
+- Final clean-checkout rerun: 292 passed, two existing deprecation warnings. The additional real-sample E1 display-only run matched the original deterministic digest exactly. Final real-history UI checks and guarded deployment passed; collector PID 608/restart count 0 remained unchanged.

@@ -38,7 +38,7 @@ Net PnL remains spread contribution at the fill's midpoint + inventory MTM − s
 
 The terminal inventory calculation is a separate immediate visible-depth reference: sell longs into bids, buy shorts into asks, apply lots, known coverage, stale-book checks and assumed taker fees. Insufficient depth leaves an explicit residual. It does not mutate fills or the ledger, reproduce cancel races, or simulate the market reacting to liquidation.
 
-The unified catalog reads existing directories (including deployment symlinks) and workspace jobs. Failed, canceled, incomplete or conflicting records cannot rank as successful runs. Original files are preserved. Legacy runs remain readable; missing decision stages remain **미기록**. Cross-contract/code comparisons require explicit compatibility and otherwise are blocked. Cloning an old run is a new-policy experiment, not a claim to reproduce its original environment.
+The unified catalog reads existing directories (including deployment symlinks) and workspace jobs. Failed, canceled, incomplete or conflicting records cannot rank as successful runs. Original files are preserved. Legacy runs remain readable; missing decision stages remain **미기록**. Cross-contract/code comparisons require explicit compatibility and otherwise are blocked. A narrow exception checks actual Git objects and records all changed paths: only the UI, catalog, tests and documentation may differ. Execution, configuration, dependencies and analysis changes fail this check; missing objects or dirty versions also fail closed. The UI displays this compatibility evidence. Cloning an old run is a new-policy experiment, not a claim to reproduce its original environment.
 
 ## Reproduction
 
