@@ -1,0 +1,452 @@
+[
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/",
+    "title": "HftBacktest",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "82f6ee253a74afdc036e5e3d69b573f362bb6067e7dfbb25e1b6536491bdc560",
+    "status": "개선 필요",
+    "project_relevance": "독립 비교 엔진 후보. L2/L3와 재생 한계 확인",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/data.html",
+    "title": "Data",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "6c244cce9a42ed339c7fd367b704e24abbaf64be185246a9cc0164b60ed8e982",
+    "status": "반영됨",
+    "project_relevance": "소스·수신 시각 보존. provider별 계약은 별도",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/debugging_backtesting_and_live_discrepancies.html",
+    "title": "Debugging Backtesting and Live Discrepancies",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "9fe7b64ac13f9373232e52ff0ae05a924782b60af4e13f1b232d07bb3df7ebca",
+    "status": "데이터 필요",
+    "project_relevance": "실제 주문 로그와 백테스트 사건 대조",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/jit_compilation_overhead.html",
+    "title": "JIT Compilation Overhead",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "43545822175fd58acd8a43b184214d03f10e681a6e9ab261bb6fc77140ce5c6c",
+    "status": "후순위",
+    "project_relevance": "프로파일링 후 JIT 도입; cold/warm 시간을 분리",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/latency_models.html",
+    "title": "Latency Models",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "22ca8b57c83af1375644a50f8262ce9a47db3f0cdc833b8ef33b997bcb913ec5",
+    "status": "개선 필요",
+    "project_relevance": "고정 주문·보고 지연을 profile 인터페이스로 확장",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/market_maker_program.html",
+    "title": "Market Maker Program",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "ca07db25b1cff3cf557dbe3395aa77fe00b3adba0121ec2fb9cc5cb9edb413ce",
+    "status": "데이터 필요",
+    "project_relevance": "현재 계정 수수료 확인. 예제 리베이트 일반화 금지",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/migration2.html",
+    "title": "Migration to v2",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "c95430c6f8915b83058f98f7e92d216417e8824a77f79aec419368de209967ed",
+    "status": "후순위",
+    "project_relevance": "도입 시 v2 버전 고정과 기존 예제 API 차이 확인",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/order_fill.html",
+    "title": "Order Fill",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "514feb17ac8dd130626cb5263338176d244835eefb2f2a1268556de75944ed64",
+    "status": "개선 필요",
+    "project_relevance": "관통/동일가 체결 분리, queue 모델 차이 검증",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/backtester.html",
+    "title": "Backtester",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "38bb6193996bea6b7c52dcd082e2867be3de71c6a0dc7f8e4dfb9ebf5d30e3de",
+    "status": "개선 필요",
+    "project_relevance": "계산 지연·이벤트 대기·주문 API를 어댑터 비교 기준으로 사용",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/constants.html",
+    "title": "Constants",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "36f168f28e6999b72274169b1c245b712934cefa1093f9f0aa054cf092e8fd97",
+    "status": "개선 필요",
+    "project_relevance": "거래 aggressor와 maker side 변환 계약",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/data_utilities.html",
+    "title": "Data Utilities",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "a4e2b976c8f33d2afbca42968aeeb302dff86c1e235c2c48b7d5ea073b79a151",
+    "status": "반영됨",
+    "project_relevance": "스트리밍 변환 기반 존재; 타 포맷 어댑터는 후순위",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/data_validation.html",
+    "title": "Data Validation",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "1ae5d37d3c8f02b5fbdbdcef1f86cfb293b42e8f6a8fa66d4e4ba22e6e46e377",
+    "status": "반영됨",
+    "project_relevance": "순서 검증 존재. timestamp 자동 보정은 인과성 검토 필요",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/initialization.html",
+    "title": "Initialization",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "e1ae64bbe96d7d8f2cefe55486c72785383b865292cb2651d5e2bac9feb21cab",
+    "status": "개선 필요",
+    "project_relevance": "tick/lot/fee/latency/queue 설정을 양 엔진 간 명시적으로 대응",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/stats.html",
+    "title": "Statistics",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "7aa154604ad51e2856c1c535e275cf1523eba7bd35ee0aa7fee285459d8e5d84",
+    "status": "반영됨",
+    "project_relevance": "회계·markout 존재. 짧은 표본 연율화 기본값 복사 금지",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Accelerated%20Backtesting.html",
+    "title": "Accelerated Backtesting",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "73edc6ce1577d878fa3aba03d4ad9250fe8cfe9a9e051d7b405be1903d8e536c",
+    "status": "개선 필요",
+    "project_relevance": "근사 선별과 정밀 검증 구분; 우선 feature 공유 계산",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Data%20Preparation.html",
+    "title": "Data Preparation",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "b1599880d019752bc3ce2a8cd7ce17cda455b3e7cacc982b1a4107628e0e4c33",
+    "status": "반영됨",
+    "project_relevance": "snapshot·거래·depth 정규화 기반. 외부 converter 의미 대조",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Fusing%20Depth%20Data.html",
+    "title": "Fusing Depth Data",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "11a8c8f031ad9ddb6030d636b09113be643f90949a39b7fdecc158efa50645da",
+    "status": "데이터 필요",
+    "project_relevance": "bookTicker 추가 관측 및 중복 없는 BBO/depth 결합",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/GLFT%20Market%20Making%20Model%20and%20Grid%20Trading.html",
+    "title": "Guéant–Lehalle–Fernandez-Tapia Market Making Model and Grid Trading",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "1ec0fbff98cf4f7d2cf9f3afcf32f71de2443265c750ea0aea75c2b02edfa845",
+    "status": "개선 필요",
+    "project_relevance": "강도·변동성 기반 동적 spread/skew. 알려진 단위 오류 주의",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Getting%20Started.html",
+    "title": "Getting Started",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "96cac4e754adee874e80b8209da4e7dc4a99100af045113b71cd27532a6aa8a4",
+    "status": "반영됨",
+    "project_relevance": "기본 재생·주문·계측 존재. 예제 성과는 별도",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/High-Frequency%20Grid%20Trading%20-%20Comparison%20Across%20Other%20Exchanges.html",
+    "title": "High-Frequency Grid Trading - Comparison Across Other Exchanges",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "b63fe10cb291b3dc080f43e84c583ce28f36beb1313ba60153938e7e6ff6f393",
+    "status": "데이터 필요",
+    "project_relevance": "거래소별 수수료·tick·지연·자료 품질 통제",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/High-Frequency%20Grid%20Trading%20-%20Simplified%20from%20GLFT.html",
+    "title": "High-Frequency Grid Trading - Simplified from GLFT",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "995bbed4ade74c0d16c4afabfc3a3699c26e82956ed3d9d5f3c98c60352e727a",
+    "status": "개선 필요",
+    "project_relevance": "해석 가능한 동적 spread baseline 설계 참고",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/High-Frequency%20Grid%20Trading.html",
+    "title": "High-Frequency Grid Trading",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "e2abc0d2217015a9cf06c5c8ab77bf12639e0c558b003b78998b9a6d47a4349e",
+    "status": "후순위",
+    "project_relevance": "다중 동시 quote grid; 현재 parameter grid와 다름",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Impact%20of%20Order%20Latency.html",
+    "title": "Impact of Order Latency",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "01e9fa8e2dc30c57c4c4f7f96448bdcecdd9fb4b45f439f499872509e9dea4a2",
+    "status": "개선 필요",
+    "project_relevance": "지연 민감도 존재. empirical tail·계산 지연 보강",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Integrating%20Custom%20Data.html",
+    "title": "Integrating Custom Data",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "f7101a44a5487df5052840e741b98e098eeb1364c062e5ede93d5d09160076e7",
+    "status": "개선 필요",
+    "project_relevance": "point-in-time feature 입력 계약 확장",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Level-3%20Backtesting.html",
+    "title": "Level-3 Backtesting",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "3d984b058946786152f919509ea060b61904960fa034319884efc7031c341511",
+    "status": "데이터 필요",
+    "project_relevance": "개별 주문 데이터가 있어야 L3 재생 검증 가능",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Making%20Multiple%20Markets%20-%20Introduction.html",
+    "title": "Making Multiple Markets - Introduction",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "0476bf94286bfd47006c98ba20cc872e092b990f89c9ee7b93cfd39d3f6a7eb7",
+    "status": "데이터 필요",
+    "project_relevance": "다중 자산 위험·데이터 동기화 설계",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Making%20Multiple%20Markets.html",
+    "title": "Making Multiple Markets",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "be23b13bb11103b02a797916d5a665bcd1bfe71fded3d1248101ed4eed4e03cf",
+    "status": "데이터 필요",
+    "project_relevance": "공통 factor·시장별 노출 및 동시 실행 제약",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Market%20Making%20with%20Alpha%20-%20APT.html",
+    "title": "Market Making with Alpha - APT",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "810740b09a609d2a122a182f5cfdf626f5e063fe7eb8e7a2acfe323731b5fc59",
+    "status": "데이터 필요",
+    "project_relevance": "동기화된 다중 자산 입력과 과거 beta 추정",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Market%20Making%20with%20Alpha%20-%20Basis.html",
+    "title": "Market Making with Alpha - Basis",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "b29d7e370ab69665343f250302fb1ad55473b8c21ba650b0a0e2398480ffb210",
+    "status": "데이터 필요",
+    "project_relevance": "spot/perpetual 입력, basis 단위와 lead-lag 검증",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Market%20Making%20with%20Alpha%20-%20Order%20Book%20Imbalance.html",
+    "title": "Market Making with Alpha - Order Book Imbalance",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "90964a4c7df6abef773914290d263c0cff5fab3014e98497d62a8a082d80861c",
+    "status": "개선 필요",
+    "project_relevance": "BBO 중심에서 다중 depth 신호와 신호 자체 평가로 확장",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Order%20Latency%20Data.html",
+    "title": "Order Latency Data",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "3230bfc9e833ce9277732658babea727c702760687a160cf1d1d88a08cae9956",
+    "status": "데이터 필요",
+    "project_relevance": "요청/거래소/수신 시각 실측. 공개 feed로 대체 불가",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Pricing%20Framework.html",
+    "title": "Research Pricing Framework",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "af85af62be07a4fbbedf0f67c0a44fa4fb87109878f998a2bbe5d0672d77baa5",
+    "status": "개선 필요",
+    "project_relevance": "fair price·spread·skew·size 분리. 초안 상태 주의",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Probability%20Queue%20Models.html",
+    "title": "Probability Queue Position Models",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "b08201242f633c7b1a10fbc23255432b8702ca9e2f7617d86960564ef48ab3c9",
+    "status": "개선 필요",
+    "project_relevance": "고정 alpha 외 위치 의존 queue 가정 민감도 비교",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Queue-Based%20Market%20Making%20in%20Large%20Tick%20Size%20Assets.html",
+    "title": "Queue-Based Market Making in Large Tick Size Assets",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "bf9ff173901db30774e290605d4b8f5c863c94ed342e4aa71e90b93ff8b12f9d",
+    "status": "후순위",
+    "project_relevance": "tick regime 분석 선행. BTC에 large-tick 예제 직접 이식 금지",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Risk%20Mitigation%20through%20Price%20Protection%20in%20Extreme%20Market%20Conditions.html",
+    "title": "Risk Mitigation through Price Protection in Extreme Market Conditions",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "1280d86631f991ac5804e65114da2da2b1848f6630f370f0f338902c6143547f",
+    "status": "개선 필요",
+    "project_relevance": "가격 보호·급변/장애 제어. 문서 예제는 미완",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/Working%20with%20Market%20Depth%20and%20Trades.html",
+    "title": "Working with Market Depth and Trades",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "e5262243f7defaf5783257d743b921d156c7cbbf0eab141553da372f674b41ad",
+    "status": "반영됨",
+    "project_relevance": "호가/거래 기반 입력 존재. 버퍼·조회 계약 어댑터 참고",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/tutorials/examples.html",
+    "title": "Examples",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "0de1cd575aac1c6c96e28da9d84cc4697b9f9b07fa42e2cf0e0d76ff0bbb1d9e",
+    "status": "반영됨",
+    "project_relevance": "튜토리얼 색인과 예제 범위 확인",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/index.html",
+    "title": "HftBacktest",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "f6442302bcf085d7b4889b4924c080764ea2b0d54fd2a87594147e4215ab7f86",
+    "status": "반영됨",
+    "project_relevance": "홈페이지 중복 URL; 별도 문서로 세지 않음",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": true
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/hftbacktest.data.utils.binancefutures.html",
+    "title": "hftbacktest.data.utils.binancefutures module",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "29121a7670bbe6dac2690761c1a36750a6a3ee89c1f28a2dd1cac7aa60e1662d",
+    "status": "개선 필요",
+    "project_relevance": "기존 Binance envelope·nq를 보존하는 별도 변환 필요",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/hftbacktest.data.utils.binancehistmktdata.html",
+    "title": "hftbacktest.data.utils.binancehistmktdata module",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "b6272c2c37bd453913e141f0cbcd6c8fd02f292081976b3bfac788d44eea00cd",
+    "status": "후순위",
+    "project_relevance": "역사 자료 포맷 확장. 현재 캡처 계약과 동일시 금지",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/hftbacktest.data.utils.databento.html",
+    "title": "hftbacktest.data.utils.databento module",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "c2ceecb3f55d45dcb24eee779c61c2f03566cabba6cafcdadd29dd09b7be04aa",
+    "status": "데이터 필요",
+    "project_relevance": "Databento/L3 외부 자료가 있을 때 활용",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/hftbacktest.data.utils.difforderbooksnapshot.html",
+    "title": "hftbacktest.data.utils.difforderbooksnapshot module",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "1057da3205136ca4d43b112fa1a12879fdeb25c2a05e12200fed526ca5cd3476",
+    "status": "반영됨",
+    "project_relevance": "snapshot diff·reconciliation 기반 존재; 독립 비교 참고",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/hftbacktest.data.utils.migration2.html",
+    "title": "hftbacktest.data.utils.migration2 module",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "f0bb17b511a56abf5f1564799d19e4f2e3b86695cc02e8d3303dfcd01ce7d724",
+    "status": "후순위",
+    "project_relevance": "HftBacktest 이전 버전 데이터 유입 시에만 변환",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/hftbacktest.data.utils.snapshot.html",
+    "title": "hftbacktest.data.utils.snapshot module",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "7c14e26d00f8cbed1816466481f44101a8e54d7470aa5d445796143340315303",
+    "status": "반영됨",
+    "project_relevance": "초기 snapshot 재현과 source boundary 확인",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  },
+  {
+    "url": "https://hftbacktest.readthedocs.io/en/latest/reference/hftbacktest.data.utils.tardis.html",
+    "title": "hftbacktest.data.utils.tardis module",
+    "retrieved_date": "2026-09-10",
+    "sha256_html": "3806db8d87f9ec0cc4174088fec1dcf97917d93b007ce8fb17d0f16bc0cb8ccb",
+    "status": "데이터 필요",
+    "project_relevance": "Tardis 자료 유입 시 receive clock·side 정규화 검증",
+    "scope": "Narrative and API documentation review; examples not executed",
+    "duplicate_home": false
+  }
+]
