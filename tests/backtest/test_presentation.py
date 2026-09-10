@@ -31,6 +31,16 @@ def test_compare_checks_all_settings_and_sample_identity():
     with pytest.raises(ValueError,match='체크섬'):comparison_differences([a,b])
 
 
+def test_compare_rejects_old_engine_and_compares_structured_coefficients():
+    a=manifest(config());old=manifest(config(),run_id='old')
+    old['resolved_config'].pop('execution_contract_version')
+    with pytest.raises(ValueError,match='엔진 버전'):comparison_differences([a,old])
+    b=manifest(config(),run_id='two')
+    a['resolved_config']['expression_parameters']=[['beta','1']]
+    b['resolved_config']['expression_parameters']=[['beta','2']]
+    assert len(comparison_differences([a,b]))==1
+
+
 def test_sweep_rejects_inactive_empty_duplicate_or_unbounded_variants():
     c=config()
     assert 'inventory_skew_ticks' not in applicable_parameters(c.strategy)

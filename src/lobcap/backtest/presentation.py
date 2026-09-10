@@ -125,11 +125,13 @@ def validate_ui_config(config):
 
 def comparison_differences(manifests):
     if len({m['sample_sha256'] for m in manifests})!=1:raise ValueError("표본 체크섬이 다른 결과는 직접 비교할 수 없습니다.")
+    if len({m['resolved_config'].get('execution_contract_version','legacy-v1') for m in manifests})!=1:
+        raise ValueError("체결 엔진 버전이 다른 결과는 같은 비교에 사용할 수 없습니다.")
     rows=[]
     keys=sorted(set().union(*(m['resolved_config'].keys() for m in manifests)) & (DECIMALS|INTS|STRINGS|STRUCTURED))
     for key in keys:
         values=[m['resolved_config'].get(key) for m in manifests]
-        comparable={Decimal(str(v)) if key in DECIMALS and v is not None else v for v in values}
+        comparable={Decimal(str(v)) if key in DECIMALS and v is not None else json.dumps(v,sort_keys=True) if key in STRUCTURED else v for v in values}
         if len(comparable)>1:
             rows.append({"설정":LABELS.get(key,key), **{m['run_id']:str(v) for m,v in zip(manifests,values)}})
     return rows
