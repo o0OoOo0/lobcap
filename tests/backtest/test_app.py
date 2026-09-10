@@ -113,6 +113,8 @@ def test_legacy_result_without_workspace_jobs_or_trace_is_visible(sample):
     from lobcap.backtest.runner import run_one
     from lobcap.backtest.research_flow.experiments import save_conclusion,save_context
     config,path=sample
+    from lobcap.config.backtest import variant
+    config=variant(config,stale_book_ms=100000)  # Initial fixture book is 30 s old; exercise real orders.
     result=run_one(config,path)
     legacy=config.output_path/'runs'/'legacy-readable'
     legacy.mkdir()
