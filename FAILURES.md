@@ -143,3 +143,7 @@ keep / exclude interval / exclude day
 - Initial external HftBacktest 2.4.4 comparison failed two partial-fill position cases. Added separate order-leaves evidence; order execution matches, while position remains zero. Retain ACCOUNTING_DISCREPANCY, not parity PASS.
 - Validation agent source URL guesses returned 404/safe-open errors; used actual linked published source. No source issue was hidden or converted to a passing external comparison.
 - A read-only glob for staging data paths matched no directory; existing sample links were found under artifacts/backtest instead.
+- External partial-then-full follow-up also failed portfolio reconciliation: executed 0.003, reported position 0.002 on both sides. All 16 external order quantities meet their explicit expected contracts; four portfolio checks remain failed.
+- An SSH transport reset interrupted an artifact transfer and the waiting session after the 24-run validator had completed. Confirmed the persisted report was PASS, retransferred only the partial temporary bundle, and enabled connection/keepalive timeouts.
+- Local Get-NetTCPConnection stalled and was canceled. A bounded HTTP check found the old SSH forward absent; restored forwarding and verified local health returned ok. No collector restart or data loss was involved.
+- Final clean-release Ubuntu suite: 249 passed; compileall and pip check passed. Twenty-four core runs and four workspace runs passed independent audits and reverse-order digest checks. Streamlit deprecation warnings remain nonfatal.

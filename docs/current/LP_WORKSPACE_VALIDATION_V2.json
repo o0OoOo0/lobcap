@@ -1,0 +1,67 @@
+{
+  "checks": [
+    {
+      "ending_inventory": "0.0010",
+      "fills": 139,
+      "ledger_rows": 352,
+      "performance": {
+        "cpu_seconds": 10.421774425,
+        "output_bytes": 493345,
+        "process_peak_rss_mib": 39.75390625,
+        "sample_preparation_seconds": 1.1213996913284063e-05,
+        "wall_seconds": 10.475069790962152
+      }
+    },
+    {
+      "ending_inventory": "0.0000",
+      "fills": 126,
+      "ledger_rows": 339,
+      "performance": {
+        "cpu_seconds": 9.854893819,
+        "output_bytes": 492123,
+        "process_peak_rss_mib": 413.65625,
+        "sample_preparation_seconds": 4.684960003942251e-06,
+        "wall_seconds": 9.883740338031203
+      }
+    },
+    {
+      "ending_inventory": "0.0000",
+      "fills": 126,
+      "ledger_rows": 339,
+      "performance": {
+        "cpu_seconds": 9.742984553,
+        "output_bytes": 492123,
+        "process_peak_rss_mib": 413.65625,
+        "sample_preparation_seconds": 4.584027919918299e-06,
+        "wall_seconds": 9.755548124958295
+      }
+    },
+    {
+      "ending_inventory": "0.0010",
+      "fills": 139,
+      "ledger_rows": 352,
+      "performance": {
+        "cpu_seconds": 10.213290393999998,
+        "output_bytes": 493345,
+        "process_peak_rss_mib": 413.69140625,
+        "sample_preparation_seconds": 3.3929827623069286e-06,
+        "wall_seconds": 10.234731571981683
+      }
+    }
+  ],
+  "collector_checked": true,
+  "digests": {
+    "74bda9b15d3e6a50dec747409f6c3ca2a2c646fc10cc64eeb5bf94f2b9176937": "644f047a7d8ee79f7657c612288100b48de3f57b0445866e4aa48ee159d86e2b",
+    "df373da3775bedb8a4088df726312c08084b99185d797df6e7c7dfcaba8be3aa": "9117a2de19b40225e9cb4d4be1a4091f0bb584af372ad5597c99006553c800c9"
+  },
+  "jobs": [
+    "66d44eb99a0a40799399a2954ea83660",
+    "03c099e934f149d282edcd7a007f5460",
+    "5f77df7e6c6a4db3bfcf08558b7ed66c",
+    "076a3e44daeb43778a597a23dee9cbf0"
+  ],
+  "mode": "smoke",
+  "paper_eligibility": "INSUFFICIENT_EVIDENCE",
+  "runs": 4,
+  "status": "PASS"
+}

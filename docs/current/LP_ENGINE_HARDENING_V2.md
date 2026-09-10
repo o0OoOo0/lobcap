@@ -1,6 +1,6 @@
 # LP engine and simulator hardening v2
 
-Status: implementation complete; Ubuntu acceptance evidence is recorded in the completion section after validation. Execution contract: `binance-own-orders-v2`. Existing normalized samples are unchanged.
+Status: deployed after Ubuntu acceptance. External HftBacktest accounting remains a documented failed comparison, not a release dependency. Execution contract: `binance-own-orders-v2`. Existing normalized samples are unchanged.
 
 ## Team and scope
 
@@ -69,4 +69,47 @@ The final command requires the separate pinned environment and intentionally exi
 
 ## Completion evidence
 
-Acceptance results and service status are appended after the final checks. Scope remains research simulation; live calibration and paper eligibility are not granted by this release.
+### Files changed
+
+Execution, scheduler, ledger input guards, config provenance, comparison/diagnostic UI, independent contract and evidence auditors, focused tests, and validation documentation. Research L2 queue arithmetic, collectors, raw captures and accepted research outputs were not changed.
+
+### Commands run
+
+Full Ubuntu pytest, compileall, pip check, `validate_lp_engine.py`, workspace smoke validator, isolated HftBacktest comparison, and saved-real-result Streamlit AppTest. Git bundles created a separate clean release checkout. SSH/SCP transferred source and bounded evidence. The existing app process was gracefully replaced only after acceptance; no collector service operation was performed.
+
+### Official docs checked
+
+HftBacktest fill/API/constants/initialization documentation, pinned package release and published processor source; see the linked validation guide and earlier full-site review. The runtime discrepancy is retained independently of source interpretation.
+
+### Tests passed
+
+- Clean release `c7c4ee782b7cea4fe95c252abe6ce42f64eb9596`: **249 passed**, 10 existing Streamlit/NumPy deprecation warnings, 61.07 seconds. VM log `/tmp/lp-release-pytest.log`.
+- Compileall and pip check passed.
+- [24 frozen-sample runs](LP_CORE24_VALIDATION_V2.json): 3 baseline strategies × 4 fill assumptions, repeated in reverse order. Digests match; public-volume and every ledger identity audit pass. Maximum per-run wall time **38.689 seconds**, process peak RSS **424.781 MiB** including independent audit allocations; output total **13,142,882 bytes**. Preparation was not rebenchmarked. Engine validation preceded final comparison-only changes and added external fixtures; no production execution/accounting code changed afterward.
+- [Clean-release workspace smoke](LP_WORKSPACE_VALIDATION_V2.json): four real sample runs, inventory strategy and expression repeated in reverse. Deterministic, source/ledger audits pass; maximum per-run wall 10.475 seconds, peak RSS 413.691 MiB.
+- [Saved-result UI](LP_UI_VALIDATION_V2.json): three application pages plus the new v2 result panel; 13 downloads present, no AppTest errors. This is AppTest evidence, not a claim of manual browser testing.
+- 26 internal contract probes and all 16 explicitly specified external order-execution quantities behave as specified. This is distinct from external portfolio reconciliation below.
+
+### Tests failed
+
+- External HftBacktest 2.4.4 portfolio reconciliation: **four failures** (buy/sell partial and partial-then-full). Overall external report remains `ACCOUNTING_DISCREPANCY`; independent PnL parity is not approved.
+- No final project pytest failures. Intermediate missing fixture/mock issues, Windows test tooling failures and connection problems are recorded in `FAILURES.md`.
+
+### Runtime observations
+
+- [Deployment](LP_DEPLOYMENT_V2.json): app PID 381801 replaced by **409096**, cwd `/home/0woo/lobcap-lp-release-v2`, commit `c7c4ee7`, loopback `127.0.0.1:8501`.
+- Staging PID 409034 was stopped after release health passed.
+- Collector remained active, **PID 608, NRestarts 0** at final inspection. No collector configuration or service restart.
+- Local SSH forwarding restored after a transport reset; local health endpoint returned `ok`. Tunnel is a live session and must remain running. No public endpoint or reboot autostart was added.
+
+### Data written
+
+New validation runs in isolated staging and append-only shared run storage; small evidence JSON in this documentation directory. Existing samples/history are linked into release. Optional HftBacktest dependencies live only in `/tmp/lobcap-hft-validation-v244`, with exact versions preserved. Existing app dependencies were unchanged.
+
+### Open risks
+
+Actual queue, private latency and impact remain unmeasured. HftBacktest accounting mismatch prevents treating it as a verified PnL oracle. Ten-minute reuse remains exploratory. Pending old workspace jobs cannot resume under new code; clone and resubmit. Old completed results stay available, separated by execution version. Source commits are on `feat/research-workspace-v1`; no main merge or force push was performed.
+
+### Recommended next action
+
+Use the deployed v2 engine for new experiments and compare desired-quote duplication and execution evidence. Continue the separate data expansion and then implement causal feature/signal evaluation and empirical latency inputs. Live calibration and paper eligibility are not granted by this release.
