@@ -37,6 +37,7 @@ CASES = (
     ContractCase("queue_not_reached", ".010", ".003", (("0", ".002"),), "0", hft_expected="0"),
     ContractCase("queue_exactly_consumed", ".002", ".003", (("0", ".002"),), "0", hft_expected="0"),
     ContractCase("same_price_partial", ".002", ".003", (("0", ".003"),), ".001", hft_expected=".001"),
+    ContractCase("partial_then_full", ".002", ".003", (("0", ".003"), ("0", ".002")), ".003", hft_expected=".003"),
     ContractCase("same_price_full", ".002", ".003", (("0", ".006"),), ".003", hft_expected=".003"),
     ContractCase("through_clears_queue", "1", ".003", (("-1", ".001"),), ".001", hft_expected=".003",
                  difference="HftBacktest fills the whole resting order on strict price-through; lobcap bounds by observed normal trade volume."),

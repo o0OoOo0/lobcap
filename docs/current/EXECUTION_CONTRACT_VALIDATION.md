@@ -15,7 +15,7 @@ python scripts/validate_execution_contracts.py --hftbacktest --output artifacts/
 
 ## Scope and intentional differences
 
-The local fixtures cover queue exhaustion, partial and complete fills, strict price-through, non-executable prices, lot enforcement, cumulative participation capacity, splitting equivalent capacity across messages, and refusing future capacity. The separate pytest module also checks the maker-to-aggressor direction conversion. These are synthetic probes, not the frozen ten-minute market sample.
+The 26 local probes cover queue exhaustion, partial and complete fills, partial-then-full execution, strict price-through, non-executable prices, lot enforcement, cumulative participation capacity, splitting equivalent capacity across messages, and refusing future capacity. The separate pytest module also checks the maker-to-aggressor direction conversion. These are synthetic probes, not the frozen ten-minute market sample. The 16 external comparisons include partial-then-full execution to distinguish delayed position recognition from permanently omitted partial quantities.
 
 External comparison covers same-price and strict-through cases with participation 100% and queue depletion alpha zero. It does not assert equivalence for cancellation/depth attribution, arbitrary alpha, recorded arrival clocks, participation stress, or multi-order execution. Both engines receive the same integer nanosecond timing convention and normal trade quantity. Trade direction is reversed from maker to aggressor; depth direction is preserved. Own orders are active strictly before the trade.
 
@@ -28,9 +28,9 @@ The external probe records **both order quantity minus remaining quantity and re
 ## Task evidence
 
 - Files changed: validation module, CLI script, focused pytest module, this document.
-- Commands run: stdlib local validation CLI and direct 24-case probe.
+- Commands run: stdlib local validation CLI and direct 26-case probe.
 - Official docs checked: order fill, constants, initialization, backtester API, PyPI release, published Rust queue/exchange/local processor sources.
-- Tests passed: all 24 local quantity probes at implementation time; authoritative pytest and external reports are recorded by the integration run.
+- Tests passed: all 26 local quantity probes at implementation time; authoritative pytest and external reports are recorded by the integration run.
 - Tests failed: the first external integration reported partial-fill position discrepancies; investigation retained the original expected quantity and added order/position reconciliation.
 - Runtime observations: validation is bounded, synthetic and offline; external dependencies stay isolated.
 - Data written: local ignored validation JSON; no captured market data changed.

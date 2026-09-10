@@ -1,0 +1,852 @@
+{
+  "cases": [
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "queue_not_reached",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "queue_not_reached",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "queue_exactly_consumed",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "queue_exactly_consumed",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0.001",
+      "all_fills_on_lot": true,
+      "case": "same_price_partial",
+      "expected": ".001",
+      "passed": true,
+      "per_event_fills": [
+        "0.001"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0.001",
+      "all_fills_on_lot": true,
+      "case": "same_price_partial",
+      "expected": ".001",
+      "passed": true,
+      "per_event_fills": [
+        "0.001"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0.003",
+      "all_fills_on_lot": true,
+      "case": "partial_then_full",
+      "expected": ".003",
+      "passed": true,
+      "per_event_fills": [
+        "0.001",
+        "0.002"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0.003",
+      "all_fills_on_lot": true,
+      "case": "partial_then_full",
+      "expected": ".003",
+      "passed": true,
+      "per_event_fills": [
+        "0.001",
+        "0.002"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0.003",
+      "all_fills_on_lot": true,
+      "case": "same_price_full",
+      "expected": ".003",
+      "passed": true,
+      "per_event_fills": [
+        "0.003"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0.003",
+      "all_fills_on_lot": true,
+      "case": "same_price_full",
+      "expected": ".003",
+      "passed": true,
+      "per_event_fills": [
+        "0.003"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0.001",
+      "all_fills_on_lot": true,
+      "case": "through_clears_queue",
+      "expected": ".001",
+      "passed": true,
+      "per_event_fills": [
+        "0.001"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0.001",
+      "all_fills_on_lot": true,
+      "case": "through_clears_queue",
+      "expected": ".001",
+      "passed": true,
+      "per_event_fills": [
+        "0.001"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0.003",
+      "all_fills_on_lot": true,
+      "case": "through_full",
+      "expected": ".003",
+      "passed": true,
+      "per_event_fills": [
+        "0.003"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0.003",
+      "all_fills_on_lot": true,
+      "case": "through_full",
+      "expected": ".003",
+      "passed": true,
+      "per_event_fills": [
+        "0.003"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "away_price",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "away_price",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "sublot_queue_residual",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "sublot_queue_residual",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0.0010",
+      "all_fills_on_lot": true,
+      "case": "cap_merged",
+      "expected": ".001",
+      "passed": true,
+      "per_event_fills": [
+        "0.0010"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0.0010",
+      "all_fills_on_lot": true,
+      "case": "cap_merged",
+      "expected": ".001",
+      "passed": true,
+      "per_event_fills": [
+        "0.0010"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0.0010",
+      "all_fills_on_lot": true,
+      "case": "cap_split",
+      "expected": ".001",
+      "passed": true,
+      "per_event_fills": [
+        "0",
+        "0.0010"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0.0010",
+      "all_fills_on_lot": true,
+      "case": "cap_split",
+      "expected": ".001",
+      "passed": true,
+      "per_event_fills": [
+        "0",
+        "0.0010"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "cap_cannot_borrow_future",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0",
+      "all_fills_on_lot": true,
+      "case": "cap_cannot_borrow_future",
+      "expected": "0",
+      "passed": true,
+      "per_event_fills": [
+        "0"
+      ],
+      "side": "sell",
+      "source_linked": true
+    },
+    {
+      "actual": "0.003",
+      "all_fills_on_lot": true,
+      "case": "cap_multiple_lots",
+      "expected": ".003",
+      "passed": true,
+      "per_event_fills": [
+        "0.001",
+        "0.002"
+      ],
+      "side": "buy",
+      "source_linked": true
+    },
+    {
+      "actual": "0.003",
+      "all_fills_on_lot": true,
+      "case": "cap_multiple_lots",
+      "expected": ".003",
+      "passed": true,
+      "per_event_fills": [
+        "0.001",
+        "0.002"
+      ],
+      "side": "sell",
+      "source_linked": true
+    }
+  ],
+  "external": {
+    "accounting_reconciled": false,
+    "cases": [
+      {
+        "case": "queue_not_reached",
+        "engines_agree": true,
+        "hft_actual": "0.000",
+        "hft_expected": "0",
+        "hft_order_evidence": {
+          "executed_quantity": "0.000",
+          "last_exec_quantity": "0.0",
+          "order_status": 1,
+          "position_reconciles": true,
+          "remaining_quantity": "0.003",
+          "reported_position_abs": "0.0"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0",
+        "lobcap_expected": "0",
+        "passed": true,
+        "side": "buy"
+      },
+      {
+        "case": "queue_not_reached",
+        "engines_agree": true,
+        "hft_actual": "0.000",
+        "hft_expected": "0",
+        "hft_order_evidence": {
+          "executed_quantity": "0.000",
+          "last_exec_quantity": "0.0",
+          "order_status": 1,
+          "position_reconciles": true,
+          "remaining_quantity": "0.003",
+          "reported_position_abs": "0.0"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0",
+        "lobcap_expected": "0",
+        "passed": true,
+        "side": "sell"
+      },
+      {
+        "case": "queue_exactly_consumed",
+        "engines_agree": true,
+        "hft_actual": "0.000",
+        "hft_expected": "0",
+        "hft_order_evidence": {
+          "executed_quantity": "0.000",
+          "last_exec_quantity": "0.0",
+          "order_status": 1,
+          "position_reconciles": true,
+          "remaining_quantity": "0.003",
+          "reported_position_abs": "0.0"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0",
+        "lobcap_expected": "0",
+        "passed": true,
+        "side": "buy"
+      },
+      {
+        "case": "queue_exactly_consumed",
+        "engines_agree": true,
+        "hft_actual": "0.000",
+        "hft_expected": "0",
+        "hft_order_evidence": {
+          "executed_quantity": "0.000",
+          "last_exec_quantity": "0.0",
+          "order_status": 1,
+          "position_reconciles": true,
+          "remaining_quantity": "0.003",
+          "reported_position_abs": "0.0"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0",
+        "lobcap_expected": "0",
+        "passed": true,
+        "side": "sell"
+      },
+      {
+        "case": "same_price_partial",
+        "engines_agree": true,
+        "hft_actual": "0.001",
+        "hft_expected": ".001",
+        "hft_order_evidence": {
+          "executed_quantity": "0.001",
+          "last_exec_quantity": "0.001",
+          "order_status": 5,
+          "position_reconciles": false,
+          "remaining_quantity": "0.002",
+          "reported_position_abs": "0.0"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0.001",
+        "lobcap_expected": ".001",
+        "passed": true,
+        "side": "buy"
+      },
+      {
+        "case": "same_price_partial",
+        "engines_agree": true,
+        "hft_actual": "0.001",
+        "hft_expected": ".001",
+        "hft_order_evidence": {
+          "executed_quantity": "0.001",
+          "last_exec_quantity": "0.001",
+          "order_status": 5,
+          "position_reconciles": false,
+          "remaining_quantity": "0.002",
+          "reported_position_abs": "0.0"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0.001",
+        "lobcap_expected": ".001",
+        "passed": true,
+        "side": "sell"
+      },
+      {
+        "case": "partial_then_full",
+        "engines_agree": true,
+        "hft_actual": "0.003",
+        "hft_expected": ".003",
+        "hft_order_evidence": {
+          "executed_quantity": "0.003",
+          "last_exec_quantity": "0.002",
+          "order_status": 3,
+          "position_reconciles": false,
+          "remaining_quantity": "0.0",
+          "reported_position_abs": "0.002"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0.003",
+        "lobcap_expected": ".003",
+        "passed": true,
+        "side": "buy"
+      },
+      {
+        "case": "partial_then_full",
+        "engines_agree": true,
+        "hft_actual": "0.003",
+        "hft_expected": ".003",
+        "hft_order_evidence": {
+          "executed_quantity": "0.003",
+          "last_exec_quantity": "0.002",
+          "order_status": 3,
+          "position_reconciles": false,
+          "remaining_quantity": "0.0",
+          "reported_position_abs": "0.002"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0.003",
+        "lobcap_expected": ".003",
+        "passed": true,
+        "side": "sell"
+      },
+      {
+        "case": "same_price_full",
+        "engines_agree": true,
+        "hft_actual": "0.003",
+        "hft_expected": ".003",
+        "hft_order_evidence": {
+          "executed_quantity": "0.003",
+          "last_exec_quantity": "0.003",
+          "order_status": 3,
+          "position_reconciles": true,
+          "remaining_quantity": "0.0",
+          "reported_position_abs": "0.003"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0.003",
+        "lobcap_expected": ".003",
+        "passed": true,
+        "side": "buy"
+      },
+      {
+        "case": "same_price_full",
+        "engines_agree": true,
+        "hft_actual": "0.003",
+        "hft_expected": ".003",
+        "hft_order_evidence": {
+          "executed_quantity": "0.003",
+          "last_exec_quantity": "0.003",
+          "order_status": 3,
+          "position_reconciles": true,
+          "remaining_quantity": "0.0",
+          "reported_position_abs": "0.003"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0.003",
+        "lobcap_expected": ".003",
+        "passed": true,
+        "side": "sell"
+      },
+      {
+        "case": "through_clears_queue",
+        "engines_agree": false,
+        "hft_actual": "0.003",
+        "hft_expected": ".003",
+        "hft_order_evidence": {
+          "executed_quantity": "0.003",
+          "last_exec_quantity": "0.003",
+          "order_status": 3,
+          "position_reconciles": true,
+          "remaining_quantity": "0.0",
+          "reported_position_abs": "0.003"
+        },
+        "intentional_difference": "HftBacktest fills the whole resting order on strict price-through; lobcap bounds by observed normal trade volume.",
+        "lobcap_actual": "0.001",
+        "lobcap_expected": ".001",
+        "passed": true,
+        "side": "buy"
+      },
+      {
+        "case": "through_clears_queue",
+        "engines_agree": false,
+        "hft_actual": "0.003",
+        "hft_expected": ".003",
+        "hft_order_evidence": {
+          "executed_quantity": "0.003",
+          "last_exec_quantity": "0.003",
+          "order_status": 3,
+          "position_reconciles": true,
+          "remaining_quantity": "0.0",
+          "reported_position_abs": "0.003"
+        },
+        "intentional_difference": "HftBacktest fills the whole resting order on strict price-through; lobcap bounds by observed normal trade volume.",
+        "lobcap_actual": "0.001",
+        "lobcap_expected": ".001",
+        "passed": true,
+        "side": "sell"
+      },
+      {
+        "case": "through_full",
+        "engines_agree": true,
+        "hft_actual": "0.003",
+        "hft_expected": ".003",
+        "hft_order_evidence": {
+          "executed_quantity": "0.003",
+          "last_exec_quantity": "0.003",
+          "order_status": 3,
+          "position_reconciles": true,
+          "remaining_quantity": "0.0",
+          "reported_position_abs": "0.003"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0.003",
+        "lobcap_expected": ".003",
+        "passed": true,
+        "side": "buy"
+      },
+      {
+        "case": "through_full",
+        "engines_agree": true,
+        "hft_actual": "0.003",
+        "hft_expected": ".003",
+        "hft_order_evidence": {
+          "executed_quantity": "0.003",
+          "last_exec_quantity": "0.003",
+          "order_status": 3,
+          "position_reconciles": true,
+          "remaining_quantity": "0.0",
+          "reported_position_abs": "0.003"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0.003",
+        "lobcap_expected": ".003",
+        "passed": true,
+        "side": "sell"
+      },
+      {
+        "case": "away_price",
+        "engines_agree": true,
+        "hft_actual": "0.000",
+        "hft_expected": "0",
+        "hft_order_evidence": {
+          "executed_quantity": "0.000",
+          "last_exec_quantity": "0.0",
+          "order_status": 1,
+          "position_reconciles": true,
+          "remaining_quantity": "0.003",
+          "reported_position_abs": "0.0"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0",
+        "lobcap_expected": "0",
+        "passed": true,
+        "side": "buy"
+      },
+      {
+        "case": "away_price",
+        "engines_agree": true,
+        "hft_actual": "0.000",
+        "hft_expected": "0",
+        "hft_order_evidence": {
+          "executed_quantity": "0.000",
+          "last_exec_quantity": "0.0",
+          "order_status": 1,
+          "position_reconciles": true,
+          "remaining_quantity": "0.003",
+          "reported_position_abs": "0.0"
+        },
+        "intentional_difference": "",
+        "lobcap_actual": "0",
+        "lobcap_expected": "0",
+        "passed": true,
+        "side": "sell"
+      }
+    ],
+    "execution_contracts_passed": true,
+    "model": "PartialFillExchange / RiskAdverseQueueModel",
+    "status": "ACCOUNTING_DISCREPANCY",
+    "version": "2.4.4"
+  },
+  "fixture_sha256": "4fc71bff26dcf211dbad6442b058caddaaf837221be17b656fdd895bf2d557e2",
+  "fixtures": [
+    {
+      "difference": "",
+      "expected": "0",
+      "hft_expected": "0",
+      "name": "queue_not_reached",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": ".010",
+      "trades": [
+        [
+          "0",
+          ".002"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": "0",
+      "hft_expected": "0",
+      "name": "queue_exactly_consumed",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": ".002",
+      "trades": [
+        [
+          "0",
+          ".002"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": ".001",
+      "hft_expected": ".001",
+      "name": "same_price_partial",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": ".002",
+      "trades": [
+        [
+          "0",
+          ".003"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": ".003",
+      "hft_expected": ".003",
+      "name": "partial_then_full",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": ".002",
+      "trades": [
+        [
+          "0",
+          ".003"
+        ],
+        [
+          "0",
+          ".002"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": ".003",
+      "hft_expected": ".003",
+      "name": "same_price_full",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": ".002",
+      "trades": [
+        [
+          "0",
+          ".006"
+        ]
+      ]
+    },
+    {
+      "difference": "HftBacktest fills the whole resting order on strict price-through; lobcap bounds by observed normal trade volume.",
+      "expected": ".001",
+      "hft_expected": ".003",
+      "name": "through_clears_queue",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": "1",
+      "trades": [
+        [
+          "-1",
+          ".001"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": ".003",
+      "hft_expected": ".003",
+      "name": "through_full",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": "1",
+      "trades": [
+        [
+          "-1",
+          ".004"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": "0",
+      "hft_expected": "0",
+      "name": "away_price",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": ".002",
+      "trades": [
+        [
+          "1",
+          ".009"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": "0",
+      "hft_expected": null,
+      "name": "sublot_queue_residual",
+      "participation": "1",
+      "quantity": ".003",
+      "queue": ".0005",
+      "trades": [
+        [
+          "0",
+          ".001"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": ".001",
+      "hft_expected": null,
+      "name": "cap_merged",
+      "participation": ".1",
+      "quantity": ".003",
+      "queue": "0",
+      "trades": [
+        [
+          "0",
+          ".010"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": ".001",
+      "hft_expected": null,
+      "name": "cap_split",
+      "participation": ".1",
+      "quantity": ".003",
+      "queue": "0",
+      "trades": [
+        [
+          "0",
+          ".005"
+        ],
+        [
+          "0",
+          ".005"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": "0",
+      "hft_expected": null,
+      "name": "cap_cannot_borrow_future",
+      "participation": ".1",
+      "quantity": ".003",
+      "queue": "0",
+      "trades": [
+        [
+          "0",
+          ".005"
+        ]
+      ]
+    },
+    {
+      "difference": "",
+      "expected": ".003",
+      "hft_expected": null,
+      "name": "cap_multiple_lots",
+      "participation": ".1",
+      "quantity": ".003",
+      "queue": "0",
+      "trades": [
+        [
+          "0",
+          ".015"
+        ],
+        [
+          "0",
+          ".015"
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic contract checks do not establish real exchange accuracy.",
+    "External scope is partial-fill exchange with risk-averse queue; not full sample parity.",
+    "No endogenous market impact is simulated by either replay engine."
+  ],
+  "passed": false,
+  "schema": "execution-contract-validation-v1"
+}

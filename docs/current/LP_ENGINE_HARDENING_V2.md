@@ -48,9 +48,11 @@ The UI exposes execution rules and downloadable execution/diagnostic artifacts. 
 
 The optional adapter pins `hftbacktest==2.4.4` in a separate virtual environment, never the application environment. Fixture inputs and hashes are persisted. The public trade maker side is converted to the opposite aggressor side for HftBacktest.
 
-Our 24 symmetric fixture probes cover queue depletion, lots, trade-through, current-event volume and cumulative participation. Fourteen external comparisons check order execution separately from reported position. See [validation contract](EXECUTION_CONTRACT_VALIDATION.md).
+Our 26 symmetric fixture probes cover queue depletion, lots, trade-through, current-event volume and cumulative participation. Sixteen external comparisons check order execution separately from reported position. See [validation contract](EXECUTION_CONTRACT_VALIDATION.md).
 
 An actual external partial-fill case reported 0.001 executed in order leaves, while reported position remained zero. The report intentionally retains `ACCOUNTING_DISCREPANCY` and a failing overall external verdict. This is an observed fixture-level incompatibility, not a completed independent PnL validation. Our ledger is not changed to reproduce it. The adapter is an offline diagnostic only and HftBacktest is not adopted as the application engine.
+
+The partial-then-full follow-up also retained a discrepancy: 0.003 executed versus 0.002 reported position, on both sides. All 16 external execution quantities meet the explicitly specified external contracts, including two intentional through-volume differences, but four position checks fail. Full evidence: [LP_HFT_COMPARISON_V2.json](LP_HFT_COMPARISON_V2.json); isolated dependency versions: [requirements](LP_HFT_VALIDATION_REQUIREMENTS.txt).
 
 ## Reproduction
 
