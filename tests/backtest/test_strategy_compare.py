@@ -18,8 +18,9 @@ def score_row(run_id='a',pnl='1',strategy='fixed_spread'):
     config=load_backtest_config(ROOT/'configs/backtest/binance_demo.yaml').resolved()
     config['strategy']=strategy
     return {'rankable':True,'output_dir':run_id,'run_id':run_id,'sample_sha256':'same',
+        'scheduler_identity':'exchange-market-first-v1',
         'execution_contract_version':config['execution_contract_version'],'config':config,
-        'manifest':{'code_version':'a'*40},'summary':{'net_pnl':pnl,'gross_pnl':pnl,
+        'manifest':{'code_version':'a'*40,'scheduler_identity':'exchange-market-first-v1'},'summary':{'net_pnl':pnl,'gross_pnl':pnl,
         'fees':'0','spread_capture':pnl,'inventory_mtm':'0','max_drawdown':'1',
         'max_abs_inventory':'.01','ending_inventory':'0','execution':{'activated':2,'orders_with_fill':1}}}
 

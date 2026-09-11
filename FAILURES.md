@@ -290,3 +290,12 @@ keep / exclude interval / exclude day
 - An inspection guessed `configs/backtest/base.yaml`; the repository uses
   `binance_demo.yaml` and `binance_recorded.yaml`. The catalogue builder now
   defaults to the existing recorded-clock config.
+- The sandboxed GitHub push could not reach the configured local proxy. The
+  approved network retry pushed the same commit successfully.
+- The first Ubuntu focused-test command assumed a checkout-local `.venv`; the
+  deployed unit uses `/home/0woo/lobcap-mvp/.venv`. The Git fast-forward had
+  completed, and rerunning with the inspected interpreter passed 93 tests.
+- The first full Ubuntu suite found three synthetic scorecard fixtures without
+  the newly mandatory scheduler identity (375 passed, three failed). Production
+  comparison correctly failed closed. Added the identity to those fixtures and
+  reran the affected tests before repeating the full suite.
