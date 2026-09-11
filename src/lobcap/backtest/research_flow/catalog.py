@@ -163,6 +163,8 @@ def display_only_compatibility(left_code, right_code):
         'src/lobcap/backtest/research_flow/ui.py',
         'src/lobcap/backtest/research_flow/ui_experiment.py',
         'src/lobcap/backtest/research_flow/ui_results.py',
+        'src/lobcap/backtest/research_flow/workbench.py',
+        'src/lobcap/backtest/research_flow/workbench_model.py',
         'src/lobcap/backtest/research_flow/catalog.py'}
     if any(path not in allowed and not path.startswith(('tests/','docs/')) for path in paths):
         return None
