@@ -321,3 +321,8 @@ keep / exclude interval / exclude day
   seven-feature snapshots and risk the 512 MiB limit. Stopped it before that
   phase, quarantined 6.1 MiB of partial output, and replaced the retained objects
   with compact value tuples before rerunning.
+- The compact-redundancy rerun still reached 649 MiB at cache 6/8 because the
+  cache/cadence phase retained every window's truth series and CPython kept freed
+  arenas. Stopped at the measured breach, quarantined 31 MiB of partial output,
+  and changed the runner to retain only paths/segment IDs, reload truth per
+  feature, collect garbage and call Linux `malloc_trim` between bounded phases.

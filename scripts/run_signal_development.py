@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import gc
 import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 
 from lobcap.backtest.replay import iter_events, load_sample, write_json
 from lobcap.backtest.research_flow.feature_cache import (
@@ -85,6 +87,13 @@ def _bucket_id(feature, fit_dates, edges):
         separators=(",", ":")).encode()).hexdigest()[:16]
 
 
+def _release_memory():
+    gc.collect()
+    if sys.platform.startswith("linux"):
+        import ctypes
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+
+
 def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
     config = load_backtest_config(config_path)
     catalogue = _catalogue(catalogue_path)
@@ -104,7 +113,7 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
     definitions = _definitions(entry_latency_ms*1_000_000)
     cache_rows = {}
     cadence = {}
-    contexts = {}
+    sample_rows = {}
     for window, seal in selected:
         sample_path = config.output_path/"samples"/window.window_id
         initial, manifest = load_sample(sample_path)
@@ -126,17 +135,25 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
                                       manifest["acquisition_segments"][0])
         cadence[window.window_id] = raw_label_cadence(lean, truth, definitions,
             config.instrument.tick, window.end_ns)
-        contexts[window.window_id] = (truth, window.end_ns)
+        sample_rows[window.window_id] = {"path": str(sample_path),
+            "segment": manifest["acquisition_segments"][0]}
+        del snapshots, lean, truth, initial, manifest
+        _release_memory()
     development_windows = tuple(window for window, _ in selected)
     freshness, freshness_evidence = freeze_development_freshness(cadence, development_windows)
     write_json(study/"freshness_policy.json", freshness_evidence)
     reports = {"per_window": {}, "per_date": {}, "pooled": {}}
     for feature in FEATURES:
         feature_series = {}
+        truth_by_window = {}
         for window, _ in selected:
             cache = cache_rows[window.window_id]
             feature_series[window.window_id] = tuple(read_feature_cache(
                 cache["path"], cache["cache_key"], (feature,)))
+            sample = sample_rows[window.window_id]
+            initial, _ = load_sample(sample["path"])
+            truth_by_window[window.window_id] = truth_midpoint_series(initial,
+                iter_events(sample["path"]), sample["segment"])
         dates = sorted({window.date for window, _ in selected})
         fitted = {}
         for date in dates:
@@ -145,23 +162,26 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
             edges = fit_bucket_edges(training, feature)
             fitted[date] = (edges, _bucket_id(feature, set(dates)-{date}, edges))
         for window, _ in selected:
-            truth, end = contexts[window.window_id]
+            truth, end = truth_by_window[window.window_id], window.end_ns
             edges, policy_id = fitted[window.date]
             reports["per_window"].setdefault(window.window_id, {})[feature] = evaluate_feature(
                 feature, feature_series[window.window_id], truth, definitions,
                 freshness, config.instrument.tick, end, edges, policy_id)
         for date in dates:
-            grouped = tuple((feature_series[window.window_id], *contexts[window.window_id])
+            grouped = tuple((feature_series[window.window_id], truth_by_window[window.window_id],
+                             window.end_ns)
                             for window, _ in selected if window.date == date)
             edges, policy_id = fitted[date]
             reports["per_date"].setdefault(date, {})[feature] = evaluate_feature_group(
                 feature, grouped, definitions, freshness, config.instrument.tick,
                 edges, policy_id)
-        grouped = tuple((feature_series[window.window_id], *contexts[window.window_id])
+        grouped = tuple((feature_series[window.window_id], truth_by_window[window.window_id],
+                         window.end_ns)
                         for window, _ in selected)
         reports["pooled"][feature] = evaluate_feature_group(feature, grouped, definitions,
             freshness, config.instrument.tick)
-    del feature_series
+        del feature_series, truth_by_window, grouped, training
+        _release_memory()
     compact_rows = []
     for window, _ in selected:
         cache = cache_rows[window.window_id]

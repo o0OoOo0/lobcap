@@ -118,11 +118,8 @@ def read_feature_cache(path, expected_key=None, feature_names=None):
     names = None if feature_names is None else frozenset(feature_names)
     with gzip.open(path / "features.jsonl.gz", "rt", encoding="utf-8") as stream:
         for line in stream:
-            snapshot = snapshot_from_row(json.loads(line))
+            row = json.loads(line)
             if names is not None:
-                snapshot = FeatureSnapshot(snapshot.analysis_time_ns, snapshot.client_mid,
-                    snapshot.client_mid_source_exchange_time_ns,
-                    snapshot.client_mid_source_receive_time_ns,
-                    snapshot.client_mid_available_time_ns, snapshot.acquisition_segment,
-                    tuple(point for point in snapshot.points if point.feature_name in names))
-            yield snapshot
+                row["points"] = [point for point in row["points"]
+                                 if point["feature_name"] in names]
+            yield snapshot_from_row(row)
