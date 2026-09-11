@@ -11,6 +11,9 @@ quote calculations, and support common-window comparisons:
 [GLFT research model](docs/current/GLFT_RESEARCH.md).
 The earlier research flow and shared history remain documented in
 [research flow v1](docs/current/RESEARCH_FLOW_V1.md).
+The causal feature cache, separated market/client/post-latency labels, and raw
+midpoint-age evidence are documented in
+[Signal Research Lab v1](docs/current/SIGNAL_RESEARCH_LAB_V1.md).
 
 The underlying **Research Workspace** supports restricted signal formulas, exact
 parameter grids, durable serial jobs, comparison, cloning and research notes:

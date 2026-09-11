@@ -68,8 +68,9 @@ class MarketBook:
             if levels.get(update.price,ZERO)!=update.quantity_before:
                 raise ValueError("normalized quantity_before does not match reconstructed book")
             if update.quantity_after:
+                present=update.price in levels
                 levels[update.price]=update.quantity_after
-                self._touch(update.side,update.price,True)
+                if not present:self._touch(update.side,update.price,True)
             else:
                 levels.pop(update.price,None)
                 self._touch(update.side,update.price,False)
