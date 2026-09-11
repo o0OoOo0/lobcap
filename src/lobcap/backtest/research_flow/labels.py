@@ -132,19 +132,59 @@ def truth_midpoint_series(initial, events, acquisition_segment):
 
 def raw_label_cadence(snapshots, truth, definitions, tick, sample_end_ns):
     """Measure label availability and ages without selecting a freshness threshold."""
-    snapshots = tuple(snapshots)
-    report = []
-    for definition in definitions:
-        points = [measure_label(definition, snapshot.analysis_time_ns, snapshot.client_mid,
-                  snapshot.client_mid_source_exchange_time_ns, truth, tick, sample_end_ns,
-                  snapshot.acquisition_segment, snapshot.acquisition_segment)
-                  for snapshot in snapshots]
-        statuses = Counter(point.status for point in points)
-        report.append({"label_kind": definition.label_kind, "horizon_ns": definition.horizon_ns,
-            "entry_latency_ns": definition.entry_latency_ns, "observations": len(points),
-            "statuses": dict(sorted(statuses.items())),
-            "anchor_age_distribution": age_distribution(points, "anchor_age_ns"),
-            "target_age_distribution": age_distribution(points, "target_age_ns"),
-            "freshness_policy": None,
-            "note": "Raw cadence evidence only; OBSERVED is not VALID until a DEVELOPMENT-only policy is frozen."})
-    return tuple(report)
+    accumulator = RawLabelCadence(definitions, truth, tick, sample_end_ns)
+    for snapshot in snapshots:
+        accumulator.observe(snapshot)
+    return accumulator.finish()
+
+
+class RawLabelCadence:
+    """Streaming cadence accumulator that does not retain feature snapshots."""
+
+    def __init__(self, definitions, truth, tick, sample_end_ns):
+        self.definitions = tuple(definitions)
+        self.truth = truth
+        self.tick = tick
+        self.sample_end_ns = sample_end_ns
+        self._statuses = [Counter() for _ in self.definitions]
+        self._anchor_ages = [[] for _ in self.definitions]
+        self._target_ages = [[] for _ in self.definitions]
+        self._counts = [0 for _ in self.definitions]
+
+    def observe(self, snapshot):
+        for index, definition in enumerate(self.definitions):
+            point = measure_label(definition, snapshot.analysis_time_ns, snapshot.client_mid,
+                snapshot.client_mid_source_exchange_time_ns, self.truth, self.tick,
+                self.sample_end_ns, snapshot.acquisition_segment,
+                snapshot.acquisition_segment)
+            self._counts[index] += 1
+            self._statuses[index][point.status] += 1
+            if point.anchor_age_ns is not None:
+                self._anchor_ages[index].append(point.anchor_age_ns)
+            if point.target_age_ns is not None:
+                self._target_ages[index].append(point.target_age_ns)
+
+    @staticmethod
+    def _distribution(ages):
+        if not ages:
+            return {"observations": 0, "minimum_ns": None, "median_ns": None,
+                    "p95_ns": None, "maximum_ns": None}
+        ages.sort()
+        quantile = lambda q: ages[round((len(ages)-1)*q)]
+        return {"observations": len(ages), "minimum_ns": ages[0],
+                "median_ns": quantile(.5), "p95_ns": quantile(.95),
+                "maximum_ns": ages[-1]}
+
+    def finish(self):
+        report = []
+        for index, definition in enumerate(self.definitions):
+            report.append({"label_kind": definition.label_kind,
+                "horizon_ns": definition.horizon_ns,
+                "entry_latency_ns": definition.entry_latency_ns,
+                "observations": self._counts[index],
+                "statuses": dict(sorted(self._statuses[index].items())),
+                "anchor_age_distribution": self._distribution(self._anchor_ages[index]),
+                "target_age_distribution": self._distribution(self._target_ages[index]),
+                "freshness_policy": None,
+                "note": "Raw cadence evidence only; OBSERVED is not VALID until a DEVELOPMENT-only policy is frozen."})
+        return tuple(report)

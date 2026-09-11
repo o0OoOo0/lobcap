@@ -12,7 +12,7 @@ from pathlib import Path
 
 from lobcap.backtest.replay import iter_events, load_sample, write_json
 from lobcap.backtest.research_flow.feature_cache import iter_feature_snapshots
-from lobcap.backtest.research_flow.labels import raw_label_cadence, truth_midpoint_series
+from lobcap.backtest.research_flow.labels import RawLabelCadence, truth_midpoint_series
 from lobcap.backtest.research_flow.signal_contracts import (
     AnalysisSchedule, LabelDefinition, CLIENT_FORWARD_RETURN,
     MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -35,41 +35,43 @@ def build(config_path, sample_path, analysis_seconds=None):
         config.sample.end_ns, config.sample.start_ns+analysis_seconds*1_000_000_000)
     schedule = AnalysisSchedule(config.sample.start_ns, analysis_end, 100_000_000)
     begin = time.perf_counter(); cpu = time.process_time()
-    snapshots = tuple(iter_feature_snapshots(initial, iter_events(sample_path), schedule,
-        config.instrument.tick, config.clock_mode, manifest.get("bootstrap_receive_ns"),
-        config.stale_book_ms*1_000_000, manifest["sample"]["sample_id"]))
-    feature_seconds = time.perf_counter()-begin
     truth = truth_midpoint_series(initial, iter_events(sample_path), manifest["sample"]["sample_id"])
-    truth_seconds = time.perf_counter()-begin-feature_seconds
+    truth_seconds = time.perf_counter()-begin
     definitions = []
     for horizon in HORIZONS_NS:
         definitions.extend((LabelDefinition(MARKET_TRUTH_RETURN, horizon),
                             LabelDefinition(CLIENT_FORWARD_RETURN, horizon),
                             LabelDefinition(POST_LATENCY_RETURN, horizon,
                                             entry_latency_ns=config.entry_ms*1_000_000)))
-    availability = Counter()
-    for snapshot in snapshots:
+    cadence_accumulator = RawLabelCadence(definitions, truth, config.instrument.tick,
+                                          config.sample.end_ns)
+    availability = Counter(); snapshot_count = 0
+    feature_begin = time.perf_counter()
+    for snapshot in iter_feature_snapshots(initial, iter_events(sample_path), schedule,
+            config.instrument.tick, config.clock_mode, manifest.get("bootstrap_receive_ns"),
+            config.stale_book_ms*1_000_000, manifest["sample"]["sample_id"]):
+        snapshot_count += 1
         for name in ("microprice_minus_mid_ticks", "imbalance_1", "imbalance_5",
                      "vamp_5_minus_mid_ticks", "trade_volume_imbalance_1000ms", "bbo_ofi_1000ms"):
             availability[name+":"+snapshot.point(name).status] += 1
-    cadence = raw_label_cadence(snapshots, truth, definitions,
-                                config.instrument.tick, config.sample.end_ns)
-    label_seconds = time.perf_counter()-begin-feature_seconds-truth_seconds
+        cadence_accumulator.observe(snapshot)
+    feature_and_label_seconds = time.perf_counter()-feature_begin
+    cadence = cadence_accumulator.finish()
     result = {"status": "PASS", "purpose": "Signal Lab foundation; no strategy or paper claim",
         "sample_id": manifest["sample"]["sample_id"], "sample_sha256": manifest["sample_sha256"],
         "clock_mode": config.clock_mode, "analysis_schedule": {"interval_ns": schedule.interval_ns,
             "note": "Research snapshots only; not the strategy decision clock."},
-        "strategy_decision_ms": config.decision_ms, "snapshot_count": len(snapshots),
+        "strategy_decision_ms": config.decision_ms, "snapshot_count": snapshot_count,
         "feature_availability": dict(sorted(availability.items())),
         "label_cadence": cadence,
         "freshness_policy": None,
         "performance": {"wall_seconds": time.perf_counter()-begin,
-                        "feature_seconds": feature_seconds, "truth_seconds": truth_seconds,
-                        "label_seconds": label_seconds,
+                        "truth_seconds": truth_seconds,
+                        "feature_and_label_seconds": feature_and_label_seconds,
                         "cpu_seconds": time.process_time()-cpu},
         "environment": {"python": platform.python_version()},
         "git_commit": git_head(Path(config_path).resolve().parents[2])}
-    if len(snapshots) != (analysis_end-config.sample.start_ns)//schedule.interval_ns:
+    if snapshot_count != (analysis_end-config.sample.start_ns)//schedule.interval_ns:
         raise AssertionError("analysis schedule row count mismatch")
     return result
 
