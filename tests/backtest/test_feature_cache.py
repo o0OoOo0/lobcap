@@ -36,6 +36,16 @@ def test_analysis_grid_does_not_imply_delivery_or_decision_clock():
     assert [row.analysis_time_ns for row in recorded] == [100, 200, 300]
 
 
+def test_stream_factory_matches_heap_delivery_without_retaining_backlog():
+    schedule = AnalysisSchedule(100, 401, 100)
+    rows = [delayed_depth(), ReplayEvent(2, 60, 120, "trade", ("t:2",))]
+    kwargs = dict(clock_mode="recorded", bootstrap_receive_ns=0)
+    materialized = list(iter_feature_snapshots(initial(), rows, schedule, D(1), **kwargs))
+    streamed = list(iter_feature_snapshots(initial(), lambda: iter(rows), schedule, D(1),
+                                            **kwargs))
+    assert streamed == materialized
+
+
 def test_feature_cache_roundtrip_and_checksum(tmp_path):
     schedule = AnalysisSchedule(100, 301, 100)
     snapshots = iter_feature_snapshots(initial(), [delayed_depth()], schedule, D(1),

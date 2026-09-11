@@ -17,6 +17,21 @@ from .signal_contracts import AnalysisSchedule, FeaturePoint, FeatureSnapshot
 CACHE_VERSION = "feature-cache-v2"
 
 
+def _recorded_delivery_stream(event_source_factory, bootstrap_receive_ns):
+    """Merge two monotone venue streams while retaining at most two events."""
+    def one_kind(kind):
+        last_delivery = bootstrap_receive_ns
+        for event in event_source_factory():
+            if event.kind != kind:
+                continue
+            if event.receive_ns < event.time_ns:
+                raise ValueError("negative capture delay")
+            delivered = max(event.receive_ns, last_delivery)
+            last_delivery = delivered
+            yield delivered, event.replay_index, event
+    return heapq.merge(one_kind("trade"), one_kind("depth"))
+
+
 def iter_feature_snapshots(initial, events, schedule: AnalysisSchedule, tick,
                            clock_mode="recorded", bootstrap_receive_ns=None,
                            stale_after_ns=500_000_000, acquisition_segment="segment-1",
@@ -28,6 +43,18 @@ def iter_feature_snapshots(initial, events, schedule: AnalysisSchedule, tick,
     if available is None or available < initial.time_ns:
         raise ValueError("valid bootstrap receive time is required")
     engine = CausalFeatureEngine(initial, tick, stale_after_ns, available)
+    if clock_mode == "recorded" and callable(events):
+        deliveries = iter(_recorded_delivery_stream(events, available))
+        delivery = next(deliveries, None)
+        for now in schedule.times():
+            while delivery is not None and delivery[0] <= now:
+                delivered, _, incoming = delivery
+                engine.observe(incoming, delivered)
+                delivery = next(deliveries, None)
+            yield engine.observation(now, acquisition_segment, feature_names)
+        return
+    if callable(events):
+        events = events()
     iterator = iter(events)
     event = next(iterator, None)
     deliveries = []

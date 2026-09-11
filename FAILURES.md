@@ -347,3 +347,9 @@ keep / exclude interval / exclude day
   the limit: it still reached 529.7 MiB. Inspection found stale priority-heap
   entries accumulating when deep levels were repeatedly deleted and re-added;
   added bounded heap compaction and a churn regression test.
+- Heap compaction did not resolve the cache peak; another dense window reached
+  about 529 MiB before completion. The retained objects were queued cross-stream
+  deliveries: exchange-time iteration could read a delayed stream far ahead of
+  client time. Replaced the production cache path with a lazy two-stream merge
+  over independent file iterators, retaining only one lookahead per stream while
+  preserving per-stream order and `(delivery time, replay index)` tie-breaking.

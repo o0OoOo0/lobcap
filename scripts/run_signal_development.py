@@ -139,7 +139,7 @@ def _cache_phase(config, window, seal, study, code):
     schedule = AnalysisSchedule(window.start_ns, window.end_ns, 100_000_000)
     identity = _cache_identity(manifest, config.instrument.tick, code)
     cache_path = study/"feature_cache"/window.window_id
-    snapshots = iter_feature_snapshots(initial, iter_events(sample_path), schedule,
+    snapshots = iter_feature_snapshots(initial, lambda: iter_events(sample_path), schedule,
         config.instrument.tick, clock_mode="recorded",
         bootstrap_receive_ns=manifest["bootstrap_receive_ns"],
         acquisition_segment=manifest["acquisition_segments"][0],
