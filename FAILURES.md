@@ -175,3 +175,9 @@ keep / exclude interval / exclude day
 - Local SSH health found the prior tunnel absent. Restored a hidden loopback-only forward (PID 32120); VM app was healthy. Collector remained PID 608, NRestarts 0.
 - Whole Ubuntu suite passed 312 tests with two existing Streamlit/NumPy warnings. Removed the new chart's deprecated width argument during final visual review.
 
+
+### 2026-09-11 GLFT research policies
+- An inspection command used a Windows wildcard path unsupported by rg; repeated with actual filenames.
+- An intermediate comparison-guard patch introduced incorrect indentation. compileall detected it before transfer; corrected it and recompiled successfully.
+- Initial GLFT and workbench focused tests: 32 passed. Full Ubuntu regression: 324 passed with two existing Streamlit/NumPy warnings. No unresolved test failures at this stage.
+

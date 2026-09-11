@@ -86,7 +86,10 @@ def render_editor(store,draft,base):
             if field in INTS:
                 edits[field]=st.number_input(LABELS[field],min_value=1,value=getattr(draft.config,field))
                 continue
-            edits[field]=st.text_input(LABELS[field],str(getattr(draft.config,field)),
+            label=LABELS[field]
+            if strategy.startswith('glft'):
+                label={'half_spread_ticks':'최소 호가 반거리 (tick)','max_signal_ticks':'가격 신호 상한 (tick)'}.get(field,label)
+            edits[field]=st.text_input(label,str(getattr(draft.config,field)),
                 help='반거리는 전체 양방향 폭의 절반입니다. 최종 가격은 tick 반올림과 BBO 제한을 거칩니다.' if field=='half_spread_ticks' else None)
         if strategy=='expression':
             edits['signal_expression']=st.text_area('가격 이동 수식 · 출력 tick',draft.config.signal_expression or '(microprice-mid)/tick',height=130)

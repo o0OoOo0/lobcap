@@ -6,6 +6,9 @@ The default app now puts **strategy settings on the left and results/charts on
 the right**, with policy explanations, numerical order examples, independent
 FIFO PnL reconciliation, and one-change follow-ups:
 [simulation workbench review](docs/current/SIMULATION_WORKBENCH.md).
+GLFT policies now estimate past crossing intensity and volatility, expose their
+quote calculations, and support common-window comparisons:
+[GLFT research model](docs/current/GLFT_RESEARCH.md).
 The earlier research flow and shared history remain documented in
 [research flow v1](docs/current/RESEARCH_FLOW_V1.md).
 
