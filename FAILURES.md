@@ -415,3 +415,11 @@ keep / exclude interval / exclude day
   pairs/aggregates, and its full Ubuntu suite passed 434 tests. Runtime maximum
   worker RSS was 70.46484375 MiB. Evidence and the non-promotion conclusion are
   recorded in STUDY1_BASELINES_ACCEPTANCE.md.
+
+# 2026-09-12 — Study 1 BP extension
+
+- The first reversed-BP fixture expected every sign change to survive quote
+  rounding. With its small coefficient, the reversed desired prices rounded to
+  the same ticks as the inventory reference. Increased only the synthetic test
+  coefficient to exercise visible reversed orders; the real-data protocol keeps
+  the existing coefficient 1 and reports actual quote-path differences.
