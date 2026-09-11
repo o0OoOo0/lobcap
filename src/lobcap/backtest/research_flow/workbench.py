@@ -13,7 +13,14 @@ from .catalog import index_runs
 from .analysis import explain_run,compare_runs,order_drilldown,iter_rows
 from .ui import active_fields,LABELS
 from .ui_results import compact_timeline,representative_table,utc_display,number_display
-from .workbench_model import STRATEGIES,METRICS,economics,reviewed_metrics
+from .workbench_model import STRATEGIES,METRICS,economics,reviewed_metrics,policy_examples
+
+
+def run_label(row):
+    c=row['config'];strategy=c.get('strategy','')
+    name=STRATEGIES.get(strategy,(row['name'],))[0]
+    distance=f" · 반거리 {c.get('half_spread_ticks')} tick" if strategy not in {'join_bbo','inventory_size','flow_withdraw','no_trade'} else ''
+    return f"{name}{distance} · {c.get('size','?')} BTC · {row['status']} · {row['run_id'][-8:]}"
 
 
 def render_workbench(base):
@@ -58,6 +65,7 @@ def render_editor(store,draft,base):
     st.info(idea)
     st.markdown('**언제 판단하나?** '+trigger)
     st.markdown('**어떤 주문을 내나?** '+action)
+    st.caption(f'가격 단위: 1 tick = {draft.config.instrument.tick} USDT · 최소 주문 단위: {draft.config.instrument.lot} BTC. 반거리 0.5 tick는 BBO 참여와 같은 가격이 될 수 있습니다.')
     with st.expander('이 전략의 한계와 공통 실행 규칙'):
         st.write(risk)
         st.write('고정 주기로 판단합니다. 취소 중에도 체결될 수 있고, 기존 주문이 끝나야 다음 주기에 교체합니다. '
@@ -142,6 +150,11 @@ def render_editor(store,draft,base):
             '수량 BTC':r['settings']['size'],'반거리 tick':r['settings']['half_spread_ticks'] if r['settings']['strategy'] not in {'join_bbo','inventory_size','flow_withdraw','no_trade'} else '미사용',
             'Maker bps':r['settings']['maker_bps'],'α':str(r['settings']['alpha'])} for r in spec['runs']],hide_index=True)
         st.caption('폼을 다시 수정했다면 실행 설정 확인을 다시 누르세요. 아래 버튼은 표시된 고정 설정을 제출합니다.')
+        from lobcap.backtest.workspace.contracts import config_from_document
+        with st.expander('이 설정은 어떤 주문을 내나? · 숫자 예제',expanded=True):
+            example=config_from_document(spec['runs'][0]['config_document'])
+            st.caption('첫 실행 설정의 가상 상태: bid 80,000 USDT, ask = bid + 1 tick, 변동성 1 bps, 최근 거래 1 BTC, 기존 주문 없음. 실제 표본이나 수익 예측이 아닙니다.')
+            st.dataframe(policy_examples(example),hide_index=True)
         with st.expander('전체 실행 설정'):st.json(spec)
         if st.button('확인한 설정 실행',type='primary'):
             key='wb_submit_'+spec['experiment_hash']
@@ -172,14 +185,17 @@ def render_output(store,base,context):
         return
     ids=[r['run_id'] for r in rows]
     selected=st.selectbox('실행 결과 선택',ids,index=ids.index(context['run_id']) if context.get('run_id') in ids else 0,
-        format_func=lambda i:next(r['name']+' · '+r['status']+' · '+i[-8:] for r in rows if r['run_id']==i))
+        format_func=lambda i:run_label(next(r for r in rows if r['run_id']==i)))
     row=next(r for r in rows if r['run_id']==selected)
     save_context(store,{'run_id':selected})
+    if not row['rankable']:
+        st.warning('정상 완료 또는 근거 일관성을 확인하지 못한 결과입니다. 성과 후보로 사용하지 마세요.')
     if not row['summary'] or not row['output_dir']:
         st.warning('완료된 성과 근거가 없는 실행입니다. 실패·중단 결과를 정상 성과로 표시하지 않습니다.');return
     config,s=row['config'],row['summary']
     st.caption('선택 결과: '+STRATEGIES.get(config.get('strategy'),(config.get('strategy','미기록'),))[0]+
         f" · size {config.get('size')} BTC · maker {config.get('maker_bps')} bps · {config.get('clock_mode')} 시계")
+    st.caption(f"주문 / 취소 / 통보 {config.get('entry_ms')} / {config.get('cancel_ms')} / {config.get('report_ms')} ms · α {config.get('alpha')} · 참여 예산 {config.get('max_trade_participation')}")
     st.write('**검증 질문:** '+(row.get('hypothesis') or '이 실행에는 가설 미기록'))
     reviewed=reviewed_metrics(row['output_dir'])
     if not reviewed.get('available'):st.error(reviewed['reason']);return
@@ -276,7 +292,7 @@ def render_behavior(row,r):
         {'지표':'판단 횟수','값':str(r['decision_count'])},
         *[{'지표':k,'값':str(v)} for k,v in e.items() if k in {'submitted','activated','rejected','canceled','orders_with_fill','full_orders','partial_orders'}]],hide_index=True)
     st.write('**설정 → 최종 주문 사이에서 무엇이 바뀌었나**')
-    st.dataframe([{'단계':k,'변경된 판단 횟수':v} for k,v in r['stage_changes'].items()],hide_index=True)
+    st.dataframe([{'단계':{'tick_rounding':'tick·lot 반올림','price_policy':'최우선 호가 제한','risk':'위험 제어'}.get(k,k),'변경된 판단 횟수':v} for k,v in r['stage_changes'].items()],hide_index=True)
     st.caption('반올림·가격 제한·위험 제어의 적용 횟수입니다. 두 설정이 같은 전략 행동인지 판단하려면 기준 비교의 첫 차이를 확인하세요.')
     explanation=explain_run(row['output_dir'])
     st.dataframe(representative_table(explanation['representative_orders']),hide_index=True)
@@ -300,7 +316,7 @@ def render_comparison(rows,row,context):
     if not eligible:st.info('같은 표본의 완료 결과가 하나 더 필요합니다.');return
     ids=[r['run_id'] for r in eligible]
     key=st.selectbox('비교 기준',ids,index=ids.index(context['baseline_id']) if context.get('baseline_id') in ids else 0,
-        format_func=lambda i:next(r['name']+' · '+i[-8:] for r in eligible if r['run_id']==i))
+        format_func=lambda i:run_label(next(r for r in eligible if r['run_id']==i)))
     baseline=next(r for r in eligible if r['run_id']==key)
     sensitivity=st.checkbox('체결·비용 가정 민감도로 비교')
     result=compare_runs(baseline['output_dir'],row['output_dir'],allow_scenario_change=sensitivity)

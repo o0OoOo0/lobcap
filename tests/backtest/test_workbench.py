@@ -2,7 +2,7 @@
 import gzip
 import json
 import shutil
-from decimal import Decimal as D
+from decimal import Decimal as D,localcontext
 from types import SimpleNamespace
 
 import pytest
@@ -37,7 +37,10 @@ def test_fifo_reconciles_real_accounting(sample,tmp_path,initial,sequence,ending
     assert result['reconciled']
     assert result['realized_gross']+result['unrealized_gross']==p.gross_pnl
     assert result['net_pnl']==p.net_pnl
-    if sequence:assert result['break_even_fee_bps']==p.gross_pnl/result['turnover']*10000
+    if sequence:
+        with localcontext() as ctx:
+            ctx.prec=50
+            assert result['break_even_fee_bps']==p.gross_pnl/result['turnover']*10000
     else:assert result['break_even_fee_bps'] is None
 
 
@@ -57,6 +60,19 @@ def test_price_units_and_profitable_engine_control(sample):
     result=run_one(variant(config,alpha=None,stale_book_ms=100000),path)
     assert D(result.summary['gross_pnl'])>0
     assert reviewed_metrics(result.output_dir)['reconciled']
+
+
+def test_explanatory_examples_exercise_actual_policy(sample):
+    from lobcap.backtest.research_flow.workbench_model import policy_examples
+    config,_=sample
+    rows=policy_examples(variant(config,strategy='inventory_size',size='.001'))
+    assert rows[0]['매수 BTC']=='.001' or D(rows[0]['매수 BTC'])==D('.001')
+    assert rows[1]['매수 가격']=='철회' and rows[2]['매도 가격']=='철회'
+    flow=policy_examples(variant(config,strategy='flow_withdraw'))
+    assert flow[1]['매도 가격']=='철회' and flow[2]['매수 가격']=='철회'
+    narrow=policy_examples(variant(config,strategy='fixed_spread',half_spread_ticks='.5'))
+    wide=policy_examples(variant(config,strategy='fixed_spread',half_spread_ticks='100'))
+    assert D(wide[0]['매수 가격'])<D(narrow[0]['매수 가격'])
 
 
 def widget(items,label):return next(i for i in items if i.label==label)

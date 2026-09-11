@@ -165,3 +165,9 @@ keep / exclude interval / exclude day
 - Browser review exposed raw JSON as the default order timeline and excessively long numeric display. Replaced the default view with compact UTC/event/quantity rows and moved original rows into an audit expander. Execution outputs remain immutable.
 - Final display-checkout full suite initially reported 290 passed and 2 failed. One comparison was correctly blocked because the top-level data symlink was untracked (Git directory-only ignore rule); replaced only that verified symlink with an ignored real directory and child links, preserving all targets. The legacy timeline assertion used a fixture with a stale initial book and therefore no orders; explicitly raised that test's staleness limit to exercise actual order rows. No simulator rule was relaxed.
 - Final clean-checkout rerun: 292 passed, two existing deprecation warnings. The additional real-sample E1 display-only run matched the original deterministic digest exactly. Final real-history UI checks and guarded deployment passed; collector PID 608/restart count 0 remained unchanged.
+
+### 2026-09-11 workbench validation
+- Initial commit attempt failed because this checkout had no Git identity; reused the existing commit identity with command-scoped configuration, then rebuilt the bundle. The initial VM clone was still the prior commit and was fast-forwarded before tests.
+- New FIFO tests initially had 12 assertion failures because the expected fee ratio used Decimal precision 28 while the reviewed ratio uses 50. Exact monetary reconciliation already passed. Aligned expected ratio context to 50; no accounting change.
+- Read-only inspection attempted three nonexistent test/module filenames; corrected to the actual repository paths. No code or data was changed by those failed reads.
+

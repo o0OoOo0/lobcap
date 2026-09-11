@@ -69,6 +69,29 @@ def economics(mid,tick,half_ticks,maker_bps):
             'roundtrip_fee_usdt_per_btc':mid*maker_bps*2/10000}
 
 
+def policy_examples(config):
+    """Small hypothetical states exercise the same policy API as the engine."""
+    from lobcap.backtest.types import MarketView,PortfolioView
+    from lobcap.backtest.strategies import StrategyParameters,decide,risk_control
+    bid=D('80000');ask=bid+config.instrument.tick;mid=(bid+ask)/2
+    rows=[]
+    for label,inventory,imbalance,flow in [('중립',D(0),D(0),D(0)),
+            ('롱 재고 60% · 매수 흐름',config.max_inventory*D('.6'),D('.8'),D('.8')),
+            ('숏 재고 60% · 매도 흐름',-config.max_inventory*D('.6'),D('-.8'),D('-.8'))]:
+        b=1+imbalance;a=1-imbalance
+        market=MarketView(0,bid,ask,b,a,mid,(ask*b+bid*a)/(b+a),imbalance,1.,0,
+            bid-D(1000),ask+D(1000),flow,D(1))
+        portfolio=PortfolioView(config.initial_cash,inventory,config.initial_cash+inventory*mid)
+        stages={}
+        desired=decide(StrategyParameters.from_config(config),market,portfolio,trace=stages)
+        final=risk_control(config,market,portfolio,desired)
+        rows.append({'상태':label,'매수 가격':str(final.bid.price) if final.bid else '철회',
+            '매수 BTC':str(final.bid.quantity) if final.bid else '0',
+            '매도 가격':str(final.ask.price) if final.ask else '철회',
+            '매도 BTC':str(final.ask.quantity) if final.ask else '0','판단':final.reason})
+    return rows
+
+
 def reviewed_metrics(run_dir):
     """FIFO is a second decomposition; never add it to spread+inventory MTM."""
     with localcontext() as ctx:
