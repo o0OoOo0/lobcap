@@ -326,3 +326,10 @@ keep / exclude interval / exclude day
   arenas. Stopped at the measured breach, quarantined 31 MiB of partial output,
   and changed the runner to retain only paths/segment IDs, reload truth per
   feature, collect garbage and call Linux `malloc_trim` between bounded phases.
+- A child-process-isolated rerun showed that window 6 still reached about
+  529 MiB RSS because cache writing and cadence/truth measurement shared one
+  child. Stopped and quarantined it, then split each window into separate
+  `cache_write` and `cadence` children with independent recorded RSS gates.
+- The first child RSS probe used a stale guessed PID after reading the new parent
+  PID, so `ps` returned no process and the SSH command exited 1. Retried with the
+  exact reported PID and made no state change.

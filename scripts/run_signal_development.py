@@ -128,7 +128,7 @@ def _isolated(target, *args):
     return result
 
 
-def _cache_phase(config, window, seal, study, code, definitions):
+def _cache_phase(config, window, seal, study, code):
     sample_path = config.output_path/"samples"/window.window_id
     initial, manifest = load_sample(sample_path)
     if manifest["sample_sha256"] != seal["sample_sha256"]:
@@ -142,14 +142,19 @@ def _cache_phase(config, window, seal, study, code, definitions):
         acquisition_segment=manifest["acquisition_segments"][0])
     cache_manifest = write_feature_cache(cache_path, snapshots, manifest["sample_sha256"],
         schedule, "recorded", 500_000_000, **identity)
-    lean = tuple(read_feature_cache(cache_path, cache_manifest["cache_key"], ()))
     segment = manifest["acquisition_segments"][0]
-    truth = truth_midpoint_series(initial, iter_events(sample_path), segment)
+    return {"cache": {"path": str(cache_path), "cache_key": cache_manifest["cache_key"],
+                      "date": window.date},
+            "sample": {"path": str(sample_path), "segment": segment}}
+
+
+def _cadence_phase(config, window, cache, sample, definitions):
+    lean = tuple(read_feature_cache(cache["path"], cache["cache_key"], ()))
+    initial, _ = load_sample(sample["path"])
+    truth = truth_midpoint_series(initial, iter_events(sample["path"]), sample["segment"])
     cadence = raw_label_cadence(lean, truth, definitions, config.instrument.tick,
                                 window.end_ns)
-    return {"cache": {"path": str(cache_path), "cache_key": cache_manifest["cache_key"],
-                      "date": window.date}, "cadence": cadence,
-            "sample": {"path": str(sample_path), "segment": segment}}
+    return {"cadence": cadence}
 
 
 def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshness, feature):
@@ -222,12 +227,16 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
     sample_rows = {}
     phase_metrics = []
     for window, seal in selected:
-        result = _isolated(_cache_phase, config, window, seal, study, code, definitions)
+        result = _isolated(_cache_phase, config, window, seal, study, code)
         cache_rows[window.window_id] = result["cache"]
-        cadence[window.window_id] = result["cadence"]
         sample_rows[window.window_id] = result["sample"]
-        phase_metrics.append({"phase": "cache", "id": window.window_id,
+        phase_metrics.append({"phase": "cache_write", "id": window.window_id,
                               "peak_rss_mib": result["peak_rss_mib"]})
+        measured = _isolated(_cadence_phase, config, window, result["cache"],
+                             result["sample"], definitions)
+        cadence[window.window_id] = measured["cadence"]
+        phase_metrics.append({"phase": "cadence", "id": window.window_id,
+                              "peak_rss_mib": measured["peak_rss_mib"]})
     development_windows = tuple(window for window, _ in selected)
     freshness, freshness_evidence = freeze_development_freshness(cadence, development_windows)
     write_json(study/"freshness_policy.json", freshness_evidence)
