@@ -28,15 +28,19 @@ def git_head(root):
                           text=True, capture_output=True).stdout.strip()
 
 
-def build(config_path, sample_path):
+def build(config_path, sample_path, analysis_seconds=None):
     config = load_backtest_config(config_path)
     initial, manifest = load_sample(sample_path, config)
-    schedule = AnalysisSchedule(config.sample.start_ns, config.sample.end_ns, 100_000_000)
+    analysis_end = config.sample.end_ns if analysis_seconds is None else min(
+        config.sample.end_ns, config.sample.start_ns+analysis_seconds*1_000_000_000)
+    schedule = AnalysisSchedule(config.sample.start_ns, analysis_end, 100_000_000)
     begin = time.perf_counter(); cpu = time.process_time()
     snapshots = tuple(iter_feature_snapshots(initial, iter_events(sample_path), schedule,
         config.instrument.tick, config.clock_mode, manifest.get("bootstrap_receive_ns"),
         config.stale_book_ms*1_000_000, manifest["sample"]["sample_id"]))
+    feature_seconds = time.perf_counter()-begin
     truth = truth_midpoint_series(initial, iter_events(sample_path), manifest["sample"]["sample_id"])
+    truth_seconds = time.perf_counter()-begin-feature_seconds
     definitions = []
     for horizon in HORIZONS_NS:
         definitions.extend((LabelDefinition(MARKET_TRUTH_RETURN, horizon),
@@ -48,20 +52,24 @@ def build(config_path, sample_path):
         for name in ("microprice_minus_mid_ticks", "imbalance_1", "imbalance_5",
                      "vamp_5_minus_mid_ticks", "trade_volume_imbalance_1000ms", "bbo_ofi_1000ms"):
             availability[name+":"+snapshot.point(name).status] += 1
+    cadence = raw_label_cadence(snapshots, truth, definitions,
+                                config.instrument.tick, config.sample.end_ns)
+    label_seconds = time.perf_counter()-begin-feature_seconds-truth_seconds
     result = {"status": "PASS", "purpose": "Signal Lab foundation; no strategy or paper claim",
         "sample_id": manifest["sample"]["sample_id"], "sample_sha256": manifest["sample_sha256"],
         "clock_mode": config.clock_mode, "analysis_schedule": {"interval_ns": schedule.interval_ns,
             "note": "Research snapshots only; not the strategy decision clock."},
         "strategy_decision_ms": config.decision_ms, "snapshot_count": len(snapshots),
         "feature_availability": dict(sorted(availability.items())),
-        "label_cadence": raw_label_cadence(snapshots, truth, definitions,
-                                             config.instrument.tick, config.sample.end_ns),
+        "label_cadence": cadence,
         "freshness_policy": None,
         "performance": {"wall_seconds": time.perf_counter()-begin,
+                        "feature_seconds": feature_seconds, "truth_seconds": truth_seconds,
+                        "label_seconds": label_seconds,
                         "cpu_seconds": time.process_time()-cpu},
         "environment": {"python": platform.python_version()},
         "git_commit": git_head(Path(config_path).resolve().parents[2])}
-    if len(snapshots) != (config.sample.end_ns-config.sample.start_ns)//schedule.interval_ns:
+    if len(snapshots) != (analysis_end-config.sample.start_ns)//schedule.interval_ns:
         raise AssertionError("analysis schedule row count mismatch")
     return result
 
@@ -71,8 +79,12 @@ def main(argv=None):
     parser.add_argument("--config", required=True)
     parser.add_argument("--sample", required=True)
     parser.add_argument("--output")
+    parser.add_argument("--analysis-seconds", type=int,
+                        help="Diagnostic prefix only; does not change the sample or label horizon.")
     args = parser.parse_args(argv)
-    result = build(args.config, args.sample)
+    if args.analysis_seconds is not None and args.analysis_seconds <= 0:
+        parser.error("--analysis-seconds must be positive")
+    result = build(args.config, args.sample, args.analysis_seconds)
     if args.output:
         write_json(args.output, result)
         print(json.dumps({"status": result["status"], "output": str(args.output),
