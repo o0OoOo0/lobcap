@@ -110,3 +110,70 @@ No fitting uses future observations or the final sample outcome. A ten-minute
 development replay cannot establish out-of-sample quality or choose a production
 candidate. Market impact, account fee verification and actual queue calibration
 remain unresolved; adding this model does not remove those limits.
+
+## Bounded acceptance evidence
+
+Same frozen 2026-09-06 BTCUSDT sample, recorded clock, size 0.001 BTC, inventory
+limit 0.01 BTC, queue alpha 0.5, participation budget 0.1, delays 10/10/20 ms,
+zero fees, and keep-remaining policy. Every strategy starts quoting at 14:12 UTC
+after two minutes of observation and stops at 14:20 UTC.
+
+| Configuration | Net USDT | Fill events |
+|---|---:|---:|
+| Join BBO | -1.255350 | 139 |
+| Fixed half width 20 tick | -0.494650 | 83 |
+| GLFT gamma 0.03 | -0.401350 | 39 |
+| GLFT gamma 0.1 (default) | -0.297000 | 28 |
+| GLFT gamma 0.3 | -0.187400 | 10 |
+| GLFT + microprice, strength 0 | -0.297000 | 28 |
+| GLFT + microprice, strength 1 | -0.296900 | 28 |
+| GLFT + microprice, strength 10 | -0.243200 | 26 |
+
+All tested configurations lost money before fees. Fewer fills and lower total
+loss do not by themselves demonstrate better risk-adjusted execution or alpha.
+Default GLFT's FIFO realized/unrealized components were -0.2074/-0.0896 USDT.
+None is promoted as a paper-trading candidate.
+
+All GLFT variants had 100 initial decision ticks with insufficient observations
+and 2,300 with ready estimates; the shared quote-start gate still prevents quoting
+until 14:12. The last default fit used 120 valid seconds, A=3.79945 per side/second,
+k=0.04385 per tick, sigma=38.61591 ticks/sqrt(second), R2=0.99713. High in-sample
+curve fit is not evidence of accurate own-order fills or future prediction.
+
+Validation covered eight configurations, a repeated default GLFT, a legacy BBO
+control and one workspace/UI-path GLFT run (11 actual replays). Repeat digests
+matched; zero-signal desired quotes and lifecycle actions matched basic GLFT;
+the UI submission matched the direct run digest. The old no-delay BBO digest was
+unchanged. Every comparison run passed independent FIFO/ledger reconciliation.
+
+Full Ubuntu suite at dae0559: **324 passed**, two existing Streamlit/NumPy warnings.
+Final GLFT/workbench focused suite at efad736: **32 passed**. Browser inspection
+confirmed both policy selectors and the GLFT diagnostic graphs. Maximum measured
+wall time across the nine comparison/repeat runs was about 30.5 seconds and process
+high-water RSS 96.8 MiB (includes prior audit reads; preparation excluded).
+
+Run IDs, digests, configuration patches, estimates, markouts, component PnL,
+performance and deployment record: [glft-evidence.json](glft-evidence.json).
+
+## Completion record
+
+- Files changed: GLFT estimator, strategy/config interfaces, public-observation
+  hooks in both clocks, workbench controls/plots, comparison guard, focused tests,
+  bounded validation script and documentation.
+- Commands run: compileall, Ubuntu pytest, validate_glft_bounded.py, isolated
+  workspace/UI parity execution, guarded loopback app activation and health checks.
+- Official docs checked: GLFT and order-book imbalance references linked above;
+  this estimator's differences are explicitly documented.
+- Tests passed: full 324, final focused 32, repeat/legacy/UI parity, and all
+  bounded comparison ledger identities. No unresolved test failures.
+- Tests failed: an intermediate indentation error was caught by compileall and
+  fixed before transfer. See FAILURES.md for the tooling record.
+- Runtime observations: app PID 486876 at loopback 8501; collector PID 608,
+  NRestarts 0 before and after activation. Previous app remains available at
+  /home/0woo/lobcap-workbench-v1 for rollback.
+- Data written: separate GLFT validation runs, one saved GLFT draft/job and UI
+  evidence. Existing raw captures and accepted outputs preserved.
+- Open risks: crossing-rate proxy, symmetric exponential fit, limited history,
+  zero-cost diagnostic assumptions, unmeasured queue/impact and no OOS result.
+- Recommended next action: freeze an experiment and vary one active coefficient
+  with equal clocks/costs/start time, then test untouched data before promotion.
