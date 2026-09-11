@@ -373,3 +373,11 @@ keep / exclude interval / exclude day
   anchor. Reissued exact patches; no runtime inputs were affected.
 - A broad initial journal query included unrelated telemetry errors. Narrowed
   the query to the signal worker; telemetry configuration was not changed.
+- Initial full Ubuntu acceptance on the new checkout had 394 passes, two
+  failures and five setup errors because the ignored existing Tardis raw fixture
+  was not linked. Linked the original fixture without modifying it and reran
+  the full suite; the DEVELOPMENT worker remains gated on a passing suite.
+- Full Ubuntu regression then passed 401 tests. The actual runner caught a new
+  local-variable shadowing error (`development_windows`) before creating study
+  output. Renamed the local tuple and added a complete runner orchestration
+  regression using isolated synthetic phase results and the real acceptance gate.

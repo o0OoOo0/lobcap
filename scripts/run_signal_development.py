@@ -224,8 +224,8 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
                              result["sample"], definitions)
         cadence[window.window_id] = measured["cadence"]
         record_phase("cadence", window.window_id, measured)
-    development_windows = tuple(window for window, _ in selected)
-    freshness, freshness_evidence = freeze_development_freshness(cadence, development_windows)
+    selected_windows = tuple(window for window, _ in selected)
+    freshness, freshness_evidence = freeze_development_freshness(cadence, selected_windows)
     write_json(study/"freshness_policy.json", freshness_evidence)
     windows = tuple(window for window, _ in selected)
     reports = {"per_window": {}, "per_date": {}, "pooled": {}}

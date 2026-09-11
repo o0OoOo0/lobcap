@@ -6,7 +6,7 @@ from lobcap.backtest.research_flow.feature_cache import (
     cache_fingerprint, iter_feature_snapshots, read_feature_cache, write_feature_cache,
 )
 from lobcap.backtest.research_flow.signal_contracts import AnalysisSchedule
-from lobcap.backtest.types import BookSnapshot, L2LevelUpdate, ReplayEvent
+from lobcap.backtest.types import BookSnapshot, L2LevelUpdate, L2Trade, ReplayEvent
 
 
 def initial():
@@ -44,6 +44,29 @@ def test_stream_factory_matches_heap_delivery_without_retaining_backlog():
     streamed = list(iter_feature_snapshots(initial(), lambda: iter(rows), schedule, D(1),
                                             **kwargs))
     assert streamed == materialized
+
+
+def test_streaming_preserves_delayed_depth_sequence_and_real_trade_ties():
+    schedule = AnalysisSchedule(100_000_000, 600_000_000, 100_000_000)
+    rows = [
+        ReplayEvent(1, 50_000_000, 300_000_000, "depth", ("d:1",), updates=(
+            L2LevelUpdate("buy", D(100), D(3), D(4)),)),
+        ReplayEvent(2, 60_000_000, 100_000_000, "trade", ("t:2",),
+            trade=L2Trade("sell", D(101), D(1))),
+        ReplayEvent(3, 80_000_000, 150_000_000, "depth", ("d:3",), updates=(
+            L2LevelUpdate("buy", D(100), D(4), D(5)),)),
+        ReplayEvent(4, 90_000_000, 300_000_000, "trade", ("t:4",),
+            trade=L2Trade("buy", D(100), D(2))),
+    ]
+    kwargs = dict(clock_mode="recorded", bootstrap_receive_ns=0)
+    a = list(iter_feature_snapshots(initial(), rows, schedule, D(1), **kwargs))
+    b = list(iter_feature_snapshots(initial(), lambda: iter(rows), schedule, D(1), **kwargs))
+    assert a == b
+    assert b[0].point("imbalance_1").value == D(".5")
+    assert b[1].point("imbalance_1").value == D(".5")
+    assert b[2].point("imbalance_1").value == D(2)/D(3)
+    assert b[0].point("signed_trade_volume_100ms").value == 1
+    assert b[2].point("signed_trade_volume_100ms").value == -2
 
 
 def test_feature_cache_roundtrip_and_checksum(tmp_path):

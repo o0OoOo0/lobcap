@@ -132,3 +132,83 @@ def test_cadence_and_cache_provenance_are_bound_to_report():
     manifests[next(iter(manifests))]["code_fingerprint"] = "b"*40
     with pytest.raises(ValueError, match="cache_identity"):
         validate_report(report, cat, freshness, manifests)
+
+
+def test_cli_checks_cache_bytes_and_study_containment(tmp_path):
+    import importlib.util
+    import json
+    from lobcap.config.common import sha256_file
+    from lobcap.config.experiment import ROOT
+    spec = importlib.util.spec_from_file_location("validate_signal_development",
+        ROOT/"scripts"/"validate_signal_development.py")
+    cli = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    report, cat, freshness, manifests = evidence()
+    for wid, manifest in manifests.items():
+        path = tmp_path/"feature_cache"/wid
+        path.mkdir(parents=True)
+        data = path/"features.jsonl.gz"
+        data.write_bytes(b"fixture cache bytes")
+        manifest["files"] = {data.name: sha256_file(data)}
+        (path/"feature_manifest.json").write_text(json.dumps(manifest))
+        report["feature_caches"][wid]["path"] = str(path)
+    report_path, cat_path = tmp_path/"development_report.json", tmp_path/"catalogue.json"
+    report_path.write_text(json.dumps(report))
+    cat_path.write_text(json.dumps(cat))
+    (tmp_path/"freshness_policy.json").write_text(json.dumps(freshness))
+    assert cli.validate(report_path, cat_path)["cache_checksums_verified"]
+    data.write_bytes(b"tampered")
+    with pytest.raises(ValueError, match="checksum"):
+        cli.validate(report_path, cat_path)
+    report["feature_caches"][next(iter(manifests))]["path"] = str(tmp_path.parent/"other-study")
+    report_path.write_text(json.dumps(report))
+    with pytest.raises(ValueError, match="belong to this study"):
+        cli.validate(report_path, cat_path)
+
+
+def test_runner_completes_acceptance_without_opening_locked_windows(tmp_path, monkeypatch):
+    import importlib.util
+    import json
+    from types import SimpleNamespace
+    from lobcap.config.experiment import ROOT
+    spec = importlib.util.spec_from_file_location("run_signal_development",
+        ROOT/"scripts"/"run_signal_development.py")
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+    report, cat, freshness, manifests = evidence((fixed_pilot_windows()[0].window_id,))
+    catalogue_path = tmp_path/"catalogue.json"
+    catalogue_path.write_text(json.dumps(cat))
+    monkeypatch.setattr(runner, "_code_fingerprint", lambda root: "a"*40)
+    monkeypatch.setattr(runner, "load_backtest_config", lambda path: SimpleNamespace(output_path=tmp_path))
+    opened = []
+    def isolated(target, *args):
+        if target.__name__ == "_cache_phase":
+            _, window, _, study, _ = args
+            assert window.role == DEVELOPMENT
+            opened.append(window.window_id)
+            path = study/"feature_cache"/window.window_id
+            path.mkdir(parents=True)
+            (path/"feature_manifest.json").write_text(json.dumps(manifests[window.window_id]))
+            value = {"cache": {**report["feature_caches"][window.window_id], "path": str(path)},
+                     "sample": {"path": "unused synthetic phase", "segment": window.window_id}}
+        elif target.__name__ == "_cadence_phase":
+            value = {"cadence": freshness["raw_cadence"][args[1].window_id]}
+        elif target.__name__ == "_feature_phase":
+            features = args[-1]
+            value = {"reports": {scope: {sid: {f: rows[f] for f in features} for sid, rows in report["reports"][scope].items()}
+                                  for scope in ("per_window", "per_date")}}
+            value["reports"]["pooled"] = {f: report["reports"]["pooled"][f] for f in features}
+        elif target.__name__ == "_redundancy_phase":
+            value = {"redundancy": report["redundancy"]}
+        else:
+            raise AssertionError(target.__name__)
+        return {**value, "peak_rss_mib": 100, "wall_seconds": .01}
+    monkeypatch.setattr(runner, "_isolated", isolated)
+    path, result = runner.run("unused", catalogue_path, tmp_path/"study")
+    assert len(opened) == 7
+    assert result["status"] == "PASS"
+    assert json.loads((path/"acceptance.json").read_text())["status"] == "PASS"
+    assert json.loads((path/"progress.json").read_text())["status"] == "PASS"
+    assert json.loads((path/"candidate_report.json").read_text())["status"] == "PENDING_ACCEPTANCE"
+    with pytest.raises(FileExistsError):
+        runner.run("unused", catalogue_path, path)
