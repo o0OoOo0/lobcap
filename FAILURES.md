@@ -398,3 +398,14 @@ keep / exclude interval / exclude day
   commit 4f309df passed all 410 Ubuntu tests and completed all 19 DEVELOPMENT
   phases (maximum worker RSS 459.15625 MiB). Standalone checksum/consistency
   validation passed. Full evidence is in SIGNAL_RESEARCH_P0_ACCEPTANCE.md.
+
+# 2026-09-12 — Study 1 baseline extension
+
+- Initial zero-coefficient regression compared serialized fill rows directly.
+  Embedded strategy names and equal Decimal values with different textual scales
+  made economic parity appear to fail. Added exact numeric normalization and
+  removal of embedded policy names, retaining timing/order/economic evidence.
+  Both exchange and recorded-clock parity fixtures now pass; a nonzero skew
+  fixture produces different actual orders. No simulator behavior was changed.
+- Windows rg searches with wildcard path arguments failed. Reissued searches
+  against concrete files/directories; no project state was affected.
