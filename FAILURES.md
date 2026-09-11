@@ -181,3 +181,8 @@ keep / exclude interval / exclude day
 - An intermediate comparison-guard patch introduced incorrect indentation. compileall detected it before transfer; corrected it and recompiled successfully.
 - Initial GLFT and workbench focused tests: 32 passed. Full Ubuntu regression: 324 passed with two existing Streamlit/NumPy warnings. No unresolved test failures at this stage.
 
+### 2026-09-11 Signal Research Lab foundation
+- The first focused Windows test command omitted `PYTHONPATH=src`, so collection stopped before loading project code. Repeated with the repository source path.
+- The first label-age fixture expected 0/10/20 ns, while its midpoint series actually produced 10/20/30 ns target ages. Corrected the fixture expectation; the implementation already preserved the measured ages.
+- Windows pytest temporary-directory ACLs also blocked the cache fixture and session cleanup even with a workspace-local `--basetemp`. Eighteen non-temporary focused cases passed; the locked tool-created directory was removed with its verified absolute path and cache coverage was moved to authoritative Ubuntu validation.
+
