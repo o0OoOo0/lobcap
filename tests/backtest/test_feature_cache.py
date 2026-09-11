@@ -15,7 +15,13 @@ def initial():
 
 def delayed_depth():
     return ReplayEvent(1, 50, 150, "depth", ("d:1",), updates=(
-        L2LevelUpdate("buy", D(100), D(3), D(4)),))
+                       L2LevelUpdate("buy", D(100), D(3), D(4)),))
+
+
+IDENTITY = {"tick": D(1), "bootstrap_receive_ns": 0,
+            "acquisition_segment": "depth-1+trade-1",
+            "normalization_version": "binance-normalized-v2",
+            "source_schema_version": "capture-v1", "code_fingerprint": "abc123"}
 
 
 def test_analysis_grid_does_not_imply_delivery_or_decision_clock():
@@ -35,10 +41,12 @@ def test_feature_cache_roundtrip_and_checksum(tmp_path):
     snapshots = iter_feature_snapshots(initial(), [delayed_depth()], schedule, D(1),
         clock_mode="recorded", bootstrap_receive_ns=0)
     path = tmp_path / "cache"
-    manifest = write_feature_cache(path, snapshots, "sample-sha", schedule, "recorded", 500)
+    manifest = write_feature_cache(path, snapshots, "sample-sha", schedule, "recorded", 500,
+                                   **IDENTITY)
     assert manifest["rows"] == 3
     assert list(read_feature_cache(path, manifest["cache_key"]))[1].client_mid == D("100.5")
-    assert manifest["cache_key"] == cache_fingerprint("sample-sha", schedule, "recorded", 500)
+    assert manifest["cache_key"] == cache_fingerprint("sample-sha", schedule, "recorded", 500,
+                                                       **IDENTITY)
     with (path / "features.jsonl.gz").open("ab") as stream:
         stream.write(b"tampered")
     with pytest.raises(ValueError, match="checksum"):
@@ -48,5 +56,31 @@ def test_feature_cache_roundtrip_and_checksum(tmp_path):
 def test_feature_cache_key_changes_with_clock_and_schedule():
     a = AnalysisSchedule(0, 1000, 100)
     b = AnalysisSchedule(0, 1000, 250)
-    assert cache_fingerprint("s", a, "recorded", 500) != cache_fingerprint("s", b, "recorded", 500)
-    assert cache_fingerprint("s", a, "recorded", 500) != cache_fingerprint("s", a, "exchange", 500)
+    assert cache_fingerprint("s", a, "recorded", 500, **IDENTITY) != cache_fingerprint("s", b, "recorded", 500, **IDENTITY)
+    assert cache_fingerprint("s", a, "recorded", 500, **IDENTITY) != cache_fingerprint("s", a, "exchange", 500, **IDENTITY)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("tick", D(".5")), ("bootstrap_receive_ns", 1),
+    ("acquisition_segment", "other"), ("normalization_version", "v3"),
+    ("source_schema_version", "v2"), ("code_fingerprint", "def456"),
+])
+def test_feature_cache_key_covers_causal_provenance(field, value):
+    schedule = AnalysisSchedule(0, 1000, 100)
+    changed = dict(IDENTITY, **{field: value})
+    assert cache_fingerprint("s", schedule, "recorded", 500, **IDENTITY) != cache_fingerprint(
+        "s", schedule, "recorded", 500, **changed)
+
+
+def test_complete_replay_prefix_is_invariant_to_future_suffix_mutation():
+    schedule = AnalysisSchedule(0, 300_000_000, 100_000_000)
+    prefix = [ReplayEvent(1, 50_000_000, 60_000_000, "depth", ("d:1",), updates=(
+        L2LevelUpdate("buy", D(100), D(3), D(4)),))]
+    left = prefix + [ReplayEvent(2, 250_000_000, 260_000_000, "depth", ("d:2",), updates=(
+        L2LevelUpdate("buy", D(100), D(4), D(5)),))]
+    right = prefix + [ReplayEvent(2, 250_000_000, 260_000_000, "depth", ("d:9",), updates=(
+        L2LevelUpdate("buy", D(100), D(4), D(9)),))]
+    kwargs = dict(clock_mode="recorded", bootstrap_receive_ns=0,
+                  acquisition_segment="sealed-segment")
+    assert list(iter_feature_snapshots(initial(), left, schedule, D(1), **kwargs)) == list(
+        iter_feature_snapshots(initial(), right, schedule, D(1), **kwargs))

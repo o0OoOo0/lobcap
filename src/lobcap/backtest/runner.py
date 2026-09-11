@@ -16,7 +16,7 @@ from pathlib import Path
 import yaml
 
 from lobcap.backtest.artifacts import ArtifactSink
-from lobcap.backtest.engine import run
+from lobcap.backtest.engine import run, scheduler_identity
 from lobcap.backtest.replay import prepare_sample, load_sample, iter_events, write_json
 from lobcap.backtest.types import jsonable
 from lobcap.config.backtest import load_backtest_config, variant, STRATEGIES, BASELINE_STRATEGIES, STRINGS, DECIMALS, INTS, STRUCTURED
@@ -89,6 +89,7 @@ def _run_one(config, sample_path=None, research_policy=None, cancel_check=None):
         manifest=json.loads(manifest_path.read_text())
         manifest.update({"run_id":run_id,"sample_id":config.sample.sample_id,
             "sample_sha256":sample_manifest["sample_sha256"],"effective_config_sha256":config.effective_sha256,
+            "scheduler_identity":scheduler_identity(config,research_policy),
             "deterministic_digest":result.digest if result else None,"error":error,"environment":versions,
             "command":f"python -m lobcap.backtest run --config {output/'config.yaml'} --sample {sample_path}",
             "date_window":jsonable(config.sample),"resolved_config":config.resolved(),

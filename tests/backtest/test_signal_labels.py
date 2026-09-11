@@ -1,8 +1,9 @@
 from decimal import Decimal as D
+import pytest
 
 from lobcap.backtest.research_flow.labels import (
     MidpointSeries, apply_freshness_policy, measure_label, raw_label_cadence,
-    target_age_distribution, truth_midpoint_series,
+    target_age_distribution, truth_midpoint_series, freeze_development_freshness,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -78,3 +79,20 @@ def test_raw_cadence_report_never_promotes_observed_to_valid():
     assert report[0]["statuses"] == {OBSERVED: 1}
     assert report[0]["freshness_policy"] is None
     assert "not VALID" in report[0]["note"]
+
+
+def test_freshness_freeze_requires_two_development_dates_and_uses_worst_p95():
+    from lobcap.backtest.research_flow.sample_catalogue import CatalogueWindow, DEVELOPMENT
+    day = 86_400_000_000_000
+    windows = (CatalogueWindow("a", "2026-09-07", 0, 1_200_000_000_000,
+                               300_000_000_000, DEVELOPMENT),
+               CatalogueWindow("b", "2026-09-08", day, day+1_200_000_000_000,
+                               300_000_000_000, DEVELOPMENT))
+    def row(anchor, target):
+        return ({"horizon_ns": 100, "anchor_age_distribution": {"p95_ns": anchor},
+                 "target_age_distribution": {"p95_ns": target}},)
+    policy, evidence = freeze_development_freshness({"a": row(4, 8), "b": row(6, 7)}, windows)
+    assert policy.maximum_ages_ns(100) == (6, 8)
+    assert evidence["method"] == "maximum-development-window-p95-v1"
+    with pytest.raises(ValueError, match="two development dates"):
+        freeze_development_freshness({"a": row(4, 8)}, windows[:1])

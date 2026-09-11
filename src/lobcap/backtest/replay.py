@@ -81,12 +81,15 @@ def _inputs(config):
     return result
 
 
-def _stream(paths, kind, end_ns, start_ns=0):
+def _stream(paths, kind, end_ns, start_ns=0, connection_ids=None):
     previous_time = previous_id = None
     for record, ref in records(paths):
         p = payload(record)
         if record.get("schema_version") != 2 or record.get("kind") != kind:
             raise ValueError(f"expected schema-v2 {kind}: {ref}")
+        connection_id = record.get("connection_id", "legacy-unknown")
+        if not isinstance(connection_id, str) or not connection_id:
+            raise ValueError(f"invalid acquisition connection id: {ref}")
         if p.get("s") != "BTCUSDT" or p.get("st", 1) != 1:
             raise ValueError("only BTCUSDT USD-M captured records are supported")
         t = int(p["T"]) * 1_000_000
@@ -102,6 +105,8 @@ def _stream(paths, kind, end_ns, start_ns=0):
         previous_time, previous_id = t, seq
         if t >= end_ns:
             break
+        if connection_ids is not None:
+            connection_ids.add(connection_id)
         yield t, 0 if kind == "trade" else 1, seq, record, ref
 
 
@@ -212,7 +217,9 @@ def prepare_sample(config):
     book.load_snapshot(initial_record)
     coverage_bid = Decimal(min(book.bids)) * book.tick
     coverage_ask = Decimal(max(book.asks)) * book.tick
-    depth = iter(_stream(paths["depth"], "depth", config.sample.end_ns, snapshot_time))
+    connections = {"depth": set(), "trade": set()}
+    depth = iter(_stream(paths["depth"], "depth", config.sample.end_ns, snapshot_time,
+                         connections["depth"]))
     first = None
     for row in depth:
         if event_is_older_than_snapshot(row[3], book.last_u):
@@ -230,7 +237,8 @@ def prepare_sample(config):
         tuple((Decimal(p)*book.tick, Decimal(q)*book.lot) for p,q in sorted(book.bids.items(), reverse=True)),
         tuple((Decimal(p)*book.tick, Decimal(q)*book.lot) for p,q in sorted(book.asks.items())),
         first[0], book.last_u, coverage_bid, coverage_ask)
-    trades = _stream(paths["trade"], "trade", config.sample.end_ns, initial.time_ns + 1)
+    trades = _stream(paths["trade"], "trade", config.sample.end_ns, initial.time_ns + 1,
+                     connections["trade"])
     inputs = [{"path": str(path), "sha256": sha256_file(path)} for files in paths.values() for path in files]
     destination.mkdir(parents=True)
     stats = Counter()
@@ -255,12 +263,19 @@ def prepare_sample(config):
             raise ValueError("missing depth coverage near sample end")
         if len(shadows) < 1 or not all(item[2] for item in shadows):
             raise ValueError("missing/unaligned independent snapshot validation")
+        if any(len(ids) != 1 for ids in connections.values()):
+            raise ValueError("sample spans multiple or missing acquisition connections")
+        segment_sources = {kind: sorted(ids)[0] for kind, ids in sorted(connections.items())}
+        acquisition_segment = hashlib.sha256(json.dumps(segment_sources,
+            sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:24]
         for item in inputs:
             if sha256_file(item["path"]) != item["sha256"]:
                 raise ValueError("source file changed during preparation")
         validation = {"status": "PASS", "stats": dict(stats), "trading_counts": dict(counts),
                       "max_receive_delay_ns": dict(max_receive_delay), "bootstrap_sequence": initial.sequence,
-                      "snapshot_matches": stats["snapshot_matches"], "gaps": 0, "crossed": 0}
+                      "snapshot_matches": stats["snapshot_matches"], "gaps": 0, "crossed": 0,
+                      "acquisition_segment": acquisition_segment,
+                      "acquisition_connections": segment_sources}
         if config.sample.normalization_version==ARRIVAL_NORMALIZATION_VERSION:
             validation["bootstrap_receive_ns"]=bootstrap_receive
         write_json(destination / "validation.json", validation)
@@ -268,6 +283,9 @@ def prepare_sample(config):
         sample_hash = sample_fingerprint(files,config.sample)
         write_json(destination / "sample_manifest.json", {"status":"PASS", "sample": config.sample,
             "instrument":config.instrument, "input_artifacts":inputs, "files":files, "sample_sha256":sample_hash,
+            "source_schema_version":"capture-envelope-v2",
+            "acquisition_segments":[acquisition_segment],
+            "acquisition_connections":segment_sources,
             **({"bootstrap_receive_ns":bootstrap_receive} if config.sample.normalization_version==ARRIVAL_NORMALIZATION_VERSION else {})})
         return destination
     except Exception as exc:
@@ -296,6 +314,12 @@ def load_sample(path, config=None):
         validation=json.loads((path/"validation.json").read_text())
         if manifest.get("bootstrap_receive_ns")!=validation.get("bootstrap_receive_ns") or type(manifest.get("bootstrap_receive_ns")) is not int:
             raise ValueError("bootstrap receipt evidence mismatch")
+        if "acquisition_segments" in manifest:
+            segments = manifest["acquisition_segments"]
+            if (not isinstance(segments, list) or len(segments) != 1
+                    or validation.get("acquisition_segment") != segments[0]
+                    or validation.get("acquisition_connections") != manifest.get("acquisition_connections")):
+                raise ValueError("acquisition segment evidence mismatch")
     row["bids"] = tuple(tuple(Decimal(x) for x in pair) for pair in row["bids"])
     row["asks"] = tuple(tuple(Decimal(x) for x in pair) for pair in row["asks"])
     row["coverage_bid"], row["coverage_ask"] = Decimal(row["coverage_bid"]), Decimal(row["coverage_ask"])

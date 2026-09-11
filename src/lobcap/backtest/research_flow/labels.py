@@ -5,6 +5,8 @@ from bisect import bisect_right
 from collections import Counter
 from dataclasses import replace
 from decimal import Decimal
+import hashlib
+import json
 
 from .signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -188,3 +190,37 @@ class RawLabelCadence:
                 "freshness_policy": None,
                 "note": "Raw cadence evidence only; OBSERVED is not VALID until a DEVELOPMENT-only policy is frozen."})
         return tuple(report)
+
+
+def freeze_development_freshness(cadence_by_window, catalogue_windows):
+    """Freeze horizon thresholds from at least two DEVELOPMENT dates only.
+
+    Thresholds use the worst per-window p95 so a high-volume window cannot hide
+    a slower development window. The evidence remains part of the policy hash.
+    """
+    from .sample_catalogue import DEVELOPMENT
+    windows = {row.window_id: row for row in catalogue_windows}
+    if set(cadence_by_window) != set(windows):
+        raise ValueError("freshness evidence must match its exact catalogue windows")
+    if any(row.role != DEVELOPMENT for row in windows.values()):
+        raise ValueError("freshness policy may use DEVELOPMENT windows only")
+    if len({row.date for row in windows.values()}) < 2:
+        raise ValueError("freshness policy requires at least two development dates")
+    by_horizon = {}
+    for window_id, reports in sorted(cadence_by_window.items()):
+        for report in reports:
+            horizon = report["horizon_ns"]
+            anchor = report["anchor_age_distribution"].get("p95_ns")
+            target = report["target_age_distribution"].get("p95_ns")
+            if anchor is None or target is None:
+                raise ValueError(f"insufficient cadence evidence: {window_id}")
+            by_horizon.setdefault(horizon, []).append((anchor, target))
+    thresholds = tuple((horizon, max(row[0] for row in values),
+                         max(row[1] for row in values))
+                        for horizon, values in sorted(by_horizon.items()))
+    evidence = {"method": "maximum-development-window-p95-v1",
+        "window_ids": sorted(windows), "dates": sorted({row.date for row in windows.values()}),
+        "thresholds": thresholds, "raw_cadence": cadence_by_window}
+    policy_id = "development-freshness-" + hashlib.sha256(json.dumps(evidence,
+        sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:16]
+    return FreshnessPolicy(policy_id, thresholds), {"policy_id": policy_id, **evidence}

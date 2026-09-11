@@ -2,7 +2,9 @@ from decimal import Decimal as D
 from pathlib import Path
 
 from lobcap.backtest.research_flow.labels import MidpointSeries
-from lobcap.backtest.research_flow.signal_analysis import evaluate_feature
+from lobcap.backtest.research_flow.signal_analysis import (
+    evaluate_feature, evaluate_redundancy, fit_bucket_edges,
+)
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
     FeaturePoint, FeatureSnapshot, FreshnessPolicy, LabelDefinition,
@@ -32,6 +34,29 @@ def test_three_label_families_are_reported_separately():
     assert rows[0]["pearson_ic"] == 1
     assert rows[1]["target_age_distribution"]["maximum_ns"] == 10
     assert rows[2]["entry_latency_ns"] == 100
+    assert rows[0]["statistical_significance"] == "NOT_CLAIMED"
+    assert rows[0]["non_overlapping"]["observations"] == 2
+
+
+def test_frozen_buckets_and_redundancy_are_explicit():
+    samples = tuple(snapshot(index*100, str(index), str(100+index), index*100)
+                    for index in range(1, 7))
+    edges = fit_bucket_edges(samples, "signal")
+    assert len(edges) == 4
+    truth = MidpointSeries(tuple((index*100, str(100+index), "a") for index in range(9)))
+    policy = FreshnessPolicy("fixture", ((100, 100, 100),))
+    row = evaluate_feature("signal", samples, truth,
+        (LabelDefinition(MARKET_TRUTH_RETURN, 100),), policy, D(1), 900,
+        edges, "development-crossfit-v1")[0]
+    assert row["bucket_policy_id"] == "development-crossfit-v1"
+    assert row["bucket_analysis"]["status"] in {"VALID", "SPARSE"}
+    duplicate = tuple(FeatureSnapshot(s.analysis_time_ns, s.client_mid,
+        s.client_mid_source_exchange_time_ns, s.client_mid_source_receive_time_ns,
+        s.client_mid_available_time_ns, s.acquisition_segment,
+        s.points + (FeaturePoint("copy", "v1", s.point("signal").value, "ticks", "AVAILABLE",
+            s.analysis_time_ns, s.analysis_time_ns, s.analysis_time_ns, s.analysis_time_ns, ()),))
+        for s in samples)
+    assert evaluate_redundancy(duplicate, ("signal", "copy"))[0]["pearson"] == 1
 
 
 def test_runtime_modules_do_not_import_offline_labels():

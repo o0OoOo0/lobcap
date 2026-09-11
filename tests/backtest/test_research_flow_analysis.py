@@ -27,7 +27,8 @@ def fixture(path, run_id="a", status="PASS", trace=True):
               "alpha": "0", "entry_ms": 0, "cancel_ms": 0, "report_ms": 0,
               "maker_bps": "0", "taker_bps": "5", "max_trade_participation": "1", "impact_stress_bps": "0"}
     write_json(path / "run_manifest.json", {"run_id": run_id, "status": status, "resolved_config": config,
-               "sample_sha256": "same", "deterministic_digest": "digest", "started_at": "2026", "code_version": "test-commit"})
+               "sample_sha256": "same", "deterministic_digest": "digest", "started_at": "2026",
+               "code_version": "test-commit", "scheduler_identity": "exchange-market-first-v1"})
     write_json(path / "summary.json", {"net_pnl": "-.0011"})
     rows(path, "fills", [{"order_id": "o1", "side": "buy", "quantity": ".001", "time_ns": 2,
                           "spread_contribution": ".001", "fee": ".0001", "reason": "same_price"}])
@@ -70,6 +71,8 @@ def test_comparison_guards_versions_capital_sample_and_failed(tmp_path):
     b = deepcopy(a); b["config"]["maker_bps"] = "2"
     assert not comparison_guard(a, b)["comparable"]
     assert comparison_guard(a, b, True)["comparable"]
+    b = deepcopy(a); b["scheduler_identity"] = "client-arrival-market-first-v1"
+    assert not comparison_guard(a, b)["comparable"]
 
 
 def test_equation_explanation_and_time_weighted_exposure(tmp_path):

@@ -7,7 +7,7 @@ import pytest
 from lobcap.backtest.accounting import Portfolio
 from lobcap.backtest.arrival import run_arrival
 from lobcap.backtest.artifacts import MemorySink
-from lobcap.backtest.engine import run
+from lobcap.backtest.engine import ARRIVAL_SCHEDULER, EXCHANGE_SCHEDULER, run, scheduler_identity
 from lobcap.backtest.types import DesiredQuotes, FillEvent, NS, Quote
 from test_engine import config, depth, initial, trade
 from test_execution import market
@@ -26,6 +26,12 @@ def test_zero_latency_schedulers_expose_identical_trade_flow():
     assert observations[0] == observations[1]
     assert observations[0][1] == (250_000_000, D(1), D(".003"))
     assert next(row for row in observations[0] if row[0] == 1_250_000_000)[1:] == (None, D(0))
+
+
+def test_scheduler_identity_discloses_implicit_route_changes():
+    assert scheduler_identity(config(strategy="fixed_spread", clock_mode="exchange")) == EXCHANGE_SCHEDULER
+    assert scheduler_identity(config(strategy="flow_guard", clock_mode="exchange")) == ARRIVAL_SCHEDULER
+    assert scheduler_identity(config(strategy="fixed_spread", clock_mode="recorded")) == ARRIVAL_SCHEDULER
 
 
 def test_age_cancel_created_at_decision_waits_until_after_decision():

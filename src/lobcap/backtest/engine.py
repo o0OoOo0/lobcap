@@ -8,6 +8,16 @@ import heapq
 from lobcap.backtest.execution import Execution
 from lobcap.backtest.types import NS, ZERO, MarketView, PortfolioView, RunResult, jsonable
 
+EXCHANGE_SCHEDULER = "exchange-market-first-v1"
+ARRIVAL_SCHEDULER = "client-arrival-market-first-v1"
+
+
+def scheduler_identity(config, research_policy=None):
+    """Return the exact scheduler selected by the public run entry point."""
+    uses_arrival = (research_policy is not None or config.clock_mode == "recorded"
+        or config.report_ms or config.strategy in {"flow_guard", "expression"})
+    return ARRIVAL_SCHEDULER if uses_arrival else EXCHANGE_SCHEDULER
+
 
 class MarketBook:
     def __init__(self, initial):
@@ -86,7 +96,7 @@ class MarketBook:
 
 
 def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None, research_policy=None, cancel_check=None):
-    if research_policy is not None or config.clock_mode=="recorded" or config.report_ms or config.strategy in {"flow_guard","expression"}:
+    if scheduler_identity(config, research_policy) == ARRIVAL_SCHEDULER:
         from lobcap.backtest.arrival import run_arrival
         return run_arrival(config,initial,events,sink,strategy,bootstrap_receive_ns,research_policy,cancel_check)
     # Lazy imports keep the execution and public contracts independently usable.

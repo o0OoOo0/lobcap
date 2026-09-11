@@ -3,15 +3,14 @@ from __future__ import annotations
 
 from collections import deque
 from decimal import Decimal
-import math
 
 from lobcap.backtest.engine import MarketBook
 from lobcap.backtest.types import ZERO
+from .feature_registry import FEATURE_REGISTRY, FEATURE_SET_VERSION, WINDOWS_NS
 from .signal_contracts import FeaturePoint, FeatureSnapshot
 
 
-VERSION = "causal-features-v1"
-WINDOWS_NS = (100_000_000, 500_000_000, 1_000_000_000, 5_000_000_000)
+VERSION = FEATURE_SET_VERSION
 
 
 def _sum(values):
@@ -31,6 +30,8 @@ class CausalFeatureEngine:
         available = initial.time_ns if initial_client_available_ns is None else initial_client_available_ns
         if available < initial.time_ns:
             raise ValueError("initial book cannot arrive before exchange time")
+        self.start_client_ns = available
+        self.initial_exchange_ns = initial.time_ns
         self.last_client_ns = available
         self.last_exchange_ns = initial.time_ns
         self.last_receive_ns = available
@@ -102,25 +103,36 @@ class CausalFeatureEngine:
                 self.book.top_levels("buy",10), self.book.top_levels("sell",10))
         return self._top_cache[0][:count], self._top_cache[1][:count]
 
+    def _complete_depth(self, bids, asks, count):
+        return (len(bids) >= count and len(asks) >= count
+                and bids[count-1][0] >= self.book.coverage_bid
+                and asks[count-1][0] <= self.book.coverage_ask)
+
     def _value_map(self, now_ns):
         values = {}
+        self._anchor_metadata = {}
         bid_size, ask_size = self.book.bids[self.book.bid], self.book.asks[self.book.ask]
         mid = self.book.mid
         micro = (self.book.ask * bid_size + self.book.bid * ask_size) / (bid_size + ask_size)
         values.update(mid=mid, spread_ticks=(self.book.ask-self.book.bid)/self.tick,
                       spread_bps=(self.book.ask-self.book.bid)/mid*Decimal(10000),
                       microprice=micro, microprice_minus_mid_ticks=(micro-mid)/self.tick)
+        values.update(bid_top_depth=bid_size, ask_top_depth=ask_size,
+                      total_top_depth=bid_size+ask_size)
         for count in (1, 2, 5, 10):
             bids, asks = self._depth(count)
-            bq, aq = _sum(q for _, q in bids), _sum(q for _, q in asks)
-            values[f"imbalance_{count}"] = (bq-aq)/(bq+aq) if bq+aq else None
+            complete = self._complete_depth(bids, asks, count)
+            bq = _sum(q for _, q in bids) if complete else None
+            aq = _sum(q for _, q in asks) if complete else None
+            values[f"imbalance_{count}"] = ((bq-aq)/(bq+aq)
+                if complete and bq+aq else None)
             values[f"bid_depth_{count}"] = bq
             values[f"ask_depth_{count}"] = aq
         bids, asks = self._depth(5)
-        pairs = min(len(bids), len(asks))
-        denominator = _sum(bids[i][1]+asks[i][1] for i in range(pairs))
-        vamp = (_sum(asks[i][0]*bids[i][1]+bids[i][0]*asks[i][1] for i in range(pairs))/denominator
-                if denominator else None)
+        complete = self._complete_depth(bids, asks, 5)
+        denominator = _sum(bids[i][1]+asks[i][1] for i in range(5)) if complete else ZERO
+        vamp = (_sum(asks[i][0]*bids[i][1]+bids[i][0]*asks[i][1] for i in range(5))/denominator
+                if complete and denominator else None)
         values["vamp_5"] = vamp
         values["vamp_5_minus_mid_ticks"] = (vamp-mid)/self.tick if vamp is not None else None
         for window in WINDOWS_NS:
@@ -134,35 +146,53 @@ class CausalFeatureEngine:
             values["trade_intensity"+suffix] = Decimal(len(trades))*Decimal(1_000_000_000)/Decimal(window)
             values["bbo_ofi"+suffix] = _sum(value for t, value in self.ofi if now_ns-window < t <= now_ns)
             anchor = next(((t, m) for t, m in reversed(self.mid_history) if t <= now_ns-window), None)
-            values["mid_return"+suffix] = (Decimal(str(math.log(float(mid/anchor[1]))*10000))
+            name = "mid_return"+suffix
+            values[name] = ((mid/anchor[1]).ln()*Decimal(10000)
                                                   if anchor and anchor[1] > 0 else None)
+            if anchor is not None:
+                self._anchor_metadata[name] = (anchor[0], now_ns-window-anchor[0])
         values["book_age_ns"] = Decimal(now_ns-self.last_depth_client_ns)
+        values["feed_delay_ns"] = Decimal(max(0,
+            self.last_depth_receive_ns-self.last_depth_exchange_ns))
         return values
+
+    def _source_metadata(self, definition):
+        if definition.input_sources == ("trade",):
+            return (self.last_trade_client_ns if self.last_trade_client_ns is not None else self.start_client_ns,
+                    self.last_trade_exchange_ns if self.last_trade_exchange_ns is not None else self.initial_exchange_ns,
+                    self.last_trade_receive_ns if self.last_trade_receive_ns is not None else self.start_client_ns,
+                    self.last_trade_refs)
+        return (self.last_depth_client_ns, self.last_depth_exchange_ns,
+                self.last_depth_receive_ns, self.last_depth_refs)
 
     def snapshot(self, analysis_time_ns: int):
         if analysis_time_ns < self.last_client_ns:
             raise ValueError("analysis snapshot precedes observed client state")
         self._trim(analysis_time_ns)
-        stale = analysis_time_ns-self.last_depth_client_ns > self.stale_after_ns
         values = self._value_map(analysis_time_ns)
+        if set(values) != set(FEATURE_REGISTRY):
+            missing = sorted(set(FEATURE_REGISTRY)-set(values))
+            extra = sorted(set(values)-set(FEATURE_REGISTRY))
+            raise RuntimeError(f"feature registry mismatch: missing={missing}, extra={extra}")
         points = []
         for name, value in sorted(values.items()):
-            status = "STALE" if stale and name != "book_age_ns" else ("UNAVAILABLE" if value is None else "AVAILABLE")
-            if status != "AVAILABLE" and name != "book_age_ns":
+            definition = FEATURE_REGISTRY[name]
+            available, exchange, receive, refs = self._source_metadata(definition)
+            warm = analysis_time_ns-self.start_client_ns >= definition.minimum_warmup_ns
+            if not warm:
+                status = "WARMUP"
+            elif definition.minimum_depth_levels and value is None:
+                status = "INSUFFICIENT_DEPTH"
+            elif definition.stale_after_ns and analysis_time_ns-available > min(
+                    definition.stale_after_ns, self.stale_after_ns):
+                status = "STALE"
+            else:
+                status = "UNAVAILABLE" if value is None else "AVAILABLE"
+            if status != "AVAILABLE" and definition.missing_value_policy != "carry_with_age":
                 value = None
-            unit = "USDT" if name in {"mid", "microprice", "vamp_5"} else (
-                "bps" if name.startswith(("spread_bps", "mid_return")) else
-                "dimensionless" if "imbalance" in name else
-                "BTC" if "depth" in name or "volume" in name or name.startswith("bbo_ofi") else
-                "events_per_second" if name.startswith("trade_intensity") else
-                "ns" if name == "book_age_ns" else "dimensionless")
-            trade_feature = name.startswith(("signed_trade", "trade_volume", "trade_intensity"))
-            available = self.last_trade_client_ns if trade_feature and self.last_trade_client_ns is not None else self.last_depth_client_ns
-            exchange = self.last_trade_exchange_ns if trade_feature and self.last_trade_exchange_ns is not None else self.last_depth_exchange_ns
-            receive = self.last_trade_receive_ns if trade_feature and self.last_trade_receive_ns is not None else self.last_depth_receive_ns
-            refs = self.last_trade_refs if trade_feature and self.last_trade_refs else self.last_depth_refs
-            points.append(FeaturePoint(name, VERSION, value, unit, status, analysis_time_ns,
-                available, exchange, receive, tuple(refs)))
+            anchor_time, anchor_age = self._anchor_metadata.get(name, (None, None))
+            points.append(FeaturePoint(name, definition.version, value, definition.unit, status, analysis_time_ns,
+                available, exchange, receive, tuple(refs), anchor_time, anchor_age))
         return tuple(points)
 
     def observation(self, analysis_time_ns: int, acquisition_segment: str):

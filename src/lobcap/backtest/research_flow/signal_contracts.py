@@ -38,13 +38,15 @@ class FeatureDefinition:
     missing_value_policy: str = "unavailable"
     normalization_policy: str = "raw"
     causal: bool = True
+    minimum_depth_levels: int = 0
 
     def __post_init__(self):
         if not self.feature_name or not self.version or not self.unit:
             raise ValueError("feature identity and unit are required")
         if not self.input_sources:
             raise ValueError("feature input sources are required")
-        if min(self.lookback_ns, self.minimum_warmup_ns, self.stale_after_ns) < 0:
+        if min(self.lookback_ns, self.minimum_warmup_ns, self.stale_after_ns,
+               self.minimum_depth_levels) < 0:
             raise ValueError("feature times must be nonnegative")
         if not self.causal:
             raise ValueError("Signal Lab v1 accepts causal features only")
@@ -66,12 +68,16 @@ class FeaturePoint:
     latest_source_exchange_time_ns: int | None
     latest_source_receive_time_ns: int | None
     source_refs: tuple[str, ...]
+    lookback_anchor_time_ns: int | None = None
+    lookback_anchor_age_ns: int | None = None
 
     def __post_init__(self):
         if self.client_available_time_ns > self.analysis_time_ns:
             raise ValueError("future client data cannot enter a feature point")
         if self.value is not None and not self.value.is_finite():
             raise ValueError("feature value must be finite")
+        if self.lookback_anchor_age_ns is not None and self.lookback_anchor_age_ns < 0:
+            raise ValueError("feature lookback anchor cannot come from the future")
 
 
 @dataclass(frozen=True, slots=True)

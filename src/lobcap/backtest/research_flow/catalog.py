@@ -35,6 +35,7 @@ def run_record(run_dir):
             "source": "legacy", "sources": ["legacy"], "job_ids": [],
             "rankable": status in {"PASS", "COMPLETED"} and bool(summary) and bool(manifest),
             "sample_sha256": manifest.get("sample_sha256"),
+            "scheduler_identity": manifest.get("scheduler_identity"),
             "execution_contract_version": config.get("execution_contract_version", "legacy-v1"),
             "config": config, "summary": summary, "manifest": manifest,
             "created_at": manifest.get("started_at", ""), "warnings": warnings}
@@ -183,6 +184,9 @@ def comparison_guard(left, right, allow_scenario_change=False):
         reasons.append("Identical verified sample fingerprints are required.")
     if not left.get("execution_contract_version") or left.get("execution_contract_version") != right.get("execution_contract_version"):
         reasons.append("Execution contract versions differ or are unavailable.")
+    if (not left.get("scheduler_identity") or
+            left.get("scheduler_identity") != right.get("scheduler_identity")):
+        reasons.append("Identical known scheduler identities are required.")
     a, b = left.get("config", {}), right.get("config", {})
     if a.get('quote_start_seconds',0)!=b.get('quote_start_seconds',0):
         reasons.append('Comparison requires matching quote start delay.')

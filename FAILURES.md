@@ -272,3 +272,21 @@ keep / exclude interval / exclude day
 - A nested PowerShell/SSH `sed` regex intended to count lifecycle event types was
   parsed locally and never executed. File counts and sample lifecycle rows were
   retained; reconnect/error quality remains explicitly unverified.
+
+# 2026-09-11 — Signal Research P0 implementation tooling
+
+- The first batched inspection call contained malformed JavaScript and failed
+  during parsing before any nested tool ran. Reissued the reads with valid syntax;
+  no files or processes were affected.
+- `python -m pytest` resolved to a nonfunctional Windows app alias and returned
+  only `Python`. `py -m pytest` then collected without the src layout on
+  `PYTHONPATH` and reported five import errors. Re-ran with `PYTHONPATH=src`.
+- Windows pytest could not enumerate its user temp root, and a repository-local
+  `--basetemp` inherited the same ACL denial. Tests without `tmp_path` passed;
+  all temp-backed and full-suite judgments are deferred to authoritative Ubuntu.
+- One combined acquisition-segment patch used a whitespace-mismatched manifest
+  anchor and was rejected before editing. Reapplied the change in smaller exact
+  patches.
+- An inspection guessed `configs/backtest/base.yaml`; the repository uses
+  `binance_demo.yaml` and `binance_recorded.yaml`. The catalogue builder now
+  defaults to the existing recorded-clock config.

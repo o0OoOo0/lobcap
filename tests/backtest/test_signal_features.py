@@ -4,6 +4,7 @@ from decimal import Decimal as D
 import pytest
 
 from lobcap.backtest.research_flow.features import CausalFeatureEngine
+from lobcap.backtest.research_flow.feature_registry import FEATURE_REGISTRY
 from lobcap.backtest.types import BookSnapshot, L2LevelUpdate, L2Trade, ReplayEvent
 
 
@@ -35,15 +36,28 @@ def test_exact_book_features_and_vamp_formula():
     assert row["microprice_minus_mid_ticks"].value == D(".25")
     assert row["imbalance_1"].value == D(".5")
     assert row["imbalance_2"].value == 0
-    # (101*3 + 100*1 + 102*2 + 99*4) / 10 = 100.3
-    assert row["vamp_5"].value == D("100.3")
+    assert row["vamp_5"].status == "INSUFFICIENT_DEPTH"
+    assert row["vamp_5"].value is None
+    assert row["spread_ticks"].unit == "ticks"
+    assert row["microprice_minus_mid_ticks"].unit == "ticks"
+    assert set(row) == set(FEATURE_REGISTRY)
+
+
+def test_vamp_requires_and_uses_exactly_five_levels_per_side():
+    book = BookSnapshot(
+        tuple((D(100-i), D(i+1)) for i in range(5)),
+        tuple((D(101+i), D(5-i)) for i in range(5)), 0, 1, D(90), D(110))
+    row = values(CausalFeatureEngine(book, D(1)), 0)
+    expected = sum((D(101+i)*D(i+1)+D(100-i)*D(5-i)) for i in range(5)) / D(30)
+    assert row["vamp_5"].status == "AVAILABLE"
+    assert row["vamp_5"].value == expected
 
 
 def test_trade_direction_windows_use_quantity_not_packet_count():
     engine = CausalFeatureEngine(initial(), D(1))
-    engine.observe(trade(1, 10, "sell", "3"), 10)  # maker sell = aggressive buy
-    engine.observe(trade(2, 20, "buy", "1"), 20)   # maker buy = aggressive sell
-    row = values(engine, 30)
+    engine.observe(trade(1, 10_000_000, "sell", "3"), 10_000_000)  # maker sell = aggressive buy
+    engine.observe(trade(2, 20_000_000, "buy", "1"), 20_000_000)   # maker buy = aggressive sell
+    row = values(engine, 100_000_000)
     assert row["signed_trade_volume_100ms"].value == 2
     assert row["trade_volume_imbalance_100ms"].value == D(".5")
     assert row["trade_intensity_100ms"].value == 20
@@ -52,12 +66,12 @@ def test_trade_direction_windows_use_quantity_not_packet_count():
 def test_bbo_ofi_is_event_driven_and_snapshot_does_not_update_state():
     engine = CausalFeatureEngine(initial(), D(1))
     update = L2LevelUpdate("buy", D(100), D(3), D(4))
-    engine.observe(depth(1, 10, updates=(update,)), 10)
-    first = values(engine, 20)
-    second = values(engine, 30)
+    engine.observe(depth(1, 20_000_000, updates=(update,)), 20_000_000)
+    first = values(engine, 100_000_000)
+    second = values(engine, 110_000_000)
     assert first["bbo_ofi_100ms"].value == 1
     assert second["bbo_ofi_100ms"].value == 1
-    assert engine.last_client_ns == 10
+    assert engine.last_client_ns == 20_000_000
 
 
 def test_top_depth_cache_handles_delete_and_readd_without_duplicate_levels():
@@ -70,7 +84,8 @@ def test_top_depth_cache_handles_delete_and_readd_without_duplicate_levels():
         L2LevelUpdate("buy", D(100), D(0), D(7)),)), 20)
     assert engine.book.top_levels("buy", 3) == (
         (D(100), D(7)), (D(99), D(2)), (D(98), D(5)))
-    assert values(engine, 20)["bid_depth_5"].value == D(14)
+    row = values(engine, 20)["bid_depth_5"]
+    assert row.status == "INSUFFICIENT_DEPTH" and row.value is None
 
 
 def test_future_suffix_cannot_change_past_feature_snapshot():
@@ -86,14 +101,22 @@ def test_future_suffix_cannot_change_past_feature_snapshot():
 
 
 def test_delayed_event_is_invisible_until_delivery_and_stale_is_unavailable():
-    engine = CausalFeatureEngine(initial(), D(1), stale_after_ns=50, initial_client_available_ns=10)
-    event = replace(trade(1, 20, "sell", "2"), receive_ns=40)
-    assert values(engine, 30)["signed_trade_volume_100ms"].value == 0
-    engine.observe(event, 40)
-    assert values(engine, 40)["signed_trade_volume_100ms"].value == 2
-    stale = values(engine, 100)
+    engine = CausalFeatureEngine(initial(), D(1), initial_client_available_ns=10_000_000)
+    event = replace(trade(1, 20_000_000, "sell", "2"), receive_ns=40_000_000)
+    assert values(engine, 30_000_000)["signed_trade_volume_100ms"].status == "WARMUP"
+    engine.observe(event, 40_000_000)
+    assert values(engine, 110_000_000)["signed_trade_volume_100ms"].value == 2
+    stale_engine = CausalFeatureEngine(initial(), D(1), stale_after_ns=50,
+                                       initial_client_available_ns=10)
+    stale = values(stale_engine, 100)
     assert stale["mid"].status == "STALE" and stale["mid"].value is None
     assert stale["book_age_ns"].value == 90
+
+
+def test_rolling_features_expose_explicit_warmup_state():
+    engine = CausalFeatureEngine(initial(), D(1))
+    assert values(engine, 99_999_999)["trade_intensity_100ms"].status == "WARMUP"
+    assert values(engine, 100_000_000)["trade_intensity_100ms"].status == "AVAILABLE"
 
 
 def test_delivery_regression_and_future_delivery_fail_closed():
