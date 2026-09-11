@@ -25,18 +25,42 @@ class StrategyParameters:
     expression_parameters: tuple = ()
     max_signal_ticks: Decimal = Decimal(10)
     lot: Decimal = Decimal('.001')
+    glft_gamma: Decimal = Decimal('.1')
+    glft_window_seconds: int = 120
+    glft_min_seconds: int = 60
+    glft_min_trades: int = 30
+    glft_min_r2: Decimal = Decimal('.5')
+    glft_max_half_ticks: Decimal = Decimal(500)
 
     @classmethod
     def from_config(cls, config):
         return cls(config.strategy,config.size,config.half_spread_ticks,config.inventory_skew_ticks,
                    config.signal_strength,config.max_inventory,config.instrument.tick,config.maker_bps,
                    config.flow_threshold,config.flow_min_volume,config.volatility_spread_multiplier,
-                   config.signal_expression,config.expression_parameters,config.max_signal_ticks,config.instrument.lot)
+                   config.signal_expression,config.expression_parameters,config.max_signal_ticks,config.instrument.lot,
+                   config.glft_gamma,config.glft_window_seconds,config.glft_min_seconds,config.glft_min_trades,
+                   config.glft_min_r2,config.glft_max_half_ticks)
 
 
 class StrategyPolicy:
     """Per-run causal strategy memory. Contains no simulator or queue handles."""
-    def __init__(self):self.withdraw_side=None
+    def __init__(self,parameters=None):
+        self.withdraw_side=None
+        self.glft=None;self.glft_trace={}
+        if parameters is not None and parameters.strategy in {'glft','glft_microprice'}:
+            from lobcap.backtest.glft import Calibration
+            self.glft=Calibration(parameters)
+
+    def observe_trade(self,now,exchange_ns,price,side,quantity,mid,fresh):
+        if self.glft is not None:self.glft.trade(now,exchange_ns,price,side,quantity,mid,fresh)
+
+    def on_second(self,now,mid,fresh):
+        if self.glft is not None:self.glft.on_second(now,mid,fresh)
+
+    def diagnostics(self):
+        result={'withdraw_side':self.withdraw_side}
+        if self.glft is not None:result['glft']=self.glft_trace
+        return result
 
     def decide(self, config, market, portfolio, trace=None):
         return decide(config,market,portfolio,trace=trace,state=self)
@@ -91,6 +115,27 @@ def decide(config, market, portfolio, trace=None, state=None):
         if trace is not None:trace.update(raw_target=raw,tick_rounded_target=DesiredQuotes(*rounded,reason),policy_limited_target=result)
         return result
     if config.strategy=='no_trade':return targets(None,None,'no_trade')
+    if config.strategy in {'glft','glft_microprice'}:
+        from lobcap.backtest.glft import coefficients
+        estimate=state.glft.snapshot(market.time_ns) if state is not None and state.glft is not None else {'status':'warmup'}
+        if state is not None:state.glft_trace=dict(estimate)
+        if estimate['status']!='ready':return targets(None,None,'glft_'+estimate['status'])
+        half,skew=coefficients(estimate['A'],estimate['k'],estimate['sigma_ticks_sqrt_second'],config.glft_gamma)
+        fee_floor=max(ZERO,config.maker_bps)*market.mid/config.tick/10000
+        effective_half=max(half,config.half_spread_ticks,fee_floor)
+        # Inventory is measured in configured order-size units, Delta=1.
+        inventory_shift=skew*portfolio.inventory/config.size
+        signal=config.signal_strength*(market.microprice-market.mid)/config.tick if config.strategy=='glft_microprice' else ZERO
+        signal=min(config.max_signal_ticks,max(-config.max_signal_ticks,signal))
+        if state is not None:state.glft_trace.update(raw_half_ticks=half,half_ticks=effective_half,
+            skew_ticks_per_order=skew,inventory_shift_ticks=inventory_shift,signal_ticks=signal,
+            fee_floor_ticks=fee_floor,inventory_order_units=portfolio.inventory/config.size)
+        if effective_half>config.glft_max_half_ticks:
+            if state is not None:state.glft_trace['status']='width_limit'
+            return targets(None,None,'glft_width_limit')
+        center=market.mid+(signal-inventory_shift)*config.tick
+        return targets(Quote('buy',center-effective_half*config.tick,config.size),
+                       Quote('sell',center+effective_half*config.tick,config.size),'glft_quote')
     if config.strategy in {'join_bbo','inventory_size','flow_withdraw'}:
         buy=sell=config.size
         reason=config.strategy
@@ -148,6 +193,8 @@ def decide(config, market, portfolio, trace=None, state=None):
 
 def risk_control(config, market, portfolio, desired):
     def stop(reason):return DesiredQuotes(None,None,reason)
+    if config.quote_start_seconds and market.time_ns<config.sample.start_ns+config.quote_start_seconds*1_000_000_000:
+        return stop('common_quote_start_delay')
     if market.bid<=0 or market.bid>=market.ask:return stop("invalid_book")
     if market.book_age_ns>config.stale_book_ms*1_000_000:return stop("stale_book")
     if not market.coverage_bid<=market.bid<market.ask<=market.coverage_ask:return stop("unknown_depth_coverage")

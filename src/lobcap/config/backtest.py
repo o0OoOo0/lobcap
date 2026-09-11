@@ -60,6 +60,13 @@ class BacktestConfig:
     partial_fill_policy: str = "reset_target"
     reprice_threshold_ticks: Decimal = Decimal(0)
     min_hold_ms: int = 0
+    glft_gamma: Decimal = Decimal('0.1')
+    glft_window_seconds: int = 120
+    glft_min_seconds: int = 60
+    glft_min_trades: int = 30
+    glft_min_r2: Decimal = Decimal('0.5')
+    glft_max_half_ticks: Decimal = Decimal(500)
+    quote_start_seconds: int = 0
 
     @property
     def model(self) -> ModelSpec:
@@ -74,6 +81,12 @@ class BacktestConfig:
         row["execution_contract_version"] = EXECUTION_CONTRACT_VERSION
         row["quote_policy_version"] = "quote-policy-v1"
         row["decision_trace_version"] = "decision-trace-v1"
+        if self.quote_start_seconds==0:row.pop('quote_start_seconds')
+        if self.strategy in {'glft','glft_microprice'}:
+            row['glft_version']='glft-crossing-v1'
+        else:
+            for key in tuple(row):
+                if key.startswith('glft_'):row.pop(key)
         for key in ("config_path", "raw_file_sha256", "canonical_config_sha256", "output_path", "data_root"):
             row.pop(key)
         # Preserve established identities when the new language is inactive/default.
@@ -91,15 +104,19 @@ DECIMALS = {"size", "half_spread_ticks", "inventory_skew_ticks", "signal_strengt
 DECIMALS |= {"max_trade_participation","impact_stress_bps","flow_threshold","flow_min_volume","volatility_spread_multiplier"}
 DECIMALS.add("max_signal_ticks")
 DECIMALS.add("reprice_threshold_ticks")
+DECIMALS |= {'glft_gamma','glft_min_r2','glft_max_half_ticks'}
 OPTIONAL = {"alpha", "volatility_widen_bps", "volatility_reduce_bps", "volatility_stop_bps"}
 INTS = {"decision_ms", "max_age_ms", "stale_book_ms", "entry_ms", "cancel_ms", "report_ms"}
 INTS.add("min_hold_ms")
+INTS |= {'glft_window_seconds','glft_min_seconds','glft_min_trades'}
+INTS.add('quote_start_seconds')
 STRINGS = {"strategy","clock_mode", "signal_expression", "expression_version"}
 STRINGS.add("partial_fill_policy")
 STRUCTURED = {"expression_parameters"}
 BASELINE_STRATEGIES = ("fixed_spread", "inventory_skew", "microprice")
 STRATEGIES = BASELINE_STRATEGIES + ("flow_guard", "volatility_adaptive", "expression")
 STRATEGIES += ("no_trade", "join_bbo", "inventory_size", "flow_withdraw")
+STRATEGIES += ('glft','glft_microprice')
 
 
 def validate(config: BacktestConfig) -> BacktestConfig:
@@ -123,7 +140,7 @@ def validate(config: BacktestConfig) -> BacktestConfig:
             raise ConfigError(f"{name} must be a finite Decimal")
     for name in INTS:
         value = getattr(config, name)
-        if type(value) is not int or value < (0 if name in {"entry_ms", "cancel_ms", "report_ms", "min_hold_ms"} else 1):
+        if type(value) is not int or value < (0 if name in {"entry_ms", "cancel_ms", "report_ms", "min_hold_ms",'quote_start_seconds'} else 1):
             raise ConfigError(f"invalid {name}")
     for name in ("size", "max_inventory", "initial_cash", "max_signal_ticks"):
         if getattr(config, name) <= 0:
@@ -133,6 +150,14 @@ def validate(config: BacktestConfig) -> BacktestConfig:
             raise ConfigError(f"{name} must be nonnegative")
     if config.alpha is not None and not 0 <= config.alpha <= 1:
         raise ConfigError("alpha must be in [0,1]")
+    if config.glft_gamma<=0 or config.glft_gamma>10 or config.glft_max_half_ticks<=0:
+        raise ConfigError('GLFT gamma must be in (0,10], maximum half width positive')
+    if not 0<=config.glft_min_r2<=1:
+        raise ConfigError('GLFT minimum R2 must be in [0,1]')
+    if not 30<=config.glft_min_seconds<=config.glft_window_seconds<=600:
+        raise ConfigError('GLFT needs 30 <= minimum seconds <= window <= 600')
+    if config.quote_start_seconds*NS>=config.sample.end_ns-config.sample.start_ns:
+        raise ConfigError('quote start delay must leave a trading interval')
     if abs(config.initial_inventory) > config.max_inventory:
         raise ConfigError("initial inventory exceeds limit")
     if not 0 < config.max_trade_participation <= 1:raise ConfigError("participation must be in (0,1]")

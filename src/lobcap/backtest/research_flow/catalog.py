@@ -184,6 +184,8 @@ def comparison_guard(left, right, allow_scenario_change=False):
     if not left.get("execution_contract_version") or left.get("execution_contract_version") != right.get("execution_contract_version"):
         reasons.append("Execution contract versions differ or are unavailable.")
     a, b = left.get("config", {}), right.get("config", {})
+    if a.get('quote_start_seconds',0)!=b.get('quote_start_seconds',0):
+        reasons.append('Comparison requires matching quote start delay.')
     for key in ("sample", "instrument", "initial_cash", "initial_inventory", "max_inventory"):
         if key not in a or key not in b or a[key] != b[key]:
             reasons.append(f"Comparison requires matching {key}.")

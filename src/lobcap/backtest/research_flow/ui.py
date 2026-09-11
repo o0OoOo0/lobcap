@@ -19,11 +19,19 @@ LABELS = {'size':'기본 주문 수량 (BTC)', 'half_spread_ticks':'호가 반�
           'inventory_skew_ticks':'재고 가격 이동 (tick)', 'signal_strength':'신호 배수',
           'flow_min_volume':'최소 1초 관측량 (BTC)', 'flow_threshold':'흐름 임계값',
           'volatility_spread_multiplier':'변동성 거리 배수', 'max_signal_ticks':'수식 출력 상한 (tick)'}
+LABELS.update(glft_gamma='GLFT 위험 선호 γ',glft_window_seconds='추정 창 (초)',
+    glft_min_seconds='최소 유효 관측 (초)',glft_min_trades='최소 1-tick 통과 거래 수',
+    glft_min_r2='최소 적합도 R²',glft_max_half_ticks='허용 최대 반거리 (tick)')
 
 
 def active_fields(strategy):
     if strategy == 'no_trade': return ()
     fields = ['size']
+    if strategy in {'glft','glft_microprice'}:
+        fields+=['half_spread_ticks','glft_gamma','glft_window_seconds','glft_min_seconds',
+                 'glft_min_trades','glft_min_r2','glft_max_half_ticks']
+        if strategy=='glft_microprice':fields+=['signal_strength','max_signal_ticks']
+        return tuple(fields)
     if strategy == 'flow_withdraw': fields += ['flow_min_volume']
     if strategy not in POLICIES:
         fields += ['half_spread_ticks']
@@ -121,7 +129,10 @@ def render_strategy(store,draft):
     with st.form(f'rf_strategy_{draft.draft_id}_{draft.revision}_{strategy}'):
         name=st.text_input('전략 이름',draft.name)
         hypothesis=st.text_area('검증할 시장 가설',draft.hypothesis)
-        for field in active_fields(strategy): edits[field]=st.text_input(LABELS[field],str(getattr(draft.config,field)))
+        for field in active_fields(strategy):
+            from lobcap.config.backtest import INTS
+            value=st.text_input(LABELS[field],str(getattr(draft.config,field)))
+            edits[field]=int(value) if field in INTS and value.isdigit() else value
         if strategy!='no_trade':
             st.markdown('**주문 유지**')
             ps=['keep_remaining','reset_target']

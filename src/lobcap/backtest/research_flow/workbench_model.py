@@ -6,6 +6,14 @@ from pathlib import Path
 from .analysis import iter_rows
 
 STRATEGIES={
+ 'glft':('GLFT · 거래 강도와 재고','거래 도착 강도와 가격변동에서 호가 폭과 재고 기울기를 추정합니다.',
+    '과거의 유효한 1초 관측이 최소량 이상이고 거래 강도 곡선이 적합도 조건을 통과하면 매 주기 판단합니다.',
+    'GLFT 폭과 재고 이동을 tick 단위로 계산하고 비용·최소 폭·BBO·위험 한도를 적용합니다.',
+    '공개 aggregate trade 기반 도착 강도는 자신의 실제 체결률이 아닙니다. 과도한 추정 폭·불안정한 추정에서는 호가를 중단합니다.'),
+ 'glft_microprice':('GLFT + 잔량 가격 신호','GLFT의 폭·재고 조절에 최우선 잔량 가격 신호를 더합니다.',
+    'GLFT 추정이 준비됐을 때 microprice와 midpoint의 차이에 신호 배수를 곱합니다.',
+    '상한 내 신호 이동을 중심가격에 더한 뒤 GLFT 양방향 호가를 생성합니다.',
+    '신호의 예측력은 아직 검증되지 않았습니다. 같은 GLFT 설정에서 신호 배수 0과 비교해야 합니다.'),
  'fixed_spread':('고정 폭 양방향 호가','중간가격 주변에 일정한 간격으로 매수·매도를 제시합니다.',
     '의사결정 주기마다 midpoint − 반거리 / midpoint + 반거리를 계산합니다.',
     '양쪽 가격을 tick에 맞추고 현재 최우선 호가보다 공격적으로 진입하지 않습니다.',
@@ -72,18 +80,24 @@ def economics(mid,tick,half_ticks,maker_bps):
 def policy_examples(config):
     """Small hypothetical states exercise the same policy API as the engine."""
     from lobcap.backtest.types import MarketView,PortfolioView
-    from lobcap.backtest.strategies import StrategyParameters,decide,risk_control
+    from lobcap.backtest.strategies import StrategyParameters,StrategyPolicy,decide,risk_control
     bid=D('80000');ask=bid+config.instrument.tick;mid=(bid+ask)/2
     rows=[]
     for label,inventory,imbalance,flow in [('중립',D(0),D(0),D(0)),
             ('롱 재고 60% · 매수 흐름',config.max_inventory*D('.6'),D('.8'),D('.8')),
             ('숏 재고 60% · 매도 흐름',-config.max_inventory*D('.6'),D('-.8'),D('-.8'))]:
         b=1+imbalance;a=1-imbalance
-        market=MarketView(0,bid,ask,b,a,mid,(ask*b+bid*a)/(b+a),imbalance,1.,0,
+        now=config.sample.start_ns+config.quote_start_seconds*1_000_000_000
+        market=MarketView(now,bid,ask,b,a,mid,(ask*b+bid*a)/(b+a),imbalance,1.,0,
             bid-D(1000),ask+D(1000),flow,D(1))
         portfolio=PortfolioView(config.initial_cash,inventory,config.initial_cash+inventory*mid)
         stages={}
-        desired=decide(StrategyParameters.from_config(config),market,portfolio,trace=stages)
+        parameters=StrategyParameters.from_config(config)
+        state=StrategyPolicy(parameters)
+        if state.glft is not None:
+            state.glft.last=now
+            state.glft.estimate={'status':'ready','A':D('.1'),'k':D('.05'),'sigma_ticks_sqrt_second':D(2)}
+        desired=decide(parameters,market,portfolio,trace=stages,state=state)
         final=risk_control(config,market,portfolio,desired)
         rows.append({'상태':label,'매수 가격':str(final.bid.price) if final.bid else '철회',
             '매수 BTC':str(final.bid.quantity) if final.bid else '0',

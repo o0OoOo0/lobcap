@@ -62,7 +62,7 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
             control=ResearchControl(config,research_policy,sink)
         features=Features()
         parameters=StrategyParameters.from_config(config)
-        policy=StrategyPolicy()
+        policy=StrategyPolicy(parameters)
         decision_ordinal=0
         last_source=None
         metrics=Metrics(config,sink)
@@ -175,6 +175,9 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                     if observed is None:raise AssertionError("delivery before bootstrap")
                     observed.apply(incoming)
                     features.observe_trade(incoming,delivered)
+                    if incoming.trade is not None:
+                        policy.observe_trade(delivered,incoming.time_ns,incoming.trade.price,incoming.trade.maker_side,
+                            incoming.trade.size,observed.mid,delivered-observed.time_ns<=config.stale_book_ms*1_000_000)
                     last_source=incoming
                     if incoming.kind=="depth":last_observed_receive=delivered
                     stats["observed_"+incoming.kind]+=1
@@ -189,6 +192,7 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
             if now==next_second:
                 if observed is not None:
                     features.on_second(now,observed.mid,now-observed.time_ns<=config.stale_book_ms*1_000_000)
+                    policy.on_second(now,observed.mid,now-observed.time_ns<=config.stale_book_ms*1_000_000)
                 next_second+=NS
             if now==next_decision:
                 if observed is None:raise ValueError("no observed book at trading start")
@@ -225,7 +229,7 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                 decision_ordinal+=1
                 actions=plan_actions(config,desired,client_orders,now,market,view,execution.next_id)
                 trace=make_trace(config,decision_ordinal,market,view,stages,desired,actions,last_source,
-                    {'withdraw_side':policy.withdraw_side})
+                    policy.diagnostics())
                 decision['decision_id']=trace['decision_id']
                 sink.write("decisions",decision)
                 sink.write("decision_traces",trace)

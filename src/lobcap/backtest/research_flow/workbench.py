@@ -5,7 +5,7 @@ from pathlib import Path
 import json
 import uuid
 
-from lobcap.config.backtest import variant
+from lobcap.config.backtest import variant,INTS
 from lobcap.backtest.workspace.contracts import StrategyDraft
 from lobcap.backtest.workspace.store import WorkspaceStore
 from .experiments import load_context,load_context_draft,save_context,build_experiment,clone_for_next,save_conclusion
@@ -80,6 +80,9 @@ def render_editor(store,draft,base):
         title=st.text_input('실험 이름',draft.name)
         question=st.text_area('이번에 확인할 가설',draft.hypothesis,height=85)
         for field in active_fields(strategy):
+            if field in INTS:
+                edits[field]=st.number_input(LABELS[field],min_value=1,value=getattr(draft.config,field))
+                continue
             edits[field]=st.text_input(LABELS[field],str(getattr(draft.config,field)),
                 help='반거리는 전체 양방향 폭의 절반입니다. 최종 가격은 tick 반올림과 BBO 제한을 거칩니다.' if field=='half_spread_ticks' else None)
         if strategy=='expression':
@@ -92,6 +95,8 @@ def render_editor(store,draft,base):
                 format_func=lambda x:'남은 수량 유지' if x=='keep_remaining' else '취소 후 목표 수량으로 재주문')
             edits['partial_fill_policy']=policy
         with st.expander('위험 한도 · 판단과 주문 주기',expanded=False):
+            edits['quote_start_seconds']=st.number_input('공통 거래 시작 지연 (초)',min_value=0,value=draft.config.quote_start_seconds,
+                help='준비 시간을 맞춘 비교에 사용합니다. 이 시간 전에도 계수를 추정하지만 신규 호가는 내지 않습니다.')
             edits['max_inventory']=st.text_input('최대 절대 재고 (BTC)',str(draft.config.max_inventory))
             for key,label,minval in [('decision_ms','판단 주기 (ms)',1),('max_age_ms','최대 활성 주문 나이 (ms)',1),
                                       ('min_hold_ms','일반 가격 변경의 최소 유지 (ms)',0),('stale_book_ms','허용 호가 나이 (ms)',1)]:
@@ -116,6 +121,7 @@ def render_editor(store,draft,base):
             mode=st.selectbox('실행 종류',['single','strategy_compare','assumption_sensitivity','baseline_suite'],
                 format_func=lambda x:{'single':'현재 설정 1회','strategy_compare':'전략 설정 한 요소 비교','assumption_sensitivity':'체결·비용 가정 한 요소 비교','baseline_suite':'E0–E4 행동 기준선 5회'}[x])
             fields=['half_spread_ticks','size','inventory_skew_ticks','signal_strength','partial_fill_policy','reprice_threshold_ticks','min_hold_ms',
+                    'glft_gamma','glft_window_seconds','glft_min_r2','glft_max_half_ticks',
                     'alpha','entry_ms','cancel_ms','report_ms','maker_bps']
             axis=st.selectbox('비교할 요소',fields)
             values=st.text_input('비교 값 · 쉼표 구분','0.5, 5, 20, 100',help='비교 실행에서만 사용합니다. 단일 실행에는 영향을 주지 않습니다.')
@@ -156,6 +162,8 @@ def render_editor(store,draft,base):
         with st.expander('이 설정은 어떤 주문을 내나? · 숫자 예제',expanded=True):
             example=config_from_document(spec['runs'][0]['config_document'])
             st.caption('첫 실행 설정의 가상 상태: bid 80,000 USDT, ask = bid + 1 tick, 변동성 1 bps, 최근 거래 1 BTC, 기존 주문 없음. 실제 표본이나 수익 예측이 아닙니다.')
+            if example.strategy.startswith('glft'):
+                st.caption('GLFT 숫자 예제만 A=0.1/초/방향, k=0.05/tick, σ=2 tick/√초를 가정합니다. 실행에서는 과거 데이터로 추정합니다. 호가 반거리는 GLFT의 최소 폭으로 사용됩니다.')
             st.dataframe(policy_examples(example),hide_index=True)
         with st.expander('전체 실행 설정'):st.json(spec)
         if st.button('확인한 설정 실행',type='primary'):
@@ -288,6 +296,7 @@ def render_charts(row,r):
 def render_behavior(row,r):
     import streamlit as st
     s=row['summary'];e=s.get('execution',{})
+    if row['config'].get('strategy','').startswith('glft'):render_glft(row)
     st.dataframe([{'지표':'주문 체결률','값':number_display(s.get('fill_rate'),2,True)},
         {'지표':'수량 체결률','값':number_display(s.get('quantity_fill_rate'),2,True)},
         {'지표':'부분 체결로 종료된 주문 비율','값':number_display(s.get('partial_fill_rate'),2,True)},
@@ -310,6 +319,30 @@ def render_behavior(row,r):
         '관측률':number_display(m['coverage'],2,True),'체결가 기준 USDT/BTC':number_display(m['volume_weighted_markout']),
         '체결 시 midpoint 이후 이동 USDT/BTC':number_display(m['volume_weighted_midpoint_drift'])} for h,m in s.get('markouts',{}).items()],hide_index=True)
     st.caption('midpoint 이후 이동이 음수면 해당 정의에서 불리한 체결입니다. 250 ms보다 오래된 midpoint와 표본 밖 목표는 누락입니다.')
+
+
+def render_glft(row):
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+    from collections import Counter
+    records=[dict(t['policy_state']['glft'],decision_time=t['time_ns']) for t in iter_rows(row['output_dir'],'decision_traces')
+             if t.get('policy_state',{}).get('glft')]
+    st.markdown('**GLFT: 추정 → 폭 → 재고 조정 → 주문**')
+    st.caption('A는 방향별 초당 통과 거래 강도, k는 tick당 감소율, σ는 tick/√초입니다. 공개 거래의 거리별 통과 횟수를 추정하며 실제 큐 체결률을 측정한 값이 아닙니다.')
+    st.dataframe([{'추정 상태':k,'판단 횟수':v} for k,v in Counter(r['status'] for r in records).items()],hide_index=True)
+    if not records:return
+    frame=pd.DataFrame(records)
+    fig=make_subplots(rows=2,cols=1,shared_xaxes=True,subplot_titles=('계산된 폭과 재고 이동 · tick','추정 유효 관측 · 초'))
+    for key,label in [('raw_half_ticks','GLFT 반거리'),('half_ticks','최종 반거리'),('inventory_shift_ticks','재고 이동'),('signal_ticks','신호 이동')]:
+        if key in frame:fig.add_trace(go.Scatter(x=pd.to_datetime(frame.decision_time,unit='ns',utc=True),y=pd.to_numeric(frame[key]),name=label),row=1,col=1)
+    fig.add_trace(go.Scatter(x=pd.to_datetime(frame.decision_time,unit='ns',utc=True),y=frame.get('valid_seconds'),name='유효 관측'),row=2,col=1)
+    fig.update_layout(height=430,legend=dict(orientation='h'),margin=dict(t=35,b=10))
+    st.plotly_chart(fig,width='stretch')
+    st.dataframe([{k:number_display(r[k],4) if k in {'A','k','r2','sigma_ticks_sqrt_second','half_ticks','inventory_shift_ticks'} else r.get(k)
+        for k in ('status','valid_seconds','A','k','r2','sigma_ticks_sqrt_second','half_ticks','inventory_shift_ticks') if k in r} for r in records[-1:]],hide_index=True)
+    st.caption('추정 불안정·관측 부족·최대 폭 초과는 대체 계수를 넣지 않고 호가를 중단합니다. 원본 decision_traces에 모든 추정과 거리별 통과 횟수가 있습니다.')
 
 
 def render_comparison(rows,row,context):

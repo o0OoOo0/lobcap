@@ -60,7 +60,7 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
         execution=Execution(config,sink)
         features=Features()
         parameters=StrategyParameters.from_config(config)
-        policy=StrategyPolicy()
+        policy=StrategyPolicy(parameters)
         decision_ordinal=0
         last_source=None
         portfolio=None
@@ -88,6 +88,9 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
             while event is not None and event.time_ns==now:
                 book.apply(event)
                 features.observe_trade(event, now)
+                if event.trade is not None:
+                    policy.observe_trade(now,event.time_ns,event.trade.price,event.trade.maker_side,event.trade.size,
+                        book.mid,now-book.time_ns<=config.stale_book_ms*1_000_000)
                 last_source=event
                 if portfolio is not None:
                     change=portfolio.mark(book.mid,now,event.replay_index)
@@ -106,6 +109,7 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
             execution.advance(now,market,book,defer_new_cancels=True)
             if now==next_second:
                 features.on_second(now,book.mid,market.book_age_ns<=config.stale_book_ms*1_000_000)
+                policy.on_second(now,book.mid,market.book_age_ns<=config.stale_book_ms*1_000_000)
                 market=book.view(now,features.volatility)
                 next_second+=NS
             if now==next_decision:
@@ -122,7 +126,7 @@ def run(config, initial, events, sink, strategy=None, bootstrap_receive_ns=None,
                 decision_ordinal+=1
                 actions=plan_actions(config,desired,{s:jsonable(o.record()) for s,o in execution.orders.items()},now,market,view,execution.next_id)
                 trace=make_trace(config,decision_ordinal,market,view,stages,desired,actions,last_source,
-                                 {'withdraw_side':policy.withdraw_side})
+                                 policy.diagnostics())
                 decision['decision_id']=trace['decision_id']
                 sink.write("decisions",decision)
                 sink.write("decision_traces",trace)
