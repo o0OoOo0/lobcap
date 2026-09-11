@@ -20,6 +20,7 @@ from lobcap.backtest.research_flow.sample_catalogue import (
 )
 from lobcap.backtest.research_flow.signal_analysis import (
     evaluate_feature, evaluate_feature_group, evaluate_redundancy, fit_bucket_edges,
+    stability_summary,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -165,13 +166,15 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
         cache = cache_rows[window.window_id]
         all_snapshots.extend(read_feature_cache(cache["path"], cache["cache_key"], FEATURES))
     redundancy = evaluate_redundancy(all_snapshots, FEATURES)
+    stability = stability_summary(reports["per_date"])
     output_row = {"status": "PASS", "study_version": "signal-development-v1",
         "code_fingerprint": code, "catalogue_sha256": catalogue["catalogue_sha256"],
         "roles_opened": [DEVELOPMENT], "locked_roles_opened": [],
         "entry_latency_scenario_ms": entry_latency_ms, "features": FEATURES,
         "label_horizons_ns": HORIZONS, "feature_caches": cache_rows,
         "freshness_policy": jsonable(freshness), "reports": reports,
-        "redundancy": redundancy, "statistical_significance": "NOT_CLAIMED",
+        "redundancy": redundancy, "stability": stability,
+        "statistical_significance": "NOT_CLAIMED",
         "paper_eligibility": "INSUFFICIENT_EVIDENCE"}
     write_json(study/"development_report.json", output_row)
     return study, output_row

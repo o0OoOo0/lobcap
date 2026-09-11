@@ -1,9 +1,11 @@
 from decimal import Decimal as D
 from pathlib import Path
+import pytest
 
 from lobcap.backtest.research_flow.labels import MidpointSeries
 from lobcap.backtest.research_flow.signal_analysis import (
     evaluate_feature, evaluate_feature_group, evaluate_redundancy, fit_bucket_edges,
+    stability_summary,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -71,6 +73,21 @@ def test_grouped_report_pools_independent_window_truth_without_joining_them():
         (LabelDefinition(MARKET_TRUTH_RETURN, 100),), policy, D(1))[0]
     assert row["observations"] == row["valid"] == 4
     assert row["coverage"] == 1
+
+
+def test_stability_requires_two_dates_and_reports_direction_without_p_values():
+    base = {"label_kind": MARKET_TRUTH_RETURN, "horizon_ns": 100,
+            "entry_latency_ns": 0, "pearson_ic": .2, "spearman_ic": .1,
+            "coverage": .8, "bucket_analysis": {"monotonic_direction": "NONDECREASING"}}
+    reports = {"2026-09-07": {"signal": (base,)},
+               "2026-09-08": {"signal": ({**base, "coverage": .7},)}}
+    row = stability_summary(reports)[0]
+    assert row["pearson_direction_consistent"]
+    assert row["bucket_monotonic_consistent"]
+    assert row["coverage_min"] == .7
+    assert row["statistical_significance"] == "NOT_CLAIMED"
+    with pytest.raises(ValueError, match="two dates"):
+        stability_summary({"2026-09-07": reports["2026-09-07"]})
 
 
 def test_runtime_modules_do_not_import_offline_labels():

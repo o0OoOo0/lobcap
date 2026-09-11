@@ -172,3 +172,36 @@ def evaluate_redundancy(snapshots, feature_names):
                 "coverage_overlap": len(pairs)/len(snapshots) if snapshots else None,
                 "pearson": _pearson(x, y), "spearman": _pearson(_ranks(x), _ranks(y))})
     return tuple(rows)
+
+
+def stability_summary(per_date_reports):
+    """Summarize direction and coverage without manufacturing significance."""
+    dates = sorted(per_date_reports)
+    if len(dates) < 2:
+        raise ValueError("stability requires at least two dates")
+    output = []
+    first = per_date_reports[dates[0]]
+    for feature in sorted(first):
+        keyed = {}
+        for date in dates:
+            for row in per_date_reports[date][feature]:
+                key = (row["label_kind"], row["horizon_ns"], row["entry_latency_ns"])
+                keyed.setdefault(key, []).append((date, row))
+        for (kind, horizon, latency), values in sorted(keyed.items()):
+            def direction(field):
+                signs = [1 if row[field] > 0 else -1 if row[field] < 0 else 0
+                         for _, row in values if row[field] is not None]
+                return len(signs) == len(dates) and len(set(signs)) == 1 and signs[0] != 0
+            monotonic = [row["bucket_analysis"]["monotonic_direction"] for _, row in values]
+            coverage = [row["coverage"] for _, row in values if row["coverage"] is not None]
+            output.append({"feature_name": feature, "label_kind": kind,
+                "horizon_ns": horizon, "entry_latency_ns": latency,
+                "dates": [date for date, _ in values],
+                "pearson_direction_consistent": direction("pearson_ic"),
+                "spearman_direction_consistent": direction("spearman_ic"),
+                "bucket_monotonic_consistent": (len(monotonic) == len(dates)
+                    and None not in monotonic and len(set(monotonic)) == 1),
+                "coverage_min": min(coverage) if coverage else None,
+                "coverage_max": max(coverage) if coverage else None,
+                "statistical_significance": "NOT_CLAIMED"})
+    return tuple(output)
