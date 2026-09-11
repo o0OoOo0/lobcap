@@ -392,3 +392,9 @@ keep / exclude interval / exclude day
 - Removed repeated label measurement across feature and aggregation scopes;
   exact reference parity covers multiple windows/dates, all label families,
   horizons, missing features, stale labels, coverage censoring and sample tails.
+- The incremental transfer bundle exported HEAD rather than the branch name;
+  fetching the branch ref failed without changing the validation checkout.
+  Fetched the bundle's HEAD and fast-forwarded successfully. The corrected
+  commit 4f309df passed all 410 Ubuntu tests and completed all 19 DEVELOPMENT
+  phases (maximum worker RSS 459.15625 MiB). Standalone checksum/consistency
+  validation passed. Full evidence is in SIGNAL_RESEARCH_P0_ACCEPTANCE.md.

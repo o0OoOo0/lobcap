@@ -1,0 +1,185 @@
+{
+  "status": "PASS",
+  "code_fingerprint": "4f309dfdb3b95d76c4d4400297d9ef5dd3436b93",
+  "catalogue_sha256": "cc676289c752418edb37ad9adc650dd4e6c611d19bd1bf4170f15fde6a765aae",
+  "report_sha256": "e68f5148ceea431b782fb75af81402e319a8c9d4673023daa58d0b0b86bd65ff",
+  "remote_study_path": "/home/0woo/lobcap-signal-p0-acceptance/artifacts/backtest/research/development-coverage-v3",
+  "regression": {
+    "warnings": 2,
+    "passed": 410,
+    "seconds": 106.01,
+    "platform": "Ubuntu Python 3.12"
+  },
+  "standalone_validator": {
+    "passed_checks": 4752,
+    "failed": [],
+    "cache_checksums_verified": true,
+    "version": "signal-development-acceptance-v2"
+  },
+  "roles_opened": [
+    "DEVELOPMENT"
+  ],
+  "locked_roles_opened": [],
+  "phase_count": 19,
+  "maximum_phase_rss_mib": 459.15625,
+  "elapsed_seconds": 2309.66,
+  "phase_performance": [
+    {
+      "id": "btcusdt-2026-09-07-0010-20m",
+      "peak_rss_mib": 50.65234375,
+      "phase": "cache_write",
+      "wall_seconds": 45.51098932296736
+    },
+    {
+      "id": "btcusdt-2026-09-07-0010-20m",
+      "peak_rss_mib": 62.33984375,
+      "phase": "cadence",
+      "wall_seconds": 55.650776001042686
+    },
+    {
+      "id": "btcusdt-2026-09-07-0610-20m",
+      "peak_rss_mib": 43.453125,
+      "phase": "cache_write",
+      "wall_seconds": 72.25076584500493
+    },
+    {
+      "id": "btcusdt-2026-09-07-0610-20m",
+      "peak_rss_mib": 57.90234375,
+      "phase": "cadence",
+      "wall_seconds": 31.22398763295496
+    },
+    {
+      "id": "btcusdt-2026-09-07-1210-20m",
+      "peak_rss_mib": 42.95703125,
+      "phase": "cache_write",
+      "wall_seconds": 67.85090724698966
+    },
+    {
+      "id": "btcusdt-2026-09-07-1210-20m",
+      "peak_rss_mib": 58.36328125,
+      "phase": "cadence",
+      "wall_seconds": 26.154085017042235
+    },
+    {
+      "id": "btcusdt-2026-09-07-1810-20m",
+      "peak_rss_mib": 42.0546875,
+      "phase": "cache_write",
+      "wall_seconds": 85.47218666301342
+    },
+    {
+      "id": "btcusdt-2026-09-07-1810-20m",
+      "peak_rss_mib": 56.14453125,
+      "phase": "cadence",
+      "wall_seconds": 29.345643873966765
+    },
+    {
+      "id": "btcusdt-2026-09-08-0010-20m",
+      "peak_rss_mib": 48.03515625,
+      "phase": "cache_write",
+      "wall_seconds": 87.10481658304343
+    },
+    {
+      "id": "btcusdt-2026-09-08-0010-20m",
+      "peak_rss_mib": 62.4609375,
+      "phase": "cadence",
+      "wall_seconds": 37.84821471798932
+    },
+    {
+      "id": "btcusdt-2026-09-08-0610-20m",
+      "peak_rss_mib": 51.71875,
+      "phase": "cache_write",
+      "wall_seconds": 120.64163138304139
+    },
+    {
+      "id": "btcusdt-2026-09-08-0610-20m",
+      "peak_rss_mib": 64.20703125,
+      "phase": "cadence",
+      "wall_seconds": 60.511057597002946
+    },
+    {
+      "id": "btcusdt-2026-09-08-1210-20m",
+      "peak_rss_mib": 46.01171875,
+      "phase": "cache_write",
+      "wall_seconds": 90.05386724398704
+    },
+    {
+      "id": "btcusdt-2026-09-08-1210-20m",
+      "peak_rss_mib": 61.59765625,
+      "phase": "cadence",
+      "wall_seconds": 38.84572125499835
+    },
+    {
+      "id": "btcusdt-2026-09-08-1810-20m",
+      "peak_rss_mib": 46.203125,
+      "phase": "cache_write",
+      "wall_seconds": 84.61897773901
+    },
+    {
+      "id": "btcusdt-2026-09-08-1810-20m",
+      "peak_rss_mib": 60.75390625,
+      "phase": "cadence",
+      "wall_seconds": 56.44244015600998
+    },
+    {
+      "features": [
+        "microprice_minus_mid_ticks",
+        "imbalance_1",
+        "imbalance_5",
+        "vamp_5_minus_mid_ticks"
+      ],
+      "id": 1,
+      "peak_rss_mib": 459.15625,
+      "phase": "feature_group",
+      "wall_seconds": 729.0280186680029
+    },
+    {
+      "features": [
+        "trade_volume_imbalance_1000ms",
+        "bbo_ofi_1000ms",
+        "mid_return_1000ms"
+      ],
+      "id": 2,
+      "peak_rss_mib": 393.5546875,
+      "phase": "feature_group",
+      "wall_seconds": 532.8243052450125
+    },
+    {
+      "id": "pooled",
+      "peak_rss_mib": 118.73046875,
+      "phase": "redundancy",
+      "wall_seconds": 56.288454415043816
+    }
+  ],
+  "freshness_policy": {
+    "maximum_age_by_horizon_ns": [
+      [
+        100000000,
+        199000000,
+        97000000
+      ],
+      [
+        500000000,
+        199000000,
+        97000000
+      ],
+      [
+        1000000000,
+        199000000,
+        97000000
+      ],
+      [
+        5000000000,
+        199000000,
+        97000000
+      ]
+    ],
+    "policy_id": "development-freshness-9511afafe9451d24"
+  },
+  "collector": {
+    "state": "active",
+    "restarts": 0,
+    "pid": 517216
+  },
+  "statistical_significance": "NOT_CLAIMED",
+  "paper_eligibility": "INSUFFICIENT_EVIDENCE"
+}

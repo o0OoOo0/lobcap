@@ -110,8 +110,8 @@ PYTHONPATH=src python scripts/validate_signal_development.py \
 Runtime acceptance of this change must be recorded separately at its exact code
 commit. The earlier ten-minute suite/deployment evidence does not certify it.
 
-Feature definition v3 requires known reconstructed depth for every BBO feature,
-including microprice and top depth. Cache rows retain client midpoint coverage;
+Feature definition v3 enforces the registered depth requirement for microprice
+and top-depth features as well as imbalance and VAMP. Cache rows retain client midpoint coverage;
 offline labels censor unknown anchor/target coverage as
 `CENSORED_UNKNOWN_COVERAGE` before freshness filtering. Older v2 predictive
 outputs cannot establish acceptance for this definition. The partial 723529e
