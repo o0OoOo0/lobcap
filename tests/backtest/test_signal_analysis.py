@@ -98,3 +98,39 @@ def test_runtime_modules_do_not_import_offline_labels():
                      "src/lobcap/backtest/quote_policy.py"):
         text = (ROOT / relative).read_text(encoding="utf-8")
         assert "research_flow.labels" not in text and " import labels" not in text
+
+
+def test_shared_label_scopes_match_reference_with_censoring_and_frozen_buckets():
+    from dataclasses import replace
+    from lobcap.backtest.research_flow.signal_analysis import evaluate_feature_scopes
+    contexts = {}
+    for index, date in enumerate(("day1", "day1", "day2")):
+        offset = (index+1)*10000
+        samples = []
+        for n in range(1, 9):
+            s = snapshot(offset+n*100, str(n % 3-1), str(100+n), offset+n*100-10)
+            copy = replace(s.points[0], feature_name="copy", value=D(n),
+                           status="INSUFFICIENT_DEPTH" if n == 3 else "AVAILABLE")
+            samples.append(replace(s, points=s.points+(copy,), client_mid_coverage=n != 4))
+        truth = MidpointSeries(((offset+n*100-10, str(100+n*n), "a") for n in range(10)),
+                               (n != 5 for n in range(10)))
+        contexts[str(index)] = (tuple(samples), truth, offset+900, date)
+    definitions = tuple(LabelDefinition(kind, horizon, entry_latency_ns=20 if kind == POST_LATENCY_RETURN else 0)
+        for kind in (MARKET_TRUTH_RETURN, CLIENT_FORWARD_RETURN, POST_LATENCY_RETURN)
+        for horizon in (100, 200))
+    policy = FreshnessPolicy("fixture", ((100, 20, 20), (200, 20, 5)))
+    fitted = {feature: {date: ((D(0), D(1)), date+feature) for date in ("day1", "day2")}
+              for feature in ("signal", "copy")}
+    actual = evaluate_feature_scopes(tuple(fitted), contexts, definitions, policy, D(1), fitted)
+    for scope, sid, members, date in (
+        *(("per_window", wid, (wid,), c[3]) for wid, c in contexts.items()),
+        ("per_date", "day1", ("0", "1"), "day1"),
+        ("per_date", "day2", ("2",), "day2"),
+        ("pooled", None, tuple(contexts), None),
+    ):
+        for feature in fitted:
+            edges, policy_id = fitted[feature][date] if date else ((), None)
+            expected = evaluate_feature_group(feature, (contexts[wid][:3] for wid in members),
+                definitions, policy, D(1), edges, policy_id)
+            rows = (actual[scope][sid] if sid else actual[scope])[feature]
+            assert rows == list(expected)

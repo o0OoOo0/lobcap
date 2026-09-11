@@ -109,3 +109,12 @@ PYTHONPATH=src python scripts/validate_signal_development.py \
 
 Runtime acceptance of this change must be recorded separately at its exact code
 commit. The earlier ten-minute suite/deployment evidence does not certify it.
+
+Feature definition v3 requires known reconstructed depth for every BBO feature,
+including microprice and top depth. Cache rows retain client midpoint coverage;
+offline labels censor unknown anchor/target coverage as
+`CENSORED_UNKNOWN_COVERAGE` before freshness filtering. Older v2 predictive
+outputs cannot establish acceptance for this definition. The partial 723529e
+run is diagnostic evidence only. Label measurement is shared across features
+and window/date/pooled scopes, with exact regression parity against the existing
+analysis API; labels remain offline and are never added to causal feature caches.

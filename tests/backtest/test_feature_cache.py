@@ -79,6 +79,7 @@ def test_feature_cache_roundtrip_and_checksum(tmp_path):
     assert manifest["rows"] == 3
     assert list(read_feature_cache(path, manifest["cache_key"]))[1].client_mid == D("100.5")
     assert list(read_feature_cache(path, manifest["cache_key"], ()))[0].points == ()
+    assert list(read_feature_cache(path, manifest["cache_key"], ()))[0].client_mid_coverage is True
     assert manifest["cache_key"] == cache_fingerprint("sample-sha", schedule, "recorded", 500,
                                                        **IDENTITY)
     with (path / "features.jsonl.gz").open("ab") as stream:

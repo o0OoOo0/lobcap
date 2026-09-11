@@ -96,3 +96,23 @@ def test_freshness_freeze_requires_two_development_dates_and_uses_worst_p95():
     assert evidence["method"] == "maximum-development-window-p95-v1"
     with pytest.raises(ValueError, match="two development dates"):
         freeze_development_freshness({"a": row(4, 8)}, windows[:1])
+
+
+@pytest.mark.parametrize("kind", [MARKET_TRUTH_RETURN, CLIENT_FORWARD_RETURN, POST_LATENCY_RETURN])
+def test_unknown_truth_target_is_censored_for_every_label_family(kind):
+    from lobcap.backtest.research_flow.signal_contracts import CENSORED_UNKNOWN_COVERAGE
+    truth = MidpointSeries(((0, "100", "a"), (100, "101", "a"), (200, "102", "a")),
+                            coverage=(True, True, False))
+    point = measure_label(LabelDefinition(kind, 100), 100, "101", 100, truth, D(1), 400, "a")
+    assert point.status == CENSORED_UNKNOWN_COVERAGE and point.value is None
+    assert apply_freshness_policy(point, FreshnessPolicy("x", ((100, 100, 100),))).status == point.status
+
+
+def test_client_anchor_coverage_is_separate_from_exchange_anchor():
+    from lobcap.backtest.research_flow.signal_contracts import CENSORED_UNKNOWN_COVERAGE
+    point = measure_label(LabelDefinition(CLIENT_FORWARD_RETURN, 100), 100, "100", 80,
+        series(), D(1), 400, "a", client_mid_coverage=False)
+    assert point.status == CENSORED_UNKNOWN_COVERAGE and point.value is None
+    point = measure_label(LabelDefinition(MARKET_TRUTH_RETURN, 100), 100, "100", 80,
+        series(), D(1), 400, "a", client_mid_coverage=False)
+    assert point.status == OBSERVED

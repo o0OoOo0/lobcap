@@ -381,3 +381,14 @@ keep / exclude interval / exclude day
   local-variable shadowing error (`development_windows`) before creating study
   output. Renamed the local tuple and added a complete runner orchestration
   regression using isolated synthetic phase results and the real acceptance gate.
+- Commit 723529e passed all 404 Ubuntu tests, then its DEVELOPMENT run completed
+  eight caches/cadence phases and the first feature group (484.7 MiB worker RSS).
+  The partial report exposed inconsistent BBO coverage: microprice was available
+  where imbalance_1 rejected unknown reconstructed depth. Offline midpoint
+  labels also lacked the coverage check. Stopped the second group and retained
+  `development-final` as diagnostic output, not accepted evidence. Versioned the
+  feature definition as v3, persisted client midpoint coverage, and censored
+  unknown truth/client midpoint labels before freshness filtering.
+- Removed repeated label measurement across feature and aggregation scopes;
+  exact reference parity covers multiple windows/dates, all label families,
+  horizons, missing features, stale labels, coverage censoring and sample tails.

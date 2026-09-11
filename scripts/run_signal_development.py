@@ -21,7 +21,7 @@ from lobcap.backtest.research_flow.labels import (
 )
 from lobcap.backtest.research_flow.sample_catalogue import DEVELOPMENT
 from lobcap.backtest.research_flow.signal_analysis import (
-    evaluate_feature, evaluate_feature_group, fit_bucket_edges,
+    evaluate_feature_scopes, fit_bucket_edges,
     evaluate_redundancy_values, stability_summary,
 )
 from lobcap.backtest.research_flow.signal_contracts import AnalysisSchedule
@@ -156,9 +156,7 @@ def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshn
         truth_by_window[window.window_id] = truth_midpoint_series(initial,
             iter_events(sample["path"]), sample["segment"])
     dates = sorted({window.date for window in windows})
-    reports = {"per_window": {}, "per_date": {}, "pooled": {}}
-    grouped = tuple((feature_series[window.window_id], truth_by_window[window.window_id],
-                     window.end_ns) for window in windows)
+    fitted_by_feature = {}
     for feature in features:
         fitted = {}
         for date in dates:
@@ -166,21 +164,11 @@ def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshn
                 for snapshot in feature_series[window.window_id])
             edges = fit_bucket_edges(training, feature)
             fitted[date] = (edges, _bucket_id(feature, set(dates)-{date}, edges))
-        for window in windows:
-            edges, policy_id = fitted[window.date]
-            reports["per_window"].setdefault(window.window_id, {})[feature] = evaluate_feature(
-                feature, feature_series[window.window_id], truth_by_window[window.window_id],
-                definitions, freshness, config.instrument.tick, window.end_ns, edges, policy_id)
-        for date in dates:
-            date_group = tuple((feature_series[window.window_id],
-                truth_by_window[window.window_id], window.end_ns)
-                for window in windows if window.date == date)
-            edges, policy_id = fitted[date]
-            reports["per_date"].setdefault(date, {})[feature] = evaluate_feature_group(
-                feature, date_group, definitions, freshness, config.instrument.tick,
-                edges, policy_id)
-        reports["pooled"][feature] = evaluate_feature_group(feature, grouped, definitions,
-            freshness, config.instrument.tick)
+        fitted_by_feature[feature] = fitted
+    contexts = {w.window_id: (feature_series[w.window_id], truth_by_window[w.window_id], w.end_ns, w.date)
+                for w in windows}
+    reports = evaluate_feature_scopes(features, contexts, definitions, freshness,
+                                      config.instrument.tick, fitted_by_feature)
     return {"reports": reports}
 
 

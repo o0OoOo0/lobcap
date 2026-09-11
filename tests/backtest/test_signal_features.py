@@ -146,3 +146,13 @@ def test_feature_projection_is_exact_and_rejects_unknown_names():
     assert [point.feature_name for point in points] == ["mid", "spread_ticks"]
     with pytest.raises(ValueError, match="unknown feature projection"):
         engine.snapshot(0, ("does_not_exist",))
+
+
+def test_all_bbo_depth_features_reject_unknown_reconstructed_coverage():
+    engine = CausalFeatureEngine(replace(initial(), coverage_ask=D(100)), D(1))
+    for name in ("microprice", "microprice_minus_mid_ticks", "imbalance_1",
+                 "bid_top_depth", "ask_top_depth", "total_top_depth"):
+        point = values(engine, 0)[name]
+        assert point.status == "INSUFFICIENT_DEPTH"
+        assert point.value is None
+    assert not engine.observation(0, "fixture").client_mid_coverage

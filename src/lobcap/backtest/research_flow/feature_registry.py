@@ -8,7 +8,7 @@ import json
 from .signal_contracts import FeatureDefinition
 
 
-FEATURE_SET_VERSION = "core-market-features-v2"
+FEATURE_SET_VERSION = "core-market-features-v3"
 WINDOWS_NS = (100_000_000, 500_000_000, 1_000_000_000, 5_000_000_000)
 DEFAULT_STALE_AFTER_NS = 500_000_000
 

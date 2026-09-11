@@ -10,7 +10,7 @@ import json
 
 from .signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
-    CENSORED_ACQUISITION_BOUNDARY, CENSORED_SAMPLE_END, MISSING_ANCHOR,
+    CENSORED_ACQUISITION_BOUNDARY, CENSORED_SAMPLE_END, CENSORED_UNKNOWN_COVERAGE, MISSING_ANCHOR,
     MISSING_TARGET, OBSERVED, STALE_ANCHOR, STALE_TARGET, VALID,
     FreshnessPolicy, LabelPoint,
 )
@@ -19,7 +19,7 @@ from .signal_contracts import (
 class MidpointSeries:
     """Exchange-truth midpoint observations, partitioned by acquisition segment."""
 
-    def __init__(self, observations):
+    def __init__(self, observations, coverage=None):
         rows = tuple(observations)
         if not rows:
             raise ValueError("midpoint series is empty")
@@ -33,10 +33,17 @@ class MidpointSeries:
             previous = time_ns
         self.rows = tuple(normalized)
         self.times = tuple(row[0] for row in normalized)
+        self.coverage = tuple(coverage) if coverage is not None else (True,)*len(self.rows)
+        if len(self.coverage) != len(self.rows) or any(type(v) is not bool for v in self.coverage):
+            raise ValueError("midpoint coverage must match each observation")
 
     def at_or_before(self, requested_ns):
         index = bisect_right(self.times, requested_ns)-1
         return None if index < 0 else self.rows[index]
+
+    def covered_at(self, requested_ns):
+        index = bisect_right(self.times, requested_ns)-1
+        return index >= 0 and self.coverage[index]
 
 
 def _return_value(anchor, target, unit, tick):
@@ -50,7 +57,7 @@ def _return_value(anchor, target, unit, tick):
 
 def measure_label(definition, decision_time_ns, client_mid, client_mid_source_time_ns,
                   truth: MidpointSeries, tick, sample_end_ns, decision_segment,
-                  client_mid_segment=None):
+                  client_mid_segment=None, client_mid_coverage=True):
     """Measure raw label and ages; freshness is deliberately decided later."""
     latency = definition.entry_latency_ns if definition.label_kind == POST_LATENCY_RETURN else 0
     anchor_requested = decision_time_ns+latency
@@ -81,6 +88,12 @@ def measure_label(definition, decision_time_ns, client_mid, client_mid_source_ti
         return LabelPoint(definition, decision_time_ns, anchor_requested, target_requested,
             anchor_mid, target_row[1], anchor_time, target_row[0], anchor_requested-anchor_time,
             target_requested-target_row[0], None, CENSORED_ACQUISITION_BOUNDARY)
+    anchor_covered = (client_mid_coverage if definition.label_kind == CLIENT_FORWARD_RETURN
+                      else truth.covered_at(anchor_requested))
+    if not anchor_covered or not truth.covered_at(target_requested):
+        return LabelPoint(definition, decision_time_ns, anchor_requested, target_requested,
+            anchor_mid, target_row[1], anchor_time, target_row[0], anchor_requested-anchor_time,
+            target_requested-target_row[0], None, CENSORED_UNKNOWN_COVERAGE)
     value = _return_value(anchor_mid, target_row[1], definition.unit, tick)
     return LabelPoint(definition, decision_time_ns, anchor_requested, target_requested,
         anchor_mid, target_row[1], anchor_time, target_row[0], anchor_requested-anchor_time,
@@ -122,6 +135,7 @@ def truth_midpoint_series(initial, events, acquisition_segment):
     from lobcap.backtest.engine import MarketBook
     book = MarketBook(initial)
     rows = [(initial.time_ns, book.mid, acquisition_segment)]
+    coverage = [book.coverage_bid <= book.bid < book.ask <= book.coverage_ask]
     for event in events:
         if event.kind != "depth":
             continue
@@ -129,7 +143,8 @@ def truth_midpoint_series(initial, events, acquisition_segment):
         if event.time_ns <= rows[-1][0]:
             raise ValueError("truth depth time did not advance")
         rows.append((event.time_ns, book.mid, acquisition_segment))
-    return MidpointSeries(rows)
+        coverage.append(book.coverage_bid <= book.bid < book.ask <= book.coverage_ask)
+    return MidpointSeries(rows, coverage)
 
 
 def raw_label_cadence(snapshots, truth, definitions, tick, sample_end_ns):
@@ -158,7 +173,7 @@ class RawLabelCadence:
             point = measure_label(definition, snapshot.analysis_time_ns, snapshot.client_mid,
                 snapshot.client_mid_source_exchange_time_ns, self.truth, self.tick,
                 self.sample_end_ns, snapshot.acquisition_segment,
-                snapshot.acquisition_segment)
+                snapshot.acquisition_segment, snapshot.client_mid_coverage)
             self._counts[index] += 1
             self._statuses[index][point.status] += 1
             if point.anchor_age_ns is not None:

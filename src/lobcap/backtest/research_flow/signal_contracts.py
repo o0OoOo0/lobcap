@@ -21,6 +21,7 @@ STALE_ANCHOR = "STALE_ANCHOR"
 STALE_TARGET = "STALE_TARGET"
 CENSORED_SAMPLE_END = "CENSORED_SAMPLE_END"
 CENSORED_ACQUISITION_BOUNDARY = "CENSORED_ACQUISITION_BOUNDARY"
+CENSORED_UNKNOWN_COVERAGE = "CENSORED_UNKNOWN_COVERAGE"
 MISSING_ANCHOR = "MISSING_ANCHOR"
 MISSING_TARGET = "MISSING_TARGET"
 
@@ -91,6 +92,7 @@ class FeatureSnapshot:
     client_mid_available_time_ns: int
     acquisition_segment: str
     points: tuple[FeaturePoint, ...]
+    client_mid_coverage: bool = True
 
     def __post_init__(self):
         if self.client_mid <= 0 or not self.client_mid.is_finite():
@@ -99,6 +101,8 @@ class FeatureSnapshot:
             raise ValueError("client midpoint is not available at analysis time")
         if not self.acquisition_segment:
             raise ValueError("acquisition segment is required")
+        if type(self.client_mid_coverage) is not bool:
+            raise ValueError("client midpoint coverage must be explicit boolean")
 
     def point(self, name: str) -> FeaturePoint:
         for point in self.points:

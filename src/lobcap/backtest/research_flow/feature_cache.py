@@ -153,6 +153,8 @@ def read_feature_cache(path, expected_key=None, feature_names=None):
     with gzip.open(path / "features.jsonl.gz", "rt", encoding="utf-8") as stream:
         for line in stream:
             row = json.loads(line)
+            if manifest.get("feature_version") == VERSION and "client_mid_coverage" not in row:
+                raise ValueError("feature cache is missing client midpoint coverage")
             if names is not None:
                 row["points"] = [point for point in row["points"]
                                  if point["feature_name"] in names]

@@ -183,11 +183,13 @@ class CausalFeatureEngine:
         for name in selected:
             value = values[name]
             definition = FEATURE_REGISTRY[name]
+            depth = definition.minimum_depth_levels
+            complete = not depth or self._complete_depth(*self._depth(depth), depth)
             available, exchange, receive, refs = self._source_metadata(definition)
             warm = analysis_time_ns-self.start_client_ns >= definition.minimum_warmup_ns
             if not warm:
                 status = "WARMUP"
-            elif definition.minimum_depth_levels and value is None:
+            elif depth and (not complete or value is None):
                 status = "INSUFFICIENT_DEPTH"
             elif definition.stale_after_ns and analysis_time_ns-available > min(
                     definition.stale_after_ns, self.stale_after_ns):
@@ -205,4 +207,5 @@ class CausalFeatureEngine:
                     feature_names=None):
         return FeatureSnapshot(analysis_time_ns, self.book.mid, self.last_depth_exchange_ns,
             self.last_depth_receive_ns, self.last_depth_client_ns, acquisition_segment,
-            self.snapshot(analysis_time_ns, feature_names))
+            self.snapshot(analysis_time_ns, feature_names),
+            self._complete_depth(*self._depth(1), 1))
