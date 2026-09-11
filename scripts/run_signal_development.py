@@ -24,7 +24,7 @@ from lobcap.backtest.research_flow.sample_catalogue import (
 )
 from lobcap.backtest.research_flow.signal_analysis import (
     evaluate_feature, evaluate_feature_group, fit_bucket_edges,
-    evaluate_redundancy, stability_summary,
+    evaluate_redundancy_values, stability_summary,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -161,12 +161,12 @@ def _cadence_phase(config, window, cache, sample, definitions):
     return {"cadence": cadence}
 
 
-def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshness):
+def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshness, features):
     feature_series, truth_by_window = {}, {}
     for window in windows:
         cache = cache_rows[window.window_id]
         feature_series[window.window_id] = tuple(read_feature_cache(
-            cache["path"], cache["cache_key"], FEATURES))
+            cache["path"], cache["cache_key"], features))
         sample = sample_rows[window.window_id]
         initial, _ = load_sample(sample["path"])
         truth_by_window[window.window_id] = truth_midpoint_series(initial,
@@ -175,7 +175,7 @@ def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshn
     reports = {"per_window": {}, "per_date": {}, "pooled": {}}
     grouped = tuple((feature_series[window.window_id], truth_by_window[window.window_id],
                      window.end_ns) for window in windows)
-    for feature in FEATURES:
+    for feature in features:
         fitted = {}
         for date in dates:
             training = tuple(snapshot for window in windows if window.date != date
@@ -197,9 +197,18 @@ def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshn
                 edges, policy_id)
         reports["pooled"][feature] = evaluate_feature_group(feature, grouped, definitions,
             freshness, config.instrument.tick)
-    snapshots = tuple(snapshot for window in windows
-                      for snapshot in feature_series[window.window_id])
-    return {"reports": reports, "redundancy": evaluate_redundancy(snapshots, FEATURES)}
+    return {"reports": reports}
+
+
+def _redundancy_phase(windows, cache_rows):
+    compact_rows = []
+    for window in windows:
+        cache = cache_rows[window.window_id]
+        for snapshot in read_feature_cache(cache["path"], cache["cache_key"], FEATURES):
+            points = {point.feature_name: point for point in snapshot.points}
+            compact_rows.append(tuple(points[name].value
+                if points[name].status == "AVAILABLE" else None for name in FEATURES))
+    return {"redundancy": evaluate_redundancy_values(compact_rows, FEATURES)}
 
 
 def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
@@ -238,11 +247,20 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
     freshness, freshness_evidence = freeze_development_freshness(cadence, development_windows)
     write_json(study/"freshness_policy.json", freshness_evidence)
     windows = tuple(window for window, _ in selected)
-    result = _isolated(_feature_phase, config, windows, cache_rows, sample_rows,
-                       definitions, freshness)
-    reports = result["reports"]
+    reports = {"per_window": {}, "per_date": {}, "pooled": {}}
+    for group_index, features in enumerate((FEATURES[:4], FEATURES[4:]), 1):
+        result = _isolated(_feature_phase, config, windows, cache_rows, sample_rows,
+                           definitions, freshness, features)
+        for scope in ("per_window", "per_date"):
+            for scope_id, rows in result["reports"][scope].items():
+                reports[scope].setdefault(scope_id, {}).update(rows)
+        reports["pooled"].update(result["reports"]["pooled"])
+        phase_metrics.append({"phase": "feature_group", "id": group_index,
+                              "features": features,
+                              "peak_rss_mib": result["peak_rss_mib"]})
+    result = _isolated(_redundancy_phase, windows, cache_rows)
     redundancy = result["redundancy"]
-    phase_metrics.append({"phase": "feature_and_redundancy", "id": "all",
+    phase_metrics.append({"phase": "redundancy", "id": "pooled",
                           "peak_rss_mib": result["peak_rss_mib"]})
     stability = stability_summary(reports["per_date"])
     output_row = {"status": "PASS", "study_version": "signal-development-v1",

@@ -358,3 +358,7 @@ keep / exclude interval / exclude day
   rebuilt the same eight truth series. Stopped during the first feature, kept the
   partial run quarantined, and combined preregistered feature evaluation and
   redundancy into one bounded child that reads each cache/truth input once.
+- The all-feature child reached about 565 MiB RSS, confirming that seven complete
+  `FeaturePoint` sets cannot coexist under the 512 MiB worker target. Stopped it
+  and split evaluation into preregistered groups of four and three; redundancy
+  again uses compact value tuples in its own bounded phase.
