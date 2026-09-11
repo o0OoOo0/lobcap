@@ -207,3 +207,53 @@ keep / exclude interval / exclude day
 - First short-path complete backtest regression: 301 passed, one symlink-permission skip, one legacy navigation failure while running with dirty-code provenance. Five previous long-path job failures did not recur. Clean-checkout rerun is recorded separately after committing the reviewed implementation.
 - Clean commit e67016b rerun: 38 passed; the legacy navigation test failed in local Streamlit 1.37.1 AppTest with a missing widget SessionState key at the page transition. It remains unresolved; the initial dirty-code explanation did not fully account for it. No full-pass claim is made. A subsequent rg Windows wildcard-path inspection failed; it did not change files.
 
+# 2026-09-11 — Signal research VM bundle preflight
+
+- Command: remote `git bundle verify /tmp/signal-research-v1.bundle` before selecting a repository.
+- Failure: `error: need a repository to verify a bundle`.
+- Impact: none; the upload completed, but the combined preflight stopped before later read-only checks.
+- Resolution: rerun verification from an existing Git checkout and run the remaining checks without fail-fast coupling.
+
+# 2026-09-11 — PowerShell expansion in remote symlink setup
+
+- Command: SSH command containing a remote Bash `for name ... $name` loop.
+- Failure: local PowerShell expanded the remote loop variable, producing a Bash syntax error near `done`.
+- Impact: none; Bash rejected the command during parsing, before creating links.
+- Resolution: use explicit, variable-free `test -e || ln -s` commands for each approved artifact link.
+
+# 2026-09-11 — Existing Streamlit did not exit within five seconds
+
+- Command: send `SIGTERM` to deployed Streamlit PID 486876 and poll for five seconds.
+- Failure: the process still answered `kill -0` at the deadline, so the guarded command exited before starting the replacement.
+- Impact: a short UI deployment interruption may have begun; the collector was not targeted.
+- Resolution: inspect the exact process and port state, then complete the replacement only after confirming port 8501 is free.
+
+# 2026-09-11 — PowerShell expansion in final app cwd check
+
+- Command: remote cwd check using `apppid=$(systemctl ...)` inside a PowerShell SSH command string.
+- Failure: local PowerShell attempted to execute `systemctl`; health, unit state, commit, and collector checks still ran, but cwd printed as `/proc/cwd`.
+- Impact: deployment health was established, while the cwd evidence from that invocation was invalid.
+- Resolution: repeat the read-only cwd check with the explicit observed PID 512390.
+
+# 2026-09-11 — In-app browser CUA initialization failure
+
+- Command: initialize browser control for `http://127.0.0.1:8501/` after deployment.
+- Failure: `failed to write kernel assets: path not found (os error 3)`.
+- Impact: automated screenshot-level inspection did not start; HTTP health, tunnel connectivity, Ubuntu tests, and Streamlit test coverage remained available.
+- Resolution: reset the CUA session and retry once; do not use stale UI handles.
+- Retry result: the reset session failed with the same missing kernel-assets path, so visual automation was stopped. The deployed page remains reachable through the verified local tunnel.
+
+# 2026-09-11 — PowerShell parsing of remote Python progress probe
+
+- Command: SSH `python -c` expression containing nested dictionary indexing and quotes.
+- Failure: local PowerShell raised `ParserError: Missing argument in parameter list` before SSH execution.
+- Impact: none; the running strategy-suite worker was unaffected.
+- Resolution: read only anchored top-level JSON fields with a simple remote `grep` command.
+- Follow-up: the alternation regex was also parsed locally because of nested quoting. Switched to an unquoted remote `tail` with no expressions.
+
+# 2026-09-11 — Missing local Git author identity
+
+- Command: commit deployment evidence and the bounded strategy-suite validator.
+- Failure: Git reported `Author identity unknown` after staging the files.
+- Impact: no commit was created and nothing was pushed; the intended index remained staged.
+- Resolution: copy the existing repository convention (`Codex <codex@openai.com>`) into repository-local Git config and retry the commit.

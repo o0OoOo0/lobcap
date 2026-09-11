@@ -40,9 +40,8 @@ explicit horizon-specific freshness policy.
 
 The test runner uses a short, dedicated `--basetemp` on Windows. This avoids
 the earlier nested temporary-path failures without changing research modules.
-Authoritative Ubuntu and real-sample acceptance of these review fixes require
-the previously blocked VM code transfer authorization; local tests do not
-replace that acceptance.
+Authoritative Ubuntu and real-sample acceptance was completed on the isolated
+`/home/0woo/lobcap-signal-v1` checkout at commit `5da0244`.
 
 ## Validation result
 
@@ -53,4 +52,13 @@ replace that acceptance.
   navigation test failed in Streamlit 1.37.1 AppTest while collecting widget
   state after a page transition (`SessionState` missing widget key). This is an
   unresolved local legacy UI validation failure, not an all-green regression.
-- No Ubuntu transfer, deployment, or profitability assertion was made.
+- Ubuntu focused tests: 59 passed. Full Ubuntu suite: 363 passed with two
+  existing Streamlit deprecation warnings; peak memory was 292.8 MiB.
+- The exact six-policy UI suite completed on the frozen recorded 10-minute
+  sample. Every ledger reconciled and the no-trade control remained unranked.
+  GLFT-microprice ranked first in this single development sample at -0.305900
+  USDT, so the UI explicitly reports that even the leader lost money and remains
+  ineligible for paper trading. See `signal-strategy-suite-validation.json`.
+- Streamlit was deployed to VM loopback port 8501 from the isolated checkout.
+  The collector remained PID 608, active, with zero restarts. See
+  `signal-research-deployment.json`.

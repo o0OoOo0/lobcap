@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "deployed_at_utc": "2026-09-11T06:13:17Z",
+  "release": "/home/0woo/lobcap-signal-v1",
+  "git_commit": "5da0244bacc3695df21c239ddfcec96a9b3706cb",
+  "bind": "127.0.0.1:8501",
+  "app_pid": 512390,
+  "health": "ok",
+  "local_tunnel_pid": 39956,
+  "collector_before": {
+    "MainPID": 608,
+    "NRestarts": 0,
+    "ActiveState": "active"
+  },
+  "collector_after": {
+    "MainPID": 608,
+    "NRestarts": 0,
+    "ActiveState": "active"
+  },
+  "ubuntu_validation": {
+    "focused": "59 passed in 19.95s",
+    "full": "363 passed, 2 warnings in 114.74s",
+    "full_peak_memory_mib": 292.8,
+    "strategy_response": {
+      "status": "PASS",
+      "runs": 11,
+      "peak_memory_mib": 57.6
+    },
+    "standard_strategy_suite": {
+      "status": "PASS",
+      "job_id": "bb435e87037c4f01a1e236eb37175dc9",
+      "runs": 6,
+      "cpu_seconds": 75.412,
+      "peak_memory_mib": 50.2,
+      "paper_eligibility": "INSUFFICIENT_EVIDENCE",
+      "evidence": "signal-strategy-suite-validation.json"
+    }
+  },
+  "visual_automation": {
+    "status": "UNAVAILABLE",
+    "reason": "CUA initialization failed twice because its kernel-assets path was missing",
+    "substitute_evidence": "Streamlit staging and final health checks plus Ubuntu UI tests"
+  },
+  "rollback_release": "/home/0woo/lobcap-glft-v1",
+  "collector_reconfigured": false,
+  "firewall_changed": false
+}
