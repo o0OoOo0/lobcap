@@ -46,8 +46,12 @@ def build_scorecard(rows, minimum_filled_orders=1):
     if not completed:
         return []
     samples = {row.get("sample_sha256") or row.get("manifest", {}).get("sample_sha256") for row in completed}
-    if len(samples) != 1:
+    if None in samples or len(samples) != 1:
         raise ValueError("strategy scorecard requires one identical sample")
+    contracts = {row.get("execution_contract_version") or row.get("config", {}).get("execution_contract_version")
+                 for row in completed}
+    if None in contracts or len(contracts) != 1:
+        raise ValueError("strategy scorecard requires one known execution contract")
     scenarios = {tuple((key, str(row.get("config", {}).get(key))) for key in sorted(SCENARIO_FIELDS))
                  for row in completed}
     if len(scenarios) != 1:

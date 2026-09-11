@@ -72,3 +72,20 @@ The next research stage must freeze freshness policies on development data,
 evaluate predictive stability by label family and horizon, and keep holdout data
 sealed. Only signals that survive latency, cost, and execution sensitivity can
 become paper-trading candidates.
+
+## Standard strategy comparison
+
+The workbench's **표준 전략 동시 비교** mode submits 2–12 isolated runs on one
+prepared sample. The default suite contains fixed spread, inventory skew,
+microprice, GLFT, GLFT plus microprice, and the no-trade control. Execution,
+fill, cost, capital, and sample settings remain identical. If a GLFT policy is
+selected, every policy uses the same GLFT minimum preparation delay before it
+may quote.
+
+The result panel shows cumulative net PnL and inventory overlays plus an
+accounting scorecard containing gross/net PnL, fees, spread-at-fill,
+inventory MTM, drawdown, inventory exposure, fill counts, turnover, break-even
+fee, one-second markout coverage/drift, and the largest accounting drag.
+No-trade and zero-execution runs cannot win the ranking. A Pareto marker uses
+net PnL, drawdown, and maximum inventory. All rows remain
+`INSUFFICIENT_EVIDENCE`; the displayed rank is only a development-sample rank.
