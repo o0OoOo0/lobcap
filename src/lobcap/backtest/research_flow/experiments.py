@@ -12,7 +12,7 @@ from lobcap.backtest.workspace.store import atomic_json, read_json
 
 COST_PROFILES={'zero_diagnostic':'0 비용 진단 · 실제 계정 비용 미확인',
                'user_assumed':'사용자 가정 비용 · 실제 계정 비용 미확인'}
-KINDS={'single','strategy_compare','assumption_sensitivity','baseline_suite'}
+KINDS={'single','strategy_compare','strategy_suite','assumption_sensitivity','baseline_suite'}
 CONTEXT_KEYS={'route','draft_id','draft_revision','run_id','baseline_id','job_id','cost_profile','experiment_kind'}
 FIXED_FIELDS={'initial_cash','initial_inventory','max_inventory'}
 
@@ -33,7 +33,18 @@ def build_experiment(draft,kind='single',parameter=None,values=None,
     draft=replace(draft,config=config,hypothesis=question)
     if kind in {'single','baseline_suite'} and (parameter is not None or values is not None):
         raise ValueError('이 실험 유형에는 추가 탐색 축을 사용할 수 없습니다.')
-    if kind in {'strategy_compare','assumption_sensitivity'}:
+    if kind=='strategy_suite':
+        from lobcap.config.backtest import STRATEGIES
+        if parameter is not None or not isinstance(values,(list,tuple)) or not 2<=len(values)<=12:
+            raise ValueError('전략 suite에는 2–12개 전략을 선택하세요.')
+        selected=list(values)
+        if len(selected)!=len(set(selected)) or any(value not in STRATEGIES for value in selected):
+            raise ValueError('전략 suite에 알 수 없거나 중복된 전략이 있습니다.')
+        if any(value.startswith('glft') for value in selected):
+            config=variant(config,quote_start_seconds=max(config.quote_start_seconds,config.glft_min_seconds))
+            draft=replace(draft,config=config)
+        spec=resolve_experiment(draft,{'strategy':selected},sample_path=sample_path)
+    elif kind in {'strategy_compare','assumption_sensitivity'}:
         if not isinstance(values,(list,tuple)) or not 2<=len(values)<=24:
             raise ValueError('비교할 값을 2–24개 입력하세요.')
         allowed=(DECIMALS|INTS|STRINGS|STRUCTURED)-SCENARIO_FIELDS-FIXED_FIELDS
@@ -75,7 +86,8 @@ def build_experiment(draft,kind='single',parameter=None,values=None,
         'cost_profile':cost_profile,'cost_label':COST_PROFILES[cost_profile],
         'execution_profile':'recorded_capture' if config.clock_mode=='recorded' else 'exchange_zero_feed',
         'parameter':parameter,'values':jsonable(values),'parent_run_id':draft.parent_run_id,
-        'expected_difference':('E1을 기준으로 주문 유지·재고 수량·흐름 철회를 각각 비교합니다.' if kind=='baseline_suite'
+        'expected_difference':('같은 표본·실행 가정·거래 시작 시각에서 전략 정책만 비교합니다.' if kind=='strategy_suite'
+            else 'E1을 기준으로 주문 유지·재고 수량·흐름 철회를 각각 비교합니다.' if kind=='baseline_suite'
             else f'{parameter} 하나를 변경합니다.' if parameter else '설정 전체를 동결한 기준 실행입니다.'),
         'fees_verified':False,'paper_eligibility':'INSUFFICIENT_EVIDENCE'}
     spec['experiment_hash']=fingerprint(spec)
