@@ -105,7 +105,7 @@ def write_feature_cache(path, snapshots, sample_sha256, schedule, clock_mode, st
     return manifest
 
 
-def read_feature_cache(path, expected_key=None):
+def read_feature_cache(path, expected_key=None, feature_names=None):
     path = Path(path)
     manifest = json.loads((path / "feature_manifest.json").read_text())
     if manifest.get("status") != "PASS" or manifest.get("cache_version") != CACHE_VERSION:
@@ -115,6 +115,14 @@ def read_feature_cache(path, expected_key=None):
     for name, digest in manifest["files"].items():
         if sha256_file(path / name) != digest:
             raise ValueError("feature cache checksum mismatch")
+    names = None if feature_names is None else frozenset(feature_names)
     with gzip.open(path / "features.jsonl.gz", "rt", encoding="utf-8") as stream:
         for line in stream:
-            yield snapshot_from_row(json.loads(line))
+            snapshot = snapshot_from_row(json.loads(line))
+            if names is not None:
+                snapshot = FeatureSnapshot(snapshot.analysis_time_ns, snapshot.client_mid,
+                    snapshot.client_mid_source_exchange_time_ns,
+                    snapshot.client_mid_source_receive_time_ns,
+                    snapshot.client_mid_available_time_ns, snapshot.acquisition_segment,
+                    tuple(point for point in snapshot.points if point.feature_name in names))
+            yield snapshot

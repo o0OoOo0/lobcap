@@ -63,3 +63,17 @@ The next data step is to build the catalogue on Ubuntu, inspect only Sep 7–8
 cadence, freeze freshness and bucket policies, then generate per-window,
 per-date and pooled DEVELOPMENT reports. Validation and pilot OOS remain closed
 until the human review gate.
+
+After the catalogue reports PASS windows on both development dates, run:
+
+```bash
+PYTHONPATH=src python scripts/run_signal_development.py \
+  --config configs/backtest/binance_recorded.yaml \
+  --catalogue artifacts/backtest/research/signal-catalogue-v1/catalogue_manifest.json
+```
+
+This command rejects a dirty checkout, verifies the catalogue hash, opens only
+`DEVELOPMENT` samples, writes feature-cache v2, freezes label freshness from the
+two development dates, fits quintile edges on the opposite date, and emits
+per-window, per-date and pooled reports. The POST_LATENCY family records its
+fixed entry-latency scenario. Locked roles cannot enter the analysis path.

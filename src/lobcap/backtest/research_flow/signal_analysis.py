@@ -99,23 +99,34 @@ def _non_overlapping(pairs, horizon_ns):
 def evaluate_feature(feature_name, snapshots, truth, definitions, freshness_policy,
                      tick, sample_end_ns, bucket_edges=(), bucket_policy_id=None):
     """Evaluate one feature. Raw ages are reported before the frozen policy is applied."""
-    snapshots = tuple(snapshots)
+    return evaluate_feature_group(feature_name,
+        ((tuple(snapshots), truth, sample_end_ns),), definitions, freshness_policy,
+        tick, bucket_edges, bucket_policy_id)
+
+
+def evaluate_feature_group(feature_name, contexts, definitions, freshness_policy,
+                           tick, bucket_edges=(), bucket_policy_id=None):
+    """Evaluate pooled windows without pretending their truth series is continuous."""
+    contexts = tuple((tuple(snapshots), truth, sample_end_ns)
+                     for snapshots, truth, sample_end_ns in contexts)
+    observations = sum(len(snapshots) for snapshots, _, _ in contexts)
     results = []
     for definition in definitions:
         measured = []
         timed_pairs = []
         statuses = Counter()
-        for snapshot in snapshots:
-            point = snapshot.point(feature_name)
-            label = measure_label(definition, snapshot.analysis_time_ns, snapshot.client_mid,
-                snapshot.client_mid_source_exchange_time_ns, truth, tick, sample_end_ns,
-                snapshot.acquisition_segment, snapshot.acquisition_segment)
-            measured.append(label)
-            label = apply_freshness_policy(label, freshness_policy)
-            status = label.status if point.status == "AVAILABLE" else "FEATURE_"+point.status
-            statuses[status] += 1
-            if point.status == "AVAILABLE" and label.status == VALID and point.value is not None:
-                timed_pairs.append((snapshot.analysis_time_ns, point.value, label.value))
+        for snapshots, truth, sample_end_ns in contexts:
+            for snapshot in snapshots:
+                point = snapshot.point(feature_name)
+                label = measure_label(definition, snapshot.analysis_time_ns, snapshot.client_mid,
+                    snapshot.client_mid_source_exchange_time_ns, truth, tick, sample_end_ns,
+                    snapshot.acquisition_segment, snapshot.acquisition_segment)
+                measured.append(label)
+                label = apply_freshness_policy(label, freshness_policy)
+                status = label.status if point.status == "AVAILABLE" else "FEATURE_"+point.status
+                statuses[status] += 1
+                if point.status == "AVAILABLE" and label.status == VALID and point.value is not None:
+                    timed_pairs.append((snapshot.analysis_time_ns, point.value, label.value))
         pairs = [(row[1], row[2]) for row in timed_pairs]
         x = [row[0] for row in pairs]; y = [row[1] for row in pairs]
         nonzero = [(a, b) for a, b in pairs if a != 0 and b != 0]
@@ -125,8 +136,8 @@ def evaluate_feature(feature_name, snapshots, truth, definitions, freshness_poli
                             if x else None)
         results.append({"feature_name": feature_name, "label_kind": definition.label_kind,
             "horizon_ns": definition.horizon_ns, "entry_latency_ns": definition.entry_latency_ns,
-            "observations": len(snapshots), "valid": len(pairs),
-            "coverage": len(pairs)/len(snapshots) if snapshots else None,
+            "observations": observations, "valid": len(pairs),
+            "coverage": len(pairs)/observations if observations else None,
             "statuses": dict(sorted(statuses.items())),
             "target_age_distribution": target_age_distribution(measured),
             "pearson_ic": _pearson(x, y),

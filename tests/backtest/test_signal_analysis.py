@@ -3,7 +3,7 @@ from pathlib import Path
 
 from lobcap.backtest.research_flow.labels import MidpointSeries
 from lobcap.backtest.research_flow.signal_analysis import (
-    evaluate_feature, evaluate_redundancy, fit_bucket_edges,
+    evaluate_feature, evaluate_feature_group, evaluate_redundancy, fit_bucket_edges,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -57,6 +57,20 @@ def test_frozen_buckets_and_redundancy_are_explicit():
             s.analysis_time_ns, s.analysis_time_ns, s.analysis_time_ns, s.analysis_time_ns, ()),))
         for s in samples)
     assert evaluate_redundancy(duplicate, ("signal", "copy"))[0]["pearson"] == 1
+
+
+def test_grouped_report_pools_independent_window_truth_without_joining_them():
+    first = (snapshot(100, "1", "100", 90), snapshot(200, "2", "101", 190))
+    second = (snapshot(1100, "3", "200", 1090), snapshot(1200, "4", "201", 1190))
+    truth_a = MidpointSeries(((0, "99", "a"), (90, "100", "a"), (190, "101", "a"),
+                              (290, "103", "a"), (390, "104", "a")))
+    truth_b = MidpointSeries(((1000, "199", "a"), (1090, "200", "a"),
+                              (1190, "201", "a"), (1290, "205", "a"), (1390, "206", "a")))
+    policy = FreshnessPolicy("fixture", ((100, 20, 20),))
+    row = evaluate_feature_group("signal", ((first, truth_a, 500), (second, truth_b, 1500)),
+        (LabelDefinition(MARKET_TRUTH_RETURN, 100),), policy, D(1))[0]
+    assert row["observations"] == row["valid"] == 4
+    assert row["coverage"] == 1
 
 
 def test_runtime_modules_do_not_import_offline_labels():
