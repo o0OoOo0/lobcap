@@ -75,7 +75,11 @@ def main(argv=None):
     result = build(args.config, args.sample)
     if args.output:
         write_json(args.output, result)
-    print(json.dumps(result, sort_keys=True))
+        print(json.dumps({"status": result["status"], "output": str(args.output),
+            "snapshot_count": result["snapshot_count"],
+            "wall_seconds": result["performance"]["wall_seconds"]}, sort_keys=True))
+    else:
+        print(json.dumps(result, sort_keys=True))
 
 
 if __name__ == "__main__":
