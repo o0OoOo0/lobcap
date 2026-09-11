@@ -70,7 +70,8 @@ def render_editor(store,draft,base):
     st.info(idea)
     st.markdown('**언제 판단하나?** '+trigger)
     st.markdown('**어떤 주문을 내나?** '+action)
-    st.caption(f'가격 단위: 1 tick = {draft.config.instrument.tick} USDT · 최소 주문 단위: {draft.config.instrument.lot} BTC. 반거리 0.5 tick는 BBO 참여와 같은 가격이 될 수 있습니다.')
+    unit_note='GLFT에서는 반거리 입력이 최소 폭이며 실제 폭은 추정값에 따라 달라집니다.' if strategy.startswith('glft') else '반거리 0.5 tick는 BBO 참여와 같은 가격이 될 수 있습니다.'
+    st.caption(f'가격 단위: 1 tick = {draft.config.instrument.tick} USDT · 최소 주문 단위: {draft.config.instrument.lot} BTC. '+unit_note)
     with st.expander('이 전략의 한계와 공통 실행 규칙'):
         st.write(risk)
         st.write('고정 주기로 판단합니다. 취소 중에도 체결될 수 있고, 기존 주문이 끝나야 다음 주기에 교체합니다. '
@@ -337,15 +338,19 @@ def render_glft(row):
              if t.get('policy_state',{}).get('glft')]
     st.markdown('**GLFT: 추정 → 폭 → 재고 조정 → 주문**')
     st.caption('A는 방향별 초당 통과 거래 강도, k는 tick당 감소율, σ는 tick/√초입니다. 공개 거래의 거리별 통과 횟수를 추정하며 실제 큐 체결률을 측정한 값이 아닙니다.')
-    st.dataframe([{'추정 상태':k,'판단 횟수':v} for k,v in Counter(r['status'] for r in records).items()],hide_index=True)
+    labels={'ready':'추정 준비 완료','warmup_or_stale':'유효 관측 부족','warmup':'준비 중',
+        'stale_estimate':'추정값이 오래됨','insufficient_crossings':'거리별 거래 관측 부족',
+        'unstable_intensity_fit':'거래 강도 곡선 불안정','width_limit':'허용 호가 폭 초과'}
+    st.dataframe([{'추정 상태':labels.get(k,k),'판단 횟수':v} for k,v in Counter(r['status'] for r in records).items()],hide_index=True)
     if not records:return
     frame=pd.DataFrame(records)
     fig=make_subplots(rows=2,cols=1,shared_xaxes=True,subplot_titles=('계산된 폭과 재고 이동 · tick','추정 유효 관측 · 초'))
-    for key,label in [('raw_half_ticks','GLFT 반거리'),('half_ticks','최종 반거리'),('inventory_shift_ticks','재고 이동'),('signal_ticks','신호 이동')]:
+    for key,label in [('raw_half_ticks','GLFT 반거리'),('half_ticks','비용·최소 폭 적용'),('inventory_shift_ticks','재고 이동'),('signal_ticks','신호 이동')]:
         if key in frame:fig.add_trace(go.Scatter(x=pd.to_datetime(frame.decision_time,unit='ns',utc=True),y=pd.to_numeric(frame[key]),name=label),row=1,col=1)
     fig.add_trace(go.Scatter(x=pd.to_datetime(frame.decision_time,unit='ns',utc=True),y=frame.get('valid_seconds'),name='유효 관측'),row=2,col=1)
     fig.update_layout(height=430,legend=dict(orientation='h'),margin=dict(t=35,b=10))
     st.plotly_chart(fig,width='stretch')
+    st.caption('이 폭은 BBO·위험 제한 적용 전 계산값입니다. 준비 완료 상태에서도 공통 시작 지연이나 위험 제한으로 주문이 없을 수 있습니다.')
     st.dataframe([{k:number_display(r[k],4) if k in {'A','k','r2','sigma_ticks_sqrt_second','half_ticks','inventory_shift_ticks'} else r.get(k)
         for k in ('status','valid_seconds','A','k','r2','sigma_ticks_sqrt_second','half_ticks','inventory_shift_ticks') if k in r} for r in records[-1:]],hide_index=True)
     st.caption('추정 불안정·관측 부족·최대 폭 초과는 대체 계수를 넣지 않고 호가를 중단합니다. 원본 decision_traces에 모든 추정과 거리별 통과 횟수가 있습니다.')
