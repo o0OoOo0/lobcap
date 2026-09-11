@@ -74,3 +74,15 @@ The output must be new. Failures preserve partial artifacts and a FAIL progress
 record; a final report appears only after every selected pair and control passes.
 Real-data runtime acceptance for this extension must be recorded at its exact
 execution commit separately from the previous P0 acceptance.
+
+Read-only revalidation rebuilds the review and paired aggregation from original
+run artifacts, rechecks the protocol and P0/sample provenance, validates that run
+paths belong to each window, and reports existing decision-reason/quote-path
+diagnostics. It does not rerun the simulator or independently recalibrate fills.
+
+```bash
+PYTHONPATH=src python scripts/validate_study1_baselines.py \
+  --report /path/to/STUDY1_DIRECTORY/study1_report.json \
+  --catalogue /path/to/catalogue_manifest.json \
+  --p0-report /path/to/development-coverage-v3/development_report.json
+```

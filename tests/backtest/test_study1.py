@@ -159,3 +159,51 @@ def test_preflight_rejects_sample_seal_drift(sample, monkeypatch, field):
     monkeypatch.setattr(study1, "load_sample", lambda _: (None, manifest))
     with pytest.raises(ValueError, match="catalogue seal"):
         study1.sealed_config(config, window, seal, path, path/"unused")
+
+
+@pytest.mark.parametrize("corruption", [None, "report", "path", "memory", "protocol"])
+def test_runner_and_standalone_validator_reconstruct_the_same_pairs(sample, monkeypatch, tmp_path, corruption):
+    import importlib
+    from lobcap.config.experiment import ROOT
+    monkeypatch.syspath_prepend(str(ROOT/"scripts"))
+    runner = importlib.import_module("run_study1_baselines")
+    validator = importlib.import_module("validate_study1_baselines")
+    config, _ = sample
+    config = variant(config, clock_mode="recorded")
+    cat = catalogue()
+    rows = {r["window_id"]: r for r in paired_rows(config, cat)}
+    cat_path, p0 = tmp_path/"catalogue.json", tmp_path/"p0.json"
+    cat_path.write_text(json.dumps(cat))
+    p0.write_text(json.dumps({"code_fingerprint": "b"*40}))
+    monkeypatch.setattr(runner, "load_backtest_config", lambda _: config)
+    monkeypatch.setattr(runner, "_code_fingerprint", lambda _: "a"*40)
+    for module in (runner, validator):
+        monkeypatch.setattr(module, "validate_p0", lambda *args: {"status": "PASS", "cache_checksums_verified": True})
+        monkeypatch.setattr(module, "sealed_config", lambda *args: config)
+    def phase(target, config, window, seal, sample_path, output):
+        row = rows[window.window_id]
+        for label in row["cases"]:
+            path = output/"runs"/label
+            path.mkdir(parents=True)
+            row["cases"][label]["output_dir"] = str(path)
+            (path/"diagnostics.json").write_text(json.dumps({"decision_reasons": {},
+                "quote_research": {}, "break_even_maker_bps_fixed_fills": None}))
+        return {"window": deepcopy(row), "wall_seconds": 1.0, "peak_rss_mib": 1.0}
+    monkeypatch.setattr(runner, "_isolated", phase)
+    monkeypatch.setattr(validator, "review_window", lambda w, *args: deepcopy(rows[w.window_id]))
+    output = tmp_path/"study"
+    report = runner.run("config", cat_path, p0, output)
+    assert report["status"] == "PASS" and len(rows) == 8
+    assert (output/"protocol.json").exists()
+    if corruption == "report": report["results"]["per_window"][0]["delta_mm1_minus_mm0"]["net_pnl"] = "99"
+    elif corruption == "path": report["results"]["per_window"][0]["cases"]["MM-0"]["output_dir"] = str(tmp_path)
+    elif corruption == "memory": report["performance"][0]["peak_rss_mib"] = 513
+    elif corruption == "protocol": report["protocol"]["roles_opened"] = ["VALIDATION_LOCKED"]
+    report_path = output/"study1_report.json"
+    report_path.write_text(json.dumps(report))
+    if corruption:
+        with pytest.raises(ValueError): validator.validate(report_path, cat_path, p0)
+    else:
+        accepted = validator.validate(report_path, cat_path, p0)
+        assert accepted["status"] == "PASS" and accepted["runs"] == 24
+        with pytest.raises(FileExistsError): runner.run("config", cat_path, p0, output)
