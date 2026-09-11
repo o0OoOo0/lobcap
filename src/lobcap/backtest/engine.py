@@ -50,6 +50,17 @@ class MarketBook:
             heapq.heappop(heap)
         raise ValueError("empty replay book")
 
+    def _compact_heap(self, side):
+        """Bound stale heap entries created by repeated delete/re-add updates."""
+        levels=self.bids if side=="buy" else self.asks
+        heap=self._bid_heap if side=="buy" else self._ask_heap
+        if len(heap) <= len(levels)*4+1024:return
+        versions=self._bid_versions if side=="buy" else self._ask_versions
+        rebuilt=[((-price if side=="buy" else price),versions[price]) for price in levels]
+        heapq.heapify(rebuilt)
+        if side=="buy":self._bid_heap=rebuilt
+        else:self._ask_heap=rebuilt
+
     def top_levels(self,side,count):
         """Return best aggregate levels without sorting the complete reconstructed book."""
         if count <= 0: return ()
@@ -86,6 +97,7 @@ class MarketBook:
                 self._touch(update.side,update.price,False)
         if not self.bids or not self.asks:raise ValueError("empty replay book")
         self.bid=self._best("buy");self.ask=self._best("sell")
+        self._compact_heap("buy");self._compact_heap("sell")
         if self.bid>=self.ask:raise ValueError("crossed replay book")
         self.time_ns=event.time_ns
 

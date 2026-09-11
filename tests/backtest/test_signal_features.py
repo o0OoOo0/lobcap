@@ -88,6 +88,18 @@ def test_top_depth_cache_handles_delete_and_readd_without_duplicate_levels():
     assert row.status == "INSUFFICIENT_DEPTH" and row.value is None
 
 
+def test_replay_book_compacts_stale_heap_entries_during_level_churn():
+    engine = CausalFeatureEngine(initial(), D(1))
+    quantity = D(2)
+    for index in range(1, 3001):
+        next_quantity = D(0) if quantity else D(2)
+        engine.observe(depth(index, index, updates=(
+            L2LevelUpdate("buy", D(99), quantity, next_quantity),)), index)
+        quantity = next_quantity
+    assert len(engine.book._bid_heap) <= len(engine.book.bids)*4+1024
+    assert engine.book.bid == D(100)
+
+
 def test_future_suffix_cannot_change_past_feature_snapshot():
     prefix = [trade(1, 10, "sell", "2")]
     a = CausalFeatureEngine(initial(), D(1)); b = CausalFeatureEngine(initial(), D(1))

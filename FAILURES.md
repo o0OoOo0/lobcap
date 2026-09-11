@@ -338,3 +338,12 @@ keep / exclude interval / exclude day
   gate. Quarantined the partial study and changed the cache contract to persist
   only the preregistered signals and required controls, with the exact projection
   included in the cache identity.
+- A sandboxed Git push again inherited the unavailable local proxy and failed;
+  the approved network retry pushed the identical commit.
+- The first projected-cache study invocation guessed `catalogue.json`, while the
+  sealed output is `catalogue_manifest.json`. It failed before creating the study
+  directory; the corrected invocation uses the inspected path.
+- Persisting fewer feature columns did not reduce the sixth cache worker below
+  the limit: it still reached 529.7 MiB. Inspection found stale priority-heap
+  entries accumulating when deep levels were repeatedly deleted and re-added;
+  added bounded heap compaction and a churn regression test.
