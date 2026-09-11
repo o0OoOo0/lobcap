@@ -10,7 +10,7 @@ from pathlib import Path
 from lobcap.backtest.types import jsonable
 from lobcap.config.common import sha256_file
 from .features import CausalFeatureEngine, VERSION
-from .feature_registry import FEATURE_DEFINITIONS, feature_definition_sha256
+from .feature_registry import FEATURE_DEFINITIONS, FEATURE_REGISTRY, feature_definition_sha256
 from .signal_contracts import AnalysisSchedule, FeaturePoint, FeatureSnapshot
 
 
@@ -19,7 +19,8 @@ CACHE_VERSION = "feature-cache-v2"
 
 def iter_feature_snapshots(initial, events, schedule: AnalysisSchedule, tick,
                            clock_mode="recorded", bootstrap_receive_ns=None,
-                           stale_after_ns=500_000_000, acquisition_segment="segment-1"):
+                           stale_after_ns=500_000_000, acquisition_segment="segment-1",
+                           feature_names=None):
     """Replay exchange events, delivering only information available by each grid time."""
     if clock_mode not in {"exchange", "recorded"}:
         raise ValueError("unknown clock mode")
@@ -43,7 +44,7 @@ def iter_feature_snapshots(initial, events, schedule: AnalysisSchedule, tick,
         while deliveries and deliveries[0][0] <= now:
             delivered, _, incoming = heapq.heappop(deliveries)
             engine.observe(incoming, delivered)
-        yield engine.observation(now, acquisition_segment)
+        yield engine.observation(now, acquisition_segment, feature_names)
 
 
 def _point_from_row(row):
@@ -64,8 +65,14 @@ def snapshot_from_row(row):
 
 def _cache_identity(sample_sha256, schedule, clock_mode, stale_after_ns, *, tick,
                     bootstrap_receive_ns, acquisition_segment, normalization_version,
-                    source_schema_version, code_fingerprint):
-    feature_config = {"tick": str(tick), "stale_after_ns": stale_after_ns}
+                    source_schema_version, code_fingerprint, feature_names=None):
+    projection = (tuple(sorted(FEATURE_REGISTRY)) if feature_names is None
+                  else tuple(sorted(set(feature_names))))
+    unknown = sorted(set(projection)-set(FEATURE_REGISTRY))
+    if unknown:
+        raise ValueError(f"unknown feature projection: {unknown}")
+    feature_config = {"tick": str(tick), "stale_after_ns": stale_after_ns,
+                      "feature_names": projection}
     payload = {"cache_version": CACHE_VERSION, "feature_version": VERSION,
         "sample_sha256": sample_sha256, "schedule": jsonable(schedule),
         "clock_mode": clock_mode, "bootstrap_receive_ns": bootstrap_receive_ns,

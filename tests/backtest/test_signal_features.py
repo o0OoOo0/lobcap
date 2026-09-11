@@ -126,3 +126,11 @@ def test_delivery_regression_and_future_delivery_fail_closed():
         engine.observe(trade(2, 21, "sell", "1"), 19)
     with pytest.raises(ValueError, match="before exchange"):
         CausalFeatureEngine(initial(), D(1)).observe(trade(1, 10, "sell", "1"), 9)
+
+
+def test_feature_projection_is_exact_and_rejects_unknown_names():
+    engine = CausalFeatureEngine(initial(), D(1))
+    points = engine.snapshot(0, ("spread_ticks", "mid"))
+    assert [point.feature_name for point in points] == ["mid", "spread_ticks"]
+    with pytest.raises(ValueError, match="unknown feature projection"):
+        engine.snapshot(0, ("does_not_exist",))

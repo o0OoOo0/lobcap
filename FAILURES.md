@@ -333,3 +333,8 @@ keep / exclude interval / exclude day
 - The first child RSS probe used a stale guessed PID after reading the new parent
   PID, so `ps` returned no process and the SSH command exited 1. Retried with the
   exact reported PID and made no state change.
+- Splitting cache and cadence into separate children exposed the remaining peak:
+  the sixth cache writer reached 530.6 MiB RSS and failed the explicit 512 MiB
+  gate. Quarantined the partial study and changed the cache contract to persist
+  only the preregistered signals and required controls, with the exact projection
+  included in the cache identity.

@@ -61,6 +61,15 @@ def test_feature_cache_key_changes_with_clock_and_schedule():
     assert cache_fingerprint("s", a, "recorded", 500, **IDENTITY) != cache_fingerprint("s", a, "exchange", 500, **IDENTITY)
 
 
+def test_feature_cache_key_binds_exact_projection():
+    schedule = AnalysisSchedule(0, 1000, 100)
+    one = cache_fingerprint("s", schedule, "recorded", 500,
+                            **IDENTITY, feature_names=("mid",))
+    two = cache_fingerprint("s", schedule, "recorded", 500,
+                            **IDENTITY, feature_names=("mid", "spread_ticks"))
+    assert one != two
+
+
 @pytest.mark.parametrize("field,value", [
     ("tick", D(".5")), ("bootstrap_receive_ns", 1),
     ("acquisition_segment", "other"), ("normalization_version", "v3"),

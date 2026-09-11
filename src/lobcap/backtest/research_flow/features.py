@@ -165,7 +165,7 @@ class CausalFeatureEngine:
         return (self.last_depth_client_ns, self.last_depth_exchange_ns,
                 self.last_depth_receive_ns, self.last_depth_refs)
 
-    def snapshot(self, analysis_time_ns: int):
+    def snapshot(self, analysis_time_ns: int, feature_names=None):
         if analysis_time_ns < self.last_client_ns:
             raise ValueError("analysis snapshot precedes observed client state")
         self._trim(analysis_time_ns)
@@ -174,8 +174,14 @@ class CausalFeatureEngine:
             missing = sorted(set(FEATURE_REGISTRY)-set(values))
             extra = sorted(set(values)-set(FEATURE_REGISTRY))
             raise RuntimeError(f"feature registry mismatch: missing={missing}, extra={extra}")
+        selected = (tuple(sorted(FEATURE_REGISTRY)) if feature_names is None
+                    else tuple(sorted(set(feature_names))))
+        unknown = sorted(set(selected)-set(FEATURE_REGISTRY))
+        if unknown:
+            raise ValueError(f"unknown feature projection: {unknown}")
         points = []
-        for name, value in sorted(values.items()):
+        for name in selected:
+            value = values[name]
             definition = FEATURE_REGISTRY[name]
             available, exchange, receive, refs = self._source_metadata(definition)
             warm = analysis_time_ns-self.start_client_ns >= definition.minimum_warmup_ns
@@ -195,7 +201,8 @@ class CausalFeatureEngine:
                 available, exchange, receive, tuple(refs), anchor_time, anchor_age))
         return tuple(points)
 
-    def observation(self, analysis_time_ns: int, acquisition_segment: str):
+    def observation(self, analysis_time_ns: int, acquisition_segment: str,
+                    feature_names=None):
         return FeatureSnapshot(analysis_time_ns, self.book.mid, self.last_depth_exchange_ns,
             self.last_depth_receive_ns, self.last_depth_client_ns, acquisition_segment,
-            self.snapshot(analysis_time_ns))
+            self.snapshot(analysis_time_ns, feature_names))

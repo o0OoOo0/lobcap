@@ -37,6 +37,9 @@ from lobcap.config.backtest import load_backtest_config
 FEATURES = ("microprice_minus_mid_ticks", "imbalance_1", "imbalance_5",
             "vamp_5_minus_mid_ticks", "trade_volume_imbalance_1000ms",
             "bbo_ofi_1000ms", "mid_return_1000ms")
+CONTROL_FEATURES = ("mid", "spread_ticks", "bid_top_depth", "ask_top_depth",
+                    "total_top_depth", "book_age_ns", "feed_delay_ns")
+CACHE_FEATURES = FEATURES + CONTROL_FEATURES
 HORIZONS = (100_000_000, 500_000_000, 1_000_000_000, 5_000_000_000)
 
 
@@ -79,7 +82,7 @@ def _cache_identity(manifest, tick, code):
         "acquisition_segment": manifest["acquisition_segments"][0],
         "normalization_version": manifest["sample"]["normalization_version"],
         "source_schema_version": manifest["source_schema_version"],
-        "code_fingerprint": code}
+        "code_fingerprint": code, "feature_names": CACHE_FEATURES}
 
 
 def _bucket_id(feature, fit_dates, edges):
@@ -139,7 +142,8 @@ def _cache_phase(config, window, seal, study, code):
     snapshots = iter_feature_snapshots(initial, iter_events(sample_path), schedule,
         config.instrument.tick, clock_mode="recorded",
         bootstrap_receive_ns=manifest["bootstrap_receive_ns"],
-        acquisition_segment=manifest["acquisition_segments"][0])
+        acquisition_segment=manifest["acquisition_segments"][0],
+        feature_names=CACHE_FEATURES)
     cache_manifest = write_feature_cache(cache_path, snapshots, manifest["sample_sha256"],
         schedule, "recorded", 500_000_000, **identity)
     segment = manifest["acquisition_segments"][0]
