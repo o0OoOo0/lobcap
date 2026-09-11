@@ -201,3 +201,8 @@ keep / exclude interval / exclude day
 - The full Windows `tests/backtest` run reached 286 passes and one skip but five existing workspace job tests failed after long nested temp paths caused attempt-record writes to fail; downstream assertions then saw failed/incomplete jobs. The new strategy suite's shortened-path end-to-end test and the 30-test focused regression passed. Per the repository runtime policy, unrelated Windows path portability was not changed.
 - Automatic approval review rejected the final Git-bundle upload to the existing GCP VM because this turn did not explicitly authorize exporting potentially private repository contents. Did not retry or route around the rejection; retained authoritative Ubuntu evidence at `f49ec7a` and locally verified the final structural-update refinement and documentation.
 
+### 2026-09-11 strategy comparison review
+- Found scorecard provenance/capital guard bypass, summary-versus-ledger mismatch acceptance, missing values silently becoming zero, random-ID tie ranks, unrelated-job grouping, sensitivity routed through strategy ranking, and form-dependent disabled strategy selection. Added focused adversarial regressions and corrected these paths.
+- A sandbox read of elevated pytest artifacts hit ACL denial; read-only elevated inspection succeeded. A combined patch with an incorrect FAILURES.md anchor failed before edits; reapplied with actual context.
+- First short-path complete backtest regression: 301 passed, one symlink-permission skip, one legacy navigation failure while running with dirty-code provenance. Five previous long-path job failures did not recur. Clean-checkout rerun is recorded separately after committing the reviewed implementation.
+

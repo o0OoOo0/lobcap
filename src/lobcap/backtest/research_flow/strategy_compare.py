@@ -4,6 +4,7 @@ from __future__ import annotations
 from decimal import Decimal, localcontext
 
 from .workbench_model import reviewed_metrics
+from .catalog import comparison_guard
 from lobcap.backtest.workspace.resolve import SCENARIO_FIELDS
 
 
@@ -11,7 +12,10 @@ ZERO = Decimal(0)
 
 
 def _d(value, default=ZERO):
-    return default if value is None else Decimal(str(value))
+    result = default if value is None else Decimal(str(value))
+    if not result.is_finite():
+        raise ValueError("non-finite scorecard metric")
+    return result
 
 
 def loss_driver(summary, reviewed):
@@ -56,18 +60,36 @@ def build_scorecard(rows, minimum_filled_orders=1):
                  for row in completed}
     if len(scenarios) != 1:
         raise ValueError("strategy scorecard requires identical execution and cost assumptions")
+    if len({row['run_id'] for row in completed}) != len(completed):
+        raise ValueError("duplicate scorecard run IDs")
+    for row in completed:
+        guard = comparison_guard(completed[0], row)
+        if not guard['comparable']:
+            raise ValueError('; '.join(guard['reasons']))
     result = []
     with localcontext() as context:
         context.prec = 50
         for row in completed:
             summary, config = row["summary"], row["config"]
             reviewed = reviewed_metrics(row["output_dir"])
+            required = ('net_pnl','gross_pnl','fees','spread_capture','inventory_mtm',
+                        'max_drawdown','max_abs_inventory','ending_inventory')
+            if any(summary.get(key) is None for key in required):
+                raise ValueError('missing required summary metrics')
+            for key in required:
+                _d(summary[key])
             execution = summary.get("execution", {})
             filled_orders = int(execution.get("orders_with_fill", 0))
             activated = int(execution.get("activated", 0))
             control = config.get("strategy") == "no_trade"
-            evidence_ok = bool(reviewed.get("available") and reviewed.get("reconciled"))
-            comparable = evidence_ok and not control and filled_orders >= minimum_filled_orders
+            evidence_ok = bool(reviewed.get("available") and reviewed.get("reconciled")
+                and all(reviewed.get(key) is not None and _d(summary[key]) == _d(reviewed[key])
+                        for key in required)
+                and _d(summary['spread_capture']) + _d(summary['inventory_mtm']) == _d(summary['gross_pnl'])
+                and _d(summary['gross_pnl']) - _d(summary['fees']) == _d(summary['net_pnl']))
+            comparable = (evidence_ok and not control and filled_orders >= minimum_filled_orders
+                          and reviewed.get('fill_events', 0) >= filled_orders
+                          and activated >= filled_orders and _d(reviewed.get('turnover')) > 0)
             markout = summary.get("markouts", {}).get("1000", {})
             result.append({
                 "run_id": row["run_id"], "strategy": config.get("strategy"),
@@ -97,8 +119,13 @@ def build_scorecard(rows, minimum_filled_orders=1):
         candidate["pareto"] = not any(_dominates(other, candidate) for other in candidates if other is not candidate)
     ordered = sorted(candidates, key=lambda row: (-row["net_pnl"], row["max_drawdown"],
                                                   abs(row["max_abs_inventory"]), row["run_id"]))
-    for rank, row in enumerate(ordered, 1):
-        row["development_rank"] = rank
+    previous = None
+    for position, row in enumerate(ordered, 1):
+        score = (row['net_pnl'],row['max_drawdown'],abs(row['max_abs_inventory']))
+        if score != previous:
+            rank = position
+        row['development_rank'] = rank
+        previous = score
     return sorted(result, key=lambda row: (row["development_rank"] is None,
                                            row["development_rank"] or 10**9, row["strategy"], row["run_id"]))
 
@@ -107,6 +134,8 @@ def suite_note(scorecard):
     eligible = [row for row in scorecard if row["development_rank"] is not None]
     if not eligible:
         return "체결 및 원장 검증 기준을 충족한 전략이 없습니다."
-    leader = min(eligible, key=lambda row: row["development_rank"])
-    return (f"이 10분 개발 표본의 1위는 {leader['strategy']}입니다. "
+    leaders = [row for row in eligible if row['development_rank']==1]
+    names = ', '.join(row['strategy'] for row in leaders)
+    negative = '최상위 실행도 순손실입니다. ' if leaders[0]['net_pnl'] < 0 else ''
+    return (f"개발 표본의 {'공동 ' if len(leaders)>1 else ''}1위: {names}. {negative}"
             "이는 paper trading 후보 선정이 아니며 다른 날짜·비용·지연에서 재검증해야 합니다.")

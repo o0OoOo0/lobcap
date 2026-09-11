@@ -35,6 +35,8 @@ def build_experiment(draft,kind='single',parameter=None,values=None,
         raise ValueError('이 실험 유형에는 추가 탐색 축을 사용할 수 없습니다.')
     if kind=='strategy_suite':
         from lobcap.config.backtest import STRATEGIES
+        if draft.research_policy is not None:
+            raise ValueError('전략 suite는 maker 정책 비교입니다. 별도 헤지 정책을 제거하세요.')
         if parameter is not None or not isinstance(values,(list,tuple)) or not 2<=len(values)<=12:
             raise ValueError('전략 suite에는 2–12개 전략을 선택하세요.')
         selected=list(values)

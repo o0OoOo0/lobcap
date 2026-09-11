@@ -111,9 +111,15 @@ def reviewed_metrics(run_dir):
     with localcontext() as ctx:
         ctx.prec=50
         first=last=None
+        peak=None
+        drawdown=maximum_inventory=D(0)
         for row in iter_rows(run_dir,'ledger'):
             if first is None:first=row
             last=row
+            equity=D(row['equity'])
+            peak=equity if peak is None else max(peak,equity)
+            drawdown=max(drawdown,peak-equity)
+            maximum_inventory=max(maximum_inventory,abs(D(row['inventory'])))
         if first is None:return {'available':False,'reason':'원장 미기록'}
         lots=deque()
         initial=D(first['inventory'])
@@ -148,4 +154,7 @@ def reviewed_metrics(run_dir):
             'net_bps_on_turnover':net/notional*10000 if notional else None,
             'return_on_initial_equity':net/D(first['equity']) if D(first['equity'])>0 else None,
             'decision_count':decisions,'stage_changes':dict(flags),'actions':dict(actions),
-            'reference_mid':D(first['mark_price'])}
+            'reference_mid':D(first['mark_price']),
+            'ending_inventory':inv,'max_abs_inventory':maximum_inventory,'max_drawdown':drawdown,
+            'spread_capture':D(last['spread_capture']) if 'spread_capture' in last else None,
+            'inventory_mtm':D(last['inventory_mtm']) if 'inventory_mtm' in last else None}

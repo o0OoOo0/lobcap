@@ -130,7 +130,7 @@ def render_editor(store,draft,base):
             suite_strategies=st.multiselect('비교 전략',
                 ['fixed_spread','inventory_skew','microprice','glft','glft_microprice','join_bbo','inventory_size','flow_withdraw','volatility_adaptive','no_trade'],
                 default=['fixed_spread','inventory_skew','microprice','glft','glft_microprice','no_trade'],
-                format_func=lambda x:STRATEGIES[x][0],disabled=mode!='strategy_suite',
+                format_func=lambda x:STRATEGIES[x][0],
                 help='GLFT가 포함되면 모든 전략의 거래 시작 시각을 GLFT 준비시간에 맞춥니다.')
             fields=['half_spread_ticks','size','inventory_skew_ticks','signal_strength','partial_fill_policy','reprice_threshold_ticks','min_hold_ms',
                     'glft_gamma','glft_window_seconds','glft_min_r2','glft_max_half_ticks',
@@ -363,19 +363,27 @@ def render_glft(row):
 
 def render_comparison(rows,row,context):
     import streamlit as st
-    job_id=context.get('job_id')
-    suite=[candidate for candidate in rows if job_id and job_id in candidate.get('job_ids',[]) and candidate.get('rankable')]
-    if len(suite)>=2:
+    job_ids=row.get('job_ids',[])
+    job_id=context.get('job_id') if context.get('job_id') in job_ids else next(iter(job_ids),None)
+    members=[candidate for candidate in rows if job_id and job_id in candidate.get('job_ids',[])]
+    suite=[candidate for candidate in members if candidate.get('rankable')]
+    if len(suite)>=2 and row.get('research_context',{}).get('kind') in {'strategy_suite','strategy_compare','baseline_suite'}:
         from .strategy_compare import build_scorecard,suite_note
-        scorecard=build_scorecard(suite)
+        try:
+            scorecard=build_scorecard(suite)
+        except ValueError as exc:
+            st.warning('전략 순위 산정 보류: '+str(exc))
+            scorecard=[]
         st.markdown('**동일 조건 전략 scorecard**')
+        if len(suite)<len(members) or any(candidate.get('job_status')!='COMPLETED' for candidate in members):
+            st.warning(f'미완료 실험: {len(suite)}/{len(members)}개 완료. 아래 결과는 일부 실행의 잠정 비교입니다.')
         st.caption(suite_note(scorecard))
         columns=('development_rank','strategy','net_pnl','gross_pnl','fees','spread_capture','inventory_mtm',
-                 'max_drawdown','max_abs_inventory','filled_orders','turnover','break_even_fee_bps',
+                 'max_drawdown','max_abs_inventory','activated_orders','filled_orders','quantity_fill_rate','turnover','break_even_fee_bps',
                  'markout_1s_coverage','markout_1s_drift','loss_driver','pareto','paper_eligibility')
         st.dataframe([{key:value for key,value in candidate.items() if key in columns} for candidate in scorecard],hide_index=True)
         st.caption('순위는 체결이 있고 원장이 일치하는 비대조군만 대상으로 한 10분 개발 표본 순위입니다. Pareto는 순손익·낙폭·최대 재고만 사용합니다.')
-        render_strategy_overlays(suite)
+        if scorecard:render_strategy_overlays(suite)
         st.divider()
     eligible=[r for r in rows if r['rankable'] and r['run_id']!=row['run_id']]
     if not eligible:st.info('같은 표본의 완료 결과가 하나 더 필요합니다.');return
@@ -406,7 +414,10 @@ def render_strategy_overlays(rows):
     import pandas as pd
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
-    selected=rows[:6]
+    lookup={row['run_id']:row for row in rows}
+    chosen=st.multiselect('그래프에 겹쳐 볼 실행 · 최대 6개',list(lookup),
+        default=list(lookup)[:6],max_selections=6,format_func=lambda key:run_label(lookup[key]))
+    selected=[lookup[key] for key in chosen]
     fig=make_subplots(rows=2,cols=1,shared_xaxes=True,vertical_spacing=.08,
                       subplot_titles=('전략별 누적 순손익 · USDT','전략별 재고 · BTC'))
     for row in selected:
@@ -414,7 +425,7 @@ def render_strategy_overlays(rows):
         if not path.exists():continue
         frame=pd.read_csv(path)
         times=pd.to_datetime(frame['time_ns'],unit='ns',utc=True)
-        label=STRATEGIES.get(row['config'].get('strategy'),(row['config'].get('strategy'),))[0]
+        label=run_label(row)
         fig.add_trace(go.Scatter(x=times,y=frame['net_pnl'],name=label),row=1,col=1)
         fig.add_trace(go.Scatter(x=times,y=frame['inventory'],name=label,showlegend=False,line_shape='hv'),row=2,col=1)
     fig.update_layout(height=520,hovermode='x unified',margin=dict(l=10,r=10,t=40,b=10),legend=dict(orientation='h'))
