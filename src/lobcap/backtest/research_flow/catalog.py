@@ -88,7 +88,7 @@ def index_runs(output_root, workspace_root=None):
     # rglob does not recurse into symlink directories on supported Python versions.
     # Explicit known roots retain the deployed legacy runs/research directory links.
     seen_paths = set()
-    for root in (output, output / "runs", output / "research", output / "research" / "runs"):
+    for root in (output, output / "runs", output / "research", output / "research" / "runs",output/'strategy-response'/'runs'):
         if root.exists():
             for manifest in sorted(root.rglob("run_manifest.json")):
                 resolved = manifest.resolve()

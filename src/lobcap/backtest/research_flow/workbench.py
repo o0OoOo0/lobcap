@@ -22,6 +22,9 @@ def run_label(row):
     distance=f" · 반거리 {c.get('half_spread_ticks')} tick" if strategy not in {'join_bbo','inventory_size','flow_withdraw','no_trade'} else ''
     if strategy=='microprice':distance+=f" · 신호 ×{c.get('signal_strength')}"
     if strategy=='inventory_skew':distance+=f" · 이동 {c.get('inventory_skew_ticks')} tick"
+    if strategy.startswith('glft'):
+        distance=f" · γ {c.get('glft_gamma')}"
+        if strategy=='glft_microprice':distance+=f" · 신호 ×{c.get('signal_strength')}"
     return f"{name}{distance} · {c.get('size','?')} BTC · {row['status']} · {row['run_id'][-8:]}"
 
 
