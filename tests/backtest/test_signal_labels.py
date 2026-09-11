@@ -1,7 +1,8 @@
 from decimal import Decimal as D
 
 from lobcap.backtest.research_flow.labels import (
-    MidpointSeries, apply_freshness_policy, measure_label, target_age_distribution,
+    MidpointSeries, apply_freshness_policy, measure_label, raw_label_cadence,
+    target_age_distribution, truth_midpoint_series,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -66,3 +67,14 @@ def test_sample_end_and_segment_boundary_are_censored():
     boundary = measure_label(LabelDefinition(MARKET_TRUTH_RETURN, 100), 100, "100", 80,
                              boundary_series, D(1), 400, "a")
     assert boundary.status == CENSORED_ACQUISITION_BOUNDARY and boundary.value is None
+
+
+def test_raw_cadence_report_never_promotes_observed_to_valid():
+    from lobcap.backtest.research_flow.signal_contracts import FeaturePoint, FeatureSnapshot
+    feature = FeaturePoint("x", "v1", D(1), "ticks", "AVAILABLE", 100, 100, 90, 90, ())
+    snapshot = FeatureSnapshot(100, D(101), 90, 90, 100, "a", (feature,))
+    report = raw_label_cadence((snapshot,), series(),
+        (LabelDefinition(MARKET_TRUTH_RETURN, 100),), D(1), 400)
+    assert report[0]["statuses"] == {OBSERVED: 1}
+    assert report[0]["freshness_policy"] is None
+    assert "not VALID" in report[0]["note"]

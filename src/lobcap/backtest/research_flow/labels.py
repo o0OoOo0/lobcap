@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from bisect import bisect_right
+from collections import Counter
 from dataclasses import replace
 from decimal import Decimal
 
@@ -96,9 +97,11 @@ def apply_freshness_policy(point: LabelPoint, policy: FreshnessPolicy):
     return replace(point, status=VALID)
 
 
-def target_age_distribution(points):
+def age_distribution(points, field="target_age_ns"):
     """Raw cadence evidence used before a horizon-specific policy is frozen."""
-    ages = sorted(p.target_age_ns for p in points if p.target_age_ns is not None)
+    if field not in {"anchor_age_ns", "target_age_ns"}:
+        raise ValueError("unknown label age field")
+    ages = sorted(getattr(p, field) for p in points if getattr(p, field) is not None)
     if not ages:
         return {"observations": 0, "minimum_ns": None, "median_ns": None,
                 "p95_ns": None, "maximum_ns": None}
@@ -106,3 +109,42 @@ def target_age_distribution(points):
         return ages[round((len(ages)-1)*q)]
     return {"observations": len(ages), "minimum_ns": ages[0], "median_ns": quantile(.5),
             "p95_ns": quantile(.95), "maximum_ns": ages[-1]}
+
+
+def target_age_distribution(points):
+    return age_distribution(points, "target_age_ns")
+
+
+def truth_midpoint_series(initial, events, acquisition_segment):
+    """Build exchange-truth midpoint observations from normalized depth batches."""
+    from lobcap.backtest.engine import MarketBook
+    book = MarketBook(initial)
+    rows = [(initial.time_ns, book.mid, acquisition_segment)]
+    for event in events:
+        if event.kind != "depth":
+            continue
+        book.apply(event)
+        if event.time_ns <= rows[-1][0]:
+            raise ValueError("truth depth time did not advance")
+        rows.append((event.time_ns, book.mid, acquisition_segment))
+    return MidpointSeries(rows)
+
+
+def raw_label_cadence(snapshots, truth, definitions, tick, sample_end_ns):
+    """Measure label availability and ages without selecting a freshness threshold."""
+    snapshots = tuple(snapshots)
+    report = []
+    for definition in definitions:
+        points = [measure_label(definition, snapshot.analysis_time_ns, snapshot.client_mid,
+                  snapshot.client_mid_source_exchange_time_ns, truth, tick, sample_end_ns,
+                  snapshot.acquisition_segment, snapshot.acquisition_segment)
+                  for snapshot in snapshots]
+        statuses = Counter(point.status for point in points)
+        report.append({"label_kind": definition.label_kind, "horizon_ns": definition.horizon_ns,
+            "entry_latency_ns": definition.entry_latency_ns, "observations": len(points),
+            "statuses": dict(sorted(statuses.items())),
+            "anchor_age_distribution": age_distribution(points, "anchor_age_ns"),
+            "target_age_distribution": age_distribution(points, "target_age_ns"),
+            "freshness_policy": None,
+            "note": "Raw cadence evidence only; OBSERVED is not VALID until a DEVELOPMENT-only policy is frozen."})
+    return tuple(report)
