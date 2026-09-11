@@ -68,3 +68,61 @@ Next research step: fix a hypothesis and execution assumptions, vary one active
 parameter, inspect changed order behavior and exposure, then require fresh data
 before selecting a paper-trading candidate. Do not tune alpha or sample bounds to
 manufacture profit.
+
+## Observed 10-minute diagnostic results
+
+Same recorded clock, 0.001 BTC size, alpha 0.5, participation budget 0.1,
+entry/cancel/report 10/10/20 ms, zero fees, keep-remaining policy. These are
+development-sample results; the grid was not selected after looking at profits.
+
+| Policy | Net USDT | Fill events | FIFO realized | Ending unrealized |
+|---|---:|---:|---:|---:|
+| No trade | 0 | 0 | 0 | 0 |
+| Join BBO / fixed 0.5 tick | -1.306050 | 151 | -1.301000 | -0.005050 |
+| Fixed 5 tick | -0.856700 | 106 | -0.937800 | +0.081100 |
+| Fixed 20 tick | -0.406050 | 91 | -0.473100 | +0.067050 |
+| Fixed 100 tick | +0.158400 | 14 | -0.094500 | +0.252900 |
+| Inventory skew 5 tick, half 5 | -0.851000 | 110 | -0.932900 | +0.081900 |
+| Inventory skew 50 tick, half 5 | -1.080650 | 119 | -1.076100 | -0.004550 |
+| Microprice strength 1, half 5 | -0.856500 | 106 | -0.937600 | +0.081100 |
+| Microprice strength 10, half 5 | -0.541000 | 90 | -0.514400 | -0.026600 |
+| Flow withdrawal | -0.089150 | 61 | -0.216800 | +0.127650 |
+
+The 100-tick result ends at +0.01 BTC (the inventory limit) and has 1.0701 USDT
+maximum drawdown. Its positive total depends on open inventory valuation; it is
+not evidence of reliable spread harvesting. The unchanged-fill-path break-even
+average fee is 1.4199 bps. BBO's gross decomposition is -0.02885 spread capture
+and -1.2772 inventory MTM, with negative post-fill drift at 100 ms, 1 s and 5 s.
+The loss is not an arithmetic rule forcing all strategies negative: a controlled
+profitable passive-fill fixture passes, and sufficiently different quote distances
+change actual fills. Neither observation establishes execution-model calibration.
+
+All 11 runs independently reconcile. Maximum recorded replay wall time was
+11.986 seconds and process high-water RSS 41.590 MiB, preparation excluded.
+Full Ubuntu suite at 3d80d91: 312 passed, two existing warnings. Final display and
+comparison refinements at 1260371: 44 affected tests passed; real-history AppTest
+passed on 311 indexed executions with no navigation submissions. Browser review
+confirmed the left settings / right charts layout on loopback 8501.
+
+Machine-readable run IDs, digests, sample hash, performance and markouts:
+[workbench-evidence.json](workbench-evidence.json).
+
+## Completion record
+
+- Files changed: workbench UI/model, app entrypoint, display compatibility guard,
+  focused tests, bounded diagnostic script, README, failure log and this guide.
+- Commands run: compileall; Ubuntu pytest; validate_strategy_response.py;
+  real-history Streamlit AppTest; guarded app activation and SSH health checks.
+- Official docs checked: HftBacktest order-fill and latency references linked above.
+- Tests passed: full 312; final affected 44; 11 real-sample reconciliations;
+  positive and negative actual result displays and numerical policy examples.
+- Tests failed: no unresolved failures. Initial ratio-precision and display-format
+  test expectations corrected as recorded in FAILURES.md.
+- Runtime observations: app PID 480443, loopback 8501; collector PID 608,
+  restart count 0 before and after app replacement. Local hidden tunnel PID 32120.
+- Data written: separate strategy-response run artifacts and evidence summaries;
+  existing captures and accepted outputs preserved.
+- Open risks: 10-minute selection bias, modeled queues, no measured endogenous
+  impact, unverified account fees, no external HftBacktest accounting parity claim.
+- Recommended next action: use one-parameter comparisons to trace behavior, then
+  validate a frozen hypothesis on additional untouched periods before paper selection.

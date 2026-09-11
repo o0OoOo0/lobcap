@@ -1,0 +1,951 @@
+{
+  "sample": "binance_btcusdt_20260906_1410_1420_arrival",
+  "purpose": "Diagnostic parameter response, not optimization or out-of-sample validation",
+  "runs": [
+    {
+      "label": "no_trade",
+      "settings": {
+        "strategy": "no_trade"
+      },
+      "run_id": "87f44e11f723-989f205c",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/87f44e11f723-989f205c",
+      "digest": "ea3e5093a57fc7cc5e0718ba076b14f28a51e881149939f5d429e8d7ec7c9bd5",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 9.440794271,
+        "output_bytes": 495240,
+        "process_peak_rss_mib": 37.86328125,
+        "sample_preparation_seconds": 5.131994839757681e-06,
+        "wall_seconds": 10.174435880966485
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "0",
+        "unrealized_gross": "0",
+        "net_pnl": "0.00",
+        "gross_pnl": "0.00",
+        "fees": "0",
+        "turnover": "0",
+        "filled_quantity": "0",
+        "fill_events": 0,
+        "break_even_fee_bps": null,
+        "net_bps_on_turnover": null,
+        "return_on_initial_equity": "0",
+        "decision_count": 2400,
+        "stage_changes": {},
+        "actions": {
+          "none": 4800
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "0",
+        "inventory_mtm": "0.00",
+        "ending_inventory": "0",
+        "max_drawdown": "0"
+      },
+      "markouts": {
+        "100": {
+          "observations": 0,
+          "valid": 0,
+          "quantity": "0",
+          "markout_value": "0",
+          "drift_value": "0",
+          "coverage": null,
+          "volume_weighted_markout": null,
+          "volume_weighted_midpoint_drift": null
+        },
+        "1000": {
+          "observations": 0,
+          "valid": 0,
+          "quantity": "0",
+          "markout_value": "0",
+          "drift_value": "0",
+          "coverage": null,
+          "volume_weighted_markout": null,
+          "volume_weighted_midpoint_drift": null
+        },
+        "5000": {
+          "observations": 0,
+          "valid": 0,
+          "quantity": "0",
+          "markout_value": "0",
+          "drift_value": "0",
+          "coverage": null,
+          "volume_weighted_markout": null,
+          "volume_weighted_midpoint_drift": null
+        }
+      }
+    },
+    {
+      "label": "join_bbo",
+      "settings": {
+        "strategy": "join_bbo"
+      },
+      "run_id": "5a5e55edc843-ce10651b",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/5a5e55edc843-ce10651b",
+      "digest": "5e4b838d0fd267157df265ea4862c0dc76f4bcbf225fdd6d29145282c5d72436",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 11.910941713999998,
+        "output_bytes": 818267,
+        "process_peak_rss_mib": 40.53125,
+        "sample_preparation_seconds": 6.120011676102877e-06,
+        "wall_seconds": 11.925969926989637
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-1.301000",
+        "unrealized_gross": "-0.00505",
+        "net_pnl": "-1.306050",
+        "gross_pnl": "-1.306050",
+        "fees": "0.000000",
+        "turnover": "12034.054100",
+        "filled_quantity": "0.1510",
+        "fill_events": 151,
+        "break_even_fee_bps": "-1.0852951043322964619213403735653805977156110674291",
+        "net_bps_on_turnover": "-1.0852951043322964619213403735653805977156110674291",
+        "return_on_initial_equity": "-0.0000130605",
+        "decision_count": 2400,
+        "stage_changes": {
+          "risk": 796
+        },
+        "actions": {
+          "submit": 392,
+          "retain": 3457,
+          "cancel": 139,
+          "none": 812
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "-0.028850",
+        "inventory_mtm": "-1.277200",
+        "ending_inventory": "0.0010",
+        "max_drawdown": "1.505950"
+      },
+      "markouts": {
+        "100": {
+          "observations": 151,
+          "valid": 151,
+          "quantity": "0.1510",
+          "markout_value": "-0.452100",
+          "drift_value": "-0.423250",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-2.9940397350993377483443708609271523178807947019868",
+          "volume_weighted_midpoint_drift": "-2.8029801324503311258278145695364238410596026490066"
+        },
+        "1000": {
+          "observations": 151,
+          "valid": 150,
+          "quantity": "0.1500",
+          "markout_value": "-0.728100",
+          "drift_value": "-0.699200",
+          "coverage": 0.9933774834437086,
+          "volume_weighted_markout": "-4.854",
+          "volume_weighted_midpoint_drift": "-4.6613333333333333333333333333333333333333333333333"
+        },
+        "5000": {
+          "observations": 151,
+          "valid": 150,
+          "quantity": "0.1500",
+          "markout_value": "-1.292950",
+          "drift_value": "-1.264050",
+          "coverage": 0.9933774834437086,
+          "volume_weighted_markout": "-8.6196666666666666666666666666666666666666666666667",
+          "volume_weighted_midpoint_drift": "-8.427"
+        }
+      }
+    },
+    {
+      "label": "fixed_0.5",
+      "settings": {
+        "strategy": "fixed_spread",
+        "half_spread_ticks": "0.5"
+      },
+      "run_id": "16de0134115a-fd579375",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/16de0134115a-fd579375",
+      "digest": "127591999e7313c973db1253f62bbf4988a8a611570b7c91fe22bc3073f47689",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 11.695186663999998,
+        "output_bytes": 818132,
+        "process_peak_rss_mib": 41.296875,
+        "sample_preparation_seconds": 5.669018719345331e-06,
+        "wall_seconds": 11.71846668299986
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-1.301000",
+        "unrealized_gross": "-0.00505",
+        "net_pnl": "-1.306050",
+        "gross_pnl": "-1.306050",
+        "fees": "0.000000",
+        "turnover": "12034.054100",
+        "filled_quantity": "0.1510",
+        "fill_events": 151,
+        "break_even_fee_bps": "-1.0852951043322964619213403735653805977156110674291",
+        "net_bps_on_turnover": "-1.0852951043322964619213403735653805977156110674291",
+        "return_on_initial_equity": "-0.0000130605",
+        "decision_count": 2400,
+        "stage_changes": {
+          "risk": 796,
+          "price_policy": 8,
+          "tick_rounding": 3
+        },
+        "actions": {
+          "submit": 392,
+          "retain": 3457,
+          "cancel": 139,
+          "none": 812
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "-0.028850",
+        "inventory_mtm": "-1.277200",
+        "ending_inventory": "0.0010",
+        "max_drawdown": "1.505950"
+      },
+      "markouts": {
+        "100": {
+          "observations": 151,
+          "valid": 151,
+          "quantity": "0.1510",
+          "markout_value": "-0.452100",
+          "drift_value": "-0.423250",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-2.9940397350993377483443708609271523178807947019868",
+          "volume_weighted_midpoint_drift": "-2.8029801324503311258278145695364238410596026490066"
+        },
+        "1000": {
+          "observations": 151,
+          "valid": 150,
+          "quantity": "0.1500",
+          "markout_value": "-0.728100",
+          "drift_value": "-0.699200",
+          "coverage": 0.9933774834437086,
+          "volume_weighted_markout": "-4.854",
+          "volume_weighted_midpoint_drift": "-4.6613333333333333333333333333333333333333333333333"
+        },
+        "5000": {
+          "observations": 151,
+          "valid": 150,
+          "quantity": "0.1500",
+          "markout_value": "-1.292950",
+          "drift_value": "-1.264050",
+          "coverage": 0.9933774834437086,
+          "volume_weighted_markout": "-8.6196666666666666666666666666666666666666666666667",
+          "volume_weighted_midpoint_drift": "-8.427"
+        }
+      }
+    },
+    {
+      "label": "fixed_5",
+      "settings": {
+        "strategy": "fixed_spread",
+        "half_spread_ticks": "5"
+      },
+      "run_id": "95cd06b3c49c-f6882150",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/95cd06b3c49c-f6882150",
+      "digest": "849aa15cc464210b22d7b26b42df56d17ffcf67e41dd64167f9e5e13ecaa3d61",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 10.536214692999998,
+        "output_bytes": 684023,
+        "process_peak_rss_mib": 41.296875,
+        "sample_preparation_seconds": 5.087000317871571e-06,
+        "wall_seconds": 10.55442275403766
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-0.937800",
+        "unrealized_gross": "0.081100",
+        "net_pnl": "-0.856700",
+        "gross_pnl": "-0.856700",
+        "fees": "0.000000",
+        "turnover": "8448.208600",
+        "filled_quantity": "0.1060",
+        "fill_events": 106,
+        "break_even_fee_bps": "-1.0140611348067328735230330368499660389541044239840",
+        "net_bps_on_turnover": "-1.0140611348067328735230330368499660389541044239840",
+        "return_on_initial_equity": "-0.000008567",
+        "decision_count": 2400,
+        "stage_changes": {
+          "tick_rounding": 2397,
+          "risk": 511,
+          "price_policy": 4
+        },
+        "actions": {
+          "submit": 383,
+          "retain": 3740,
+          "cancel": 150,
+          "none": 527
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "0.018400",
+        "inventory_mtm": "-0.875100",
+        "ending_inventory": "-0.0020",
+        "max_drawdown": "1.288750"
+      },
+      "markouts": {
+        "100": {
+          "observations": 106,
+          "valid": 106,
+          "quantity": "0.1060",
+          "markout_value": "-0.468950",
+          "drift_value": "-0.487350",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-4.4240566037735849056603773584905660377358490566038",
+          "volume_weighted_midpoint_drift": "-4.5976415094339622641509433962264150943396226415094"
+        },
+        "1000": {
+          "observations": 106,
+          "valid": 105,
+          "quantity": "0.1050",
+          "markout_value": "-0.695050",
+          "drift_value": "-0.712900",
+          "coverage": 0.9905660377358491,
+          "volume_weighted_markout": "-6.6195238095238095238095238095238095238095238095238",
+          "volume_weighted_midpoint_drift": "-6.7895238095238095238095238095238095238095238095238"
+        },
+        "5000": {
+          "observations": 106,
+          "valid": 105,
+          "quantity": "0.1050",
+          "markout_value": "-0.999400",
+          "drift_value": "-1.017250",
+          "coverage": 0.9905660377358491,
+          "volume_weighted_markout": "-9.5180952380952380952380952380952380952380952380952",
+          "volume_weighted_midpoint_drift": "-9.6880952380952380952380952380952380952380952380952"
+        }
+      }
+    },
+    {
+      "label": "fixed_20",
+      "settings": {
+        "strategy": "fixed_spread",
+        "half_spread_ticks": "20"
+      },
+      "run_id": "f2747a990e91-027de4b4",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/f2747a990e91-027de4b4",
+      "digest": "870a08a1c1d1a7574868fd564ff5ded6f092ae124f32075a0414ee65145d53d7",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 10.558654401999995,
+        "output_bytes": 675684,
+        "process_peak_rss_mib": 41.3046875,
+        "sample_preparation_seconds": 5.38496533408761e-06,
+        "wall_seconds": 10.579585061001126
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-0.473100",
+        "unrealized_gross": "0.06705",
+        "net_pnl": "-0.406050",
+        "gross_pnl": "-0.406050",
+        "fees": "0.000000",
+        "turnover": "7252.808900",
+        "filled_quantity": "0.0910",
+        "fill_events": 91,
+        "break_even_fee_bps": "-0.55985205952413829626753298297987694119446605024986",
+        "net_bps_on_turnover": "-0.55985205952413829626753298297987694119446605024986",
+        "return_on_initial_equity": "-0.0000040605",
+        "decision_count": 2400,
+        "stage_changes": {
+          "tick_rounding": 2397,
+          "risk": 343,
+          "price_policy": 1
+        },
+        "actions": {
+          "submit": 383,
+          "retain": 3896,
+          "cancel": 162,
+          "none": 359
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "0.136850",
+        "inventory_mtm": "-0.542900",
+        "ending_inventory": "-0.0030",
+        "max_drawdown": "1.136150"
+      },
+      "markouts": {
+        "100": {
+          "observations": 91,
+          "valid": 91,
+          "quantity": "0.0910",
+          "markout_value": "-0.342500",
+          "drift_value": "-0.479350",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-3.7637362637362637362637362637362637362637362637363",
+          "volume_weighted_midpoint_drift": "-5.2675824175824175824175824175824175824175824175824"
+        },
+        "1000": {
+          "observations": 91,
+          "valid": 90,
+          "quantity": "0.0900",
+          "markout_value": "-0.560000",
+          "drift_value": "-0.694800",
+          "coverage": 0.989010989010989,
+          "volume_weighted_markout": "-6.2222222222222222222222222222222222222222222222222",
+          "volume_weighted_midpoint_drift": "-7.72"
+        },
+        "5000": {
+          "observations": 91,
+          "valid": 90,
+          "quantity": "0.0900",
+          "markout_value": "-0.757500",
+          "drift_value": "-0.892300",
+          "coverage": 0.989010989010989,
+          "volume_weighted_markout": "-8.4166666666666666666666666666666666666666666666667",
+          "volume_weighted_midpoint_drift": "-9.9144444444444444444444444444444444444444444444444"
+        }
+      }
+    },
+    {
+      "label": "fixed_100",
+      "settings": {
+        "strategy": "fixed_spread",
+        "half_spread_ticks": "100"
+      },
+      "run_id": "7656b63091c8-dded90a9",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/7656b63091c8-dded90a9",
+      "digest": "f7fec9cf265c6620558c83016b361a2f589b5b4d6bc84d9702d42692c4291ffe",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 10.558706367,
+        "output_bytes": 628523,
+        "process_peak_rss_mib": 41.3046875,
+        "sample_preparation_seconds": 5.107023753225803e-06,
+        "wall_seconds": 10.573717694031075
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-0.09450",
+        "unrealized_gross": "0.25290",
+        "net_pnl": "0.15840",
+        "gross_pnl": "0.15840",
+        "fees": "0.00000",
+        "turnover": "1115.58050",
+        "filled_quantity": "0.014",
+        "fill_events": 14,
+        "break_even_fee_bps": "1.4198885692247220169230279661575296448799526345253",
+        "net_bps_on_turnover": "1.4198885692247220169230279661575296448799526345253",
+        "return_on_initial_equity": "0.000001584",
+        "decision_count": 2400,
+        "stage_changes": {
+          "tick_rounding": 2397,
+          "risk": 202
+        },
+        "actions": {
+          "submit": 381,
+          "retain": 3959,
+          "cancel": 242,
+          "none": 218
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "0.09540",
+        "inventory_mtm": "0.06300",
+        "ending_inventory": "0.010",
+        "max_drawdown": "1.07010"
+      },
+      "markouts": {
+        "100": {
+          "observations": 14,
+          "valid": 14,
+          "quantity": "0.014",
+          "markout_value": "-0.05100",
+          "drift_value": "-0.14640",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-3.6428571428571428571428571428571428571428571428571",
+          "volume_weighted_midpoint_drift": "-10.457142857142857142857142857142857142857142857143"
+        },
+        "1000": {
+          "observations": 14,
+          "valid": 14,
+          "quantity": "0.014",
+          "markout_value": "-0.12350",
+          "drift_value": "-0.21890",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-8.8214285714285714285714285714285714285714285714286",
+          "volume_weighted_midpoint_drift": "-15.635714285714285714285714285714285714285714285714"
+        },
+        "5000": {
+          "observations": 14,
+          "valid": 14,
+          "quantity": "0.014",
+          "markout_value": "-0.13120",
+          "drift_value": "-0.22660",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-9.3714285714285714285714285714285714285714285714286",
+          "volume_weighted_midpoint_drift": "-16.185714285714285714285714285714285714285714285714"
+        }
+      }
+    },
+    {
+      "label": "skew_5",
+      "settings": {
+        "strategy": "inventory_skew",
+        "half_spread_ticks": "5",
+        "inventory_skew_ticks": "5"
+      },
+      "run_id": "a6a529d8c502-5e36d436",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/a6a529d8c502-5e36d436",
+      "digest": "c81ff2e84a78293ab55d7c75bd6c675a16450da6ab84fd325c745e58aa0622d8",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 11.971490418999991,
+        "output_bytes": 714525,
+        "process_peak_rss_mib": 41.36328125,
+        "sample_preparation_seconds": 5.426991265267134e-06,
+        "wall_seconds": 11.98518865997903
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-0.932900",
+        "unrealized_gross": "0.08190",
+        "net_pnl": "-0.851000",
+        "gross_pnl": "-0.851000",
+        "fees": "0.000000",
+        "turnover": "8767.050900",
+        "filled_quantity": "0.1100",
+        "fill_events": 110,
+        "break_even_fee_bps": "-0.97067988963084496292818375218969014996821793289691",
+        "net_bps_on_turnover": "-0.97067988963084496292818375218969014996821793289691",
+        "return_on_initial_equity": "-0.00000851",
+        "decision_count": 2400,
+        "stage_changes": {
+          "tick_rounding": 1097,
+          "risk": 392,
+          "price_policy": 5
+        },
+        "actions": {
+          "submit": 392,
+          "retain": 3848,
+          "cancel": 152,
+          "none": 408
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "0.014900",
+        "inventory_mtm": "-0.865900",
+        "ending_inventory": "-0.0020",
+        "max_drawdown": "1.260400"
+      },
+      "markouts": {
+        "100": {
+          "observations": 110,
+          "valid": 110,
+          "quantity": "0.1100",
+          "markout_value": "-0.483150",
+          "drift_value": "-0.498050",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-4.3922727272727272727272727272727272727272727272727",
+          "volume_weighted_midpoint_drift": "-4.5277272727272727272727272727272727272727272727273"
+        },
+        "1000": {
+          "observations": 110,
+          "valid": 109,
+          "quantity": "0.1090",
+          "markout_value": "-0.717950",
+          "drift_value": "-0.732500",
+          "coverage": 0.990909090909091,
+          "volume_weighted_markout": "-6.5866972477064220183486238532110091743119266055046",
+          "volume_weighted_midpoint_drift": "-6.7201834862385321100917431192660550458715596330275"
+        },
+        "5000": {
+          "observations": 110,
+          "valid": 109,
+          "quantity": "0.1090",
+          "markout_value": "-1.036400",
+          "drift_value": "-1.050950",
+          "coverage": 0.990909090909091,
+          "volume_weighted_markout": "-9.5082568807339449541284403669724770642201834862385",
+          "volume_weighted_midpoint_drift": "-9.6417431192660550458715596330275229357798165137615"
+        }
+      }
+    },
+    {
+      "label": "skew_50",
+      "settings": {
+        "strategy": "inventory_skew",
+        "half_spread_ticks": "5",
+        "inventory_skew_ticks": "50"
+      },
+      "run_id": "c3fc54134990-3f633579",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/c3fc54134990-3f633579",
+      "digest": "31ce685a0cc9d08bd2d3a5960885cfff87e9a3fe9f684150b3b6e081499caa40",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 11.741110774999996,
+        "output_bytes": 769995,
+        "process_peak_rss_mib": 41.58984375,
+        "sample_preparation_seconds": 5.483045242726803e-06,
+        "wall_seconds": 11.765182263974566
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-1.076100",
+        "unrealized_gross": "-0.00455",
+        "net_pnl": "-1.080650",
+        "gross_pnl": "-1.080650",
+        "fees": "0.000000",
+        "turnover": "9484.493700",
+        "filled_quantity": "0.1190",
+        "fill_events": 119,
+        "break_even_fee_bps": "-1.1393860697065990986951680931582041116227427089756",
+        "net_bps_on_turnover": "-1.1393860697065990986951680931582041116227427089756",
+        "return_on_initial_equity": "-0.0000108065",
+        "decision_count": 2400,
+        "stage_changes": {
+          "tick_rounding": 2397,
+          "price_policy": 1963,
+          "risk": 99
+        },
+        "actions": {
+          "submit": 430,
+          "retain": 4063,
+          "cancel": 192,
+          "none": 115
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "0.081350",
+        "inventory_mtm": "-1.162000",
+        "ending_inventory": "0.0010",
+        "max_drawdown": "1.278050"
+      },
+      "markouts": {
+        "100": {
+          "observations": 119,
+          "valid": 119,
+          "quantity": "0.1190",
+          "markout_value": "-0.402700",
+          "drift_value": "-0.484050",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-3.3840336134453781512605042016806722689075630252101",
+          "volume_weighted_midpoint_drift": "-4.0676470588235294117647058823529411764705882352941"
+        },
+        "1000": {
+          "observations": 119,
+          "valid": 118,
+          "quantity": "0.1180",
+          "markout_value": "-0.604800",
+          "drift_value": "-0.685600",
+          "coverage": 0.9915966386554622,
+          "volume_weighted_markout": "-5.1254237288135593220338983050847457627118644067797",
+          "volume_weighted_midpoint_drift": "-5.8101694915254237288135593220338983050847457627119"
+        },
+        "5000": {
+          "observations": 119,
+          "valid": 118,
+          "quantity": "0.1180",
+          "markout_value": "-1.027350",
+          "drift_value": "-1.108150",
+          "coverage": 0.9915966386554622,
+          "volume_weighted_markout": "-8.7063559322033898305084745762711864406779661016949",
+          "volume_weighted_midpoint_drift": "-9.3911016949152542372881355932203389830508474576271"
+        }
+      }
+    },
+    {
+      "label": "micro_1",
+      "settings": {
+        "strategy": "microprice",
+        "half_spread_ticks": "5",
+        "signal_strength": "1"
+      },
+      "run_id": "73f6ea09559b-23bc90cb",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/73f6ea09559b-23bc90cb",
+      "digest": "82398068cca2cd3adf5f80ce0ee6ef68aa1a241a1c9becbbd1a6a0e0d09e20f8",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 10.752201116999998,
+        "output_bytes": 705849,
+        "process_peak_rss_mib": 41.58984375,
+        "sample_preparation_seconds": 1.3409997336566448e-05,
+        "wall_seconds": 10.828043346991763
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-0.937600",
+        "unrealized_gross": "0.081100",
+        "net_pnl": "-0.856500",
+        "gross_pnl": "-0.856500",
+        "fees": "0.000000",
+        "turnover": "8448.208400",
+        "filled_quantity": "0.1060",
+        "fill_events": 106,
+        "break_even_fee_bps": "-1.0138244222289781582566074009253843690693046823987",
+        "net_bps_on_turnover": "-1.0138244222289781582566074009253843690693046823987",
+        "return_on_initial_equity": "-0.000008565",
+        "decision_count": 2400,
+        "stage_changes": {
+          "tick_rounding": 2400,
+          "risk": 511,
+          "price_policy": 5
+        },
+        "actions": {
+          "submit": 383,
+          "retain": 3740,
+          "cancel": 150,
+          "none": 527
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "0.018600",
+        "inventory_mtm": "-0.875100",
+        "ending_inventory": "-0.0020",
+        "max_drawdown": "1.288550"
+      },
+      "markouts": {
+        "100": {
+          "observations": 106,
+          "valid": 106,
+          "quantity": "0.1060",
+          "markout_value": "-0.468750",
+          "drift_value": "-0.487350",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-4.4221698113207547169811320754716981132075471698113",
+          "volume_weighted_midpoint_drift": "-4.5976415094339622641509433962264150943396226415094"
+        },
+        "1000": {
+          "observations": 106,
+          "valid": 105,
+          "quantity": "0.1050",
+          "markout_value": "-0.694850",
+          "drift_value": "-0.712900",
+          "coverage": 0.9905660377358491,
+          "volume_weighted_markout": "-6.6176190476190476190476190476190476190476190476190",
+          "volume_weighted_midpoint_drift": "-6.7895238095238095238095238095238095238095238095238"
+        },
+        "5000": {
+          "observations": 106,
+          "valid": 105,
+          "quantity": "0.1050",
+          "markout_value": "-0.999200",
+          "drift_value": "-1.017250",
+          "coverage": 0.9905660377358491,
+          "volume_weighted_markout": "-9.5161904761904761904761904761904761904761904761905",
+          "volume_weighted_midpoint_drift": "-9.6880952380952380952380952380952380952380952380952"
+        }
+      }
+    },
+    {
+      "label": "micro_10",
+      "settings": {
+        "strategy": "microprice",
+        "half_spread_ticks": "5",
+        "signal_strength": "10"
+      },
+      "run_id": "54f1453cd4c0-8c500054",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/54f1453cd4c0-8c500054",
+      "digest": "5735e4a6f96405f81e09dad95cd1aa55b552efc2e4b73e16db3a3d62c66f5009",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 10.89665743399999,
+        "output_bytes": 826278,
+        "process_peak_rss_mib": 41.58984375,
+        "sample_preparation_seconds": 6.883987225592136e-06,
+        "wall_seconds": 10.907408255967312
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-0.51440",
+        "unrealized_gross": "-0.02660",
+        "net_pnl": "-0.54100",
+        "gross_pnl": "-0.54100",
+        "fees": "0.00000",
+        "turnover": "7172.92860",
+        "filled_quantity": "0.090",
+        "fill_events": 90,
+        "break_even_fee_bps": "-0.75422471095000164925662302005905928019414552655661",
+        "net_bps_on_turnover": "-0.75422471095000164925662302005905928019414552655661",
+        "return_on_initial_equity": "-0.00000541",
+        "decision_count": 2400,
+        "stage_changes": {
+          "tick_rounding": 2400,
+          "risk": 251,
+          "price_policy": 9
+        },
+        "actions": {
+          "submit": 1030,
+          "retain": 2575,
+          "cancel": 928,
+          "none": 267
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "0.02995",
+        "inventory_mtm": "-0.57095",
+        "ending_inventory": "-0.004",
+        "max_drawdown": "1.14310"
+      },
+      "markouts": {
+        "100": {
+          "observations": 90,
+          "valid": 90,
+          "quantity": "0.090",
+          "markout_value": "-0.37625",
+          "drift_value": "-0.40620",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-4.1805555555555555555555555555555555555555555555556",
+          "volume_weighted_midpoint_drift": "-4.5133333333333333333333333333333333333333333333333"
+        },
+        "1000": {
+          "observations": 90,
+          "valid": 89,
+          "quantity": "0.089",
+          "markout_value": "-0.60920",
+          "drift_value": "-0.63830",
+          "coverage": 0.9888888888888889,
+          "volume_weighted_markout": "-6.8449438202247191011235955056179775280898876404494",
+          "volume_weighted_midpoint_drift": "-7.1719101123595505617977528089887640449438202247191"
+        },
+        "5000": {
+          "observations": 90,
+          "valid": 89,
+          "quantity": "0.089",
+          "markout_value": "-0.71555",
+          "drift_value": "-0.74465",
+          "coverage": 0.9888888888888889,
+          "volume_weighted_markout": "-8.0398876404494382022471910112359550561797752808989",
+          "volume_weighted_midpoint_drift": "-8.3668539325842696629213483146067415730337078651685"
+        }
+      }
+    },
+    {
+      "label": "flow_withdraw",
+      "settings": {
+        "strategy": "flow_withdraw"
+      },
+      "run_id": "2ac93b144dd9-e7c86c28",
+      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/2ac93b144dd9-e7c86c28",
+      "digest": "979dda4deb76e4f8515810fe3bec6bed0dcb787b32f4bcfe889a9f89fb4d933d",
+      "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
+      "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
+      "performance": {
+        "cpu_seconds": 10.963582352000003,
+        "output_bytes": 781507,
+        "process_peak_rss_mib": 41.58984375,
+        "sample_preparation_seconds": 5.523033905774355e-06,
+        "wall_seconds": 10.976742928032763
+      },
+      "review": {
+        "available": true,
+        "reconciled": true,
+        "realized_gross": "-0.216800",
+        "unrealized_gross": "0.12765",
+        "net_pnl": "-0.089150",
+        "gross_pnl": "-0.089150",
+        "fees": "0.000000",
+        "turnover": "4861.915300",
+        "filled_quantity": "0.0610",
+        "fill_events": 61,
+        "break_even_fee_bps": "-0.18336395123954545238581182193774539840297094439305",
+        "net_bps_on_turnover": "-0.18336395123954545238581182193774539840297094439305",
+        "return_on_initial_equity": "-0.0000008915",
+        "decision_count": 2400,
+        "stage_changes": {
+          "tick_rounding": 1828,
+          "risk": 129
+        },
+        "actions": {
+          "none": 1662,
+          "submit": 488,
+          "retain": 2238,
+          "cancel": 412
+        },
+        "reference_mid": "79726.35"
+      },
+      "attribution": {
+        "spread_capture": "-0.001550",
+        "inventory_mtm": "-0.087600",
+        "ending_inventory": "-0.0050",
+        "max_drawdown": "1.451850"
+      },
+      "markouts": {
+        "100": {
+          "observations": 61,
+          "valid": 61,
+          "quantity": "0.0610",
+          "markout_value": "-0.259600",
+          "drift_value": "-0.258050",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-4.2557377049180327868852459016393442622950819672131",
+          "volume_weighted_midpoint_drift": "-4.2303278688524590163934426229508196721311475409836"
+        },
+        "1000": {
+          "observations": 61,
+          "valid": 61,
+          "quantity": "0.0610",
+          "markout_value": "-0.407850",
+          "drift_value": "-0.406300",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-6.6860655737704918032786885245901639344262295081967",
+          "volume_weighted_midpoint_drift": "-6.6606557377049180327868852459016393442622950819672"
+        },
+        "5000": {
+          "observations": 61,
+          "valid": 61,
+          "quantity": "0.0610",
+          "markout_value": "-0.530850",
+          "drift_value": "-0.529300",
+          "coverage": 1.0,
+          "volume_weighted_markout": "-8.7024590163934426229508196721311475409836065573770",
+          "volume_weighted_midpoint_drift": "-8.6770491803278688524590163934426229508196721311475"
+        }
+      }
+    }
+  ],
+  "tests": "312 passed, 2 existing warnings",
+  "ui": {
+    "status": "PASS",
+    "real_history_count": 311,
+    "chart_count": 1,
+    "navigation_submissions": 0,
+    "negative_and_positive_run_display": true,
+    "hypothetical_examples": "covered by AppTest suite"
+  },
+  "deployment": {
+    "status": "PASS",
+    "new_pid": 480443,
+    "old_pid": 445838,
+    "release": "/home/0woo/lobcap-workbench-v1",
+    "health": true,
+    "collector_before": "MainPID=608\nNRestarts=0\nActiveState=active",
+    "collector_after": "MainPID=608\nNRestarts=0\nActiveState=active",
+    "collector_unchanged": true,
+    "git_commit": "3d80d914d26ea704dd7e5837770c862f00685868"
+  }
+}
