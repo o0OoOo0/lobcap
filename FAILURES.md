@@ -257,3 +257,18 @@ keep / exclude interval / exclude day
 - Failure: Git reported `Author identity unknown` after staging the files.
 - Impact: no commit was created and nothing was pushed; the intended index remained staged.
 - Resolution: copy the existing repository convention (`Codex <codex@openai.com>`) into repository-local Git config and retry the commit.
+# 2026-09-11 — Signal next-steps review tooling
+
+- Initial source reads guessed a nonexistent `research_flow/signal_lab/` package;
+  the implementation is directly under `research_flow/`. Correct paths were
+  enumerated with `rg --files` before inspection.
+- A guessed `docs/current/02_DATA_LAYOUT.md` path did not exist. Runtime layout
+  was established from the current GCP deployment document and read-only `/data`
+  inventory instead.
+- The first VM date search used filename patterns that did not match the actual
+  Hive-style directories and returned no records. No absence conclusion was
+  drawn; `/data/market=futures/symbol=btcusdt/kind=.../date=...` was then
+  inventoried directly.
+- A nested PowerShell/SSH `sed` regex intended to count lifecycle event types was
+  parsed locally and never executed. File counts and sample lifecycle rows were
+  retained; reconnect/error quality remains explicitly unverified.
