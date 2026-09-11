@@ -174,6 +174,25 @@ def evaluate_redundancy(snapshots, feature_names):
     return tuple(rows)
 
 
+def evaluate_redundancy_values(rows, feature_names):
+    """Pairwise dependence over compact value tuples (`None` means unavailable)."""
+    rows = tuple(rows)
+    if any(len(row) != len(feature_names) for row in rows):
+        raise ValueError("compact redundancy rows do not match feature names")
+    output = []
+    for left_index, left in enumerate(feature_names):
+        for right_index in range(left_index+1, len(feature_names)):
+            pairs = [(row[left_index], row[right_index]) for row in rows
+                     if row[left_index] is not None and row[right_index] is not None]
+            x = [row[0] for row in pairs]; y = [row[1] for row in pairs]
+            output.append({"left": left, "right": feature_names[right_index],
+                "overlap": len(pairs),
+                "coverage_overlap": len(pairs)/len(rows) if rows else None,
+                "pearson": _pearson(x, y),
+                "spearman": _pearson(_ranks(x), _ranks(y))})
+    return tuple(output)
+
+
 def stability_summary(per_date_reports):
     """Summarize direction and coverage without manufacturing significance."""
     dates = sorted(per_date_reports)

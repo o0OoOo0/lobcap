@@ -307,3 +307,17 @@ keep / exclude interval / exclude day
 - A catalogue resource probe again let local PowerShell expand a remote Bash
   command substitution. It printed the worker PID but gave `ps` an empty value;
   the immediate retry used that explicit PID and changed no state.
+- The first Streamlit health probe ran immediately after `systemctl restart` and
+  reached port 8501 before the process was ready. A five-second retry returned
+  `ok`; the collector remained active with zero restarts.
+- A Windows `rg` command used a Unix-style wildcard in a path argument and
+  reported an invalid path syntax error while the independent app read succeeded.
+  Subsequent searches named files explicitly.
+- A post-catalogue `grep` command over-escaped quotes through PowerShell and
+  produced `Trailing backslash`; the preceding systemd journal already provided
+  the authoritative 16 PASS / 0 EXCLUDED count and catalogue hash.
+- The first DEVELOPMENT study reached about 393 MiB cgroup peak during initial
+  cache work. Static review showed the later redundancy phase would retain full
+  seven-feature snapshots and risk the 512 MiB limit. Stopped it before that
+  phase, quarantined 6.1 MiB of partial output, and replaced the retained objects
+  with compact value tuples before rerunning.

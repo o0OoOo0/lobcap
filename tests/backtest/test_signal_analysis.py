@@ -4,8 +4,8 @@ import pytest
 
 from lobcap.backtest.research_flow.labels import MidpointSeries
 from lobcap.backtest.research_flow.signal_analysis import (
-    evaluate_feature, evaluate_feature_group, evaluate_redundancy, fit_bucket_edges,
-    stability_summary,
+    evaluate_feature, evaluate_feature_group, evaluate_redundancy,
+    evaluate_redundancy_values, fit_bucket_edges, stability_summary,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -59,6 +59,8 @@ def test_frozen_buckets_and_redundancy_are_explicit():
             s.analysis_time_ns, s.analysis_time_ns, s.analysis_time_ns, s.analysis_time_ns, ()),))
         for s in samples)
     assert evaluate_redundancy(duplicate, ("signal", "copy"))[0]["pearson"] == 1
+    compact = tuple((s.point("signal").value, s.point("signal").value) for s in samples)
+    assert evaluate_redundancy_values(compact, ("signal", "copy"))[0]["spearman"] == 1
 
 
 def test_grouped_report_pools_independent_window_truth_without_joining_them():

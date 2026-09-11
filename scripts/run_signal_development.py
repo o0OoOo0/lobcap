@@ -19,8 +19,8 @@ from lobcap.backtest.research_flow.sample_catalogue import (
     CATALOGUE_VERSION, DEVELOPMENT, CatalogueWindow, assert_outcomes_allowed,
 )
 from lobcap.backtest.research_flow.signal_analysis import (
-    evaluate_feature, evaluate_feature_group, evaluate_redundancy, fit_bucket_edges,
-    stability_summary,
+    evaluate_feature, evaluate_feature_group, fit_bucket_edges,
+    evaluate_redundancy_values, stability_summary,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -161,11 +161,15 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
                         for window, _ in selected)
         reports["pooled"][feature] = evaluate_feature_group(feature, grouped, definitions,
             freshness, config.instrument.tick)
-    all_snapshots = []
+    del feature_series
+    compact_rows = []
     for window, _ in selected:
         cache = cache_rows[window.window_id]
-        all_snapshots.extend(read_feature_cache(cache["path"], cache["cache_key"], FEATURES))
-    redundancy = evaluate_redundancy(all_snapshots, FEATURES)
+        for snapshot in read_feature_cache(cache["path"], cache["cache_key"], FEATURES):
+            points = {point.feature_name: point for point in snapshot.points}
+            compact_rows.append(tuple(points[name].value
+                if points[name].status == "AVAILABLE" else None for name in FEATURES))
+    redundancy = evaluate_redundancy_values(compact_rows, FEATURES)
     stability = stability_summary(reports["per_date"])
     output_row = {"status": "PASS", "study_version": "signal-development-v1",
         "code_fingerprint": code, "catalogue_sha256": catalogue["catalogue_sha256"],
