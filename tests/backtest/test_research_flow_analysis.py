@@ -231,6 +231,8 @@ def test_code_compatibility_requires_actual_display_only_git_diff(monkeypatch,tm
     a['manifest']['code_version']='a'*40
     b['manifest']['code_version']='b'*40
     for changed,expected in [('src/lobcap/backtest/research_flow/ui_results.py\ndocs/current/example.md\n',True),
+                             ('src/lobcap/backtest/research_flow/workbench.py\nscripts/validate_strategy_response.py\n',True),
+                             ('scripts/another_runner.py\n',False),
                              ('src/lobcap/backtest/execution.py\n',False),
                              ('src/lobcap/backtest/research_flow/analysis.py\n',False),
                              ('pyproject.toml\n',False)]:

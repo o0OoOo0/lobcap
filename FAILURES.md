@@ -171,3 +171,7 @@ keep / exclude interval / exclude day
 - New FIFO tests initially had 12 assertion failures because the expected fee ratio used Decimal precision 28 while the reviewed ratio uses 50. Exact monetary reconciliation already passed. Aligned expected ratio context to 50; no accounting change.
 - Read-only inspection attempted three nonexistent test/module filenames; corrected to the actual repository paths. No code or data was changed by those failed reads.
 
+- Real-history UI assertion initially expected four decimal places while the UI correctly rendered six; changed validation to compare Decimal values. Rerun passed for negative and positive outcomes with no job submissions.
+- Local SSH health found the prior tunnel absent. Restored a hidden loopback-only forward (PID 32120); VM app was healthy. Collector remained PID 608, NRestarts 0.
+- Whole Ubuntu suite passed 312 tests with two existing Streamlit/NumPy warnings. Removed the new chart's deprecated width argument during final visual review.
+

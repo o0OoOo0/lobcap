@@ -2,8 +2,11 @@
 
 ## Market-Making Backtest Lab
 
-The default app now follows **전략 → 실험 → 결과 → 비교**, with observable
-decision traces, a shared legacy/current run history, and one-change follow-ups:
+The default app now puts **strategy settings on the left and results/charts on
+the right**, with policy explanations, numerical order examples, independent
+FIFO PnL reconciliation, and one-change follow-ups:
+[simulation workbench review](docs/current/SIMULATION_WORKBENCH.md).
+The earlier research flow and shared history remain documented in
 [research flow v1](docs/current/RESEARCH_FLOW_V1.md).
 
 The underlying **Research Workspace** supports restricted signal formulas, exact

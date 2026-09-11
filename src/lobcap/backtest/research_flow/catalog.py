@@ -160,6 +160,7 @@ def display_only_compatibility(left_code, right_code):
         return None
     paths=result.stdout.splitlines()
     allowed={'apps/backtest_lab.py','README_FIRST.md','FAILURES.md',
+        'scripts/validate_strategy_response.py',
         'src/lobcap/backtest/research_flow/ui.py',
         'src/lobcap/backtest/research_flow/ui_experiment.py',
         'src/lobcap/backtest/research_flow/ui_results.py',

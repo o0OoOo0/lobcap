@@ -20,6 +20,8 @@ def run_label(row):
     c=row['config'];strategy=c.get('strategy','')
     name=STRATEGIES.get(strategy,(row['name'],))[0]
     distance=f" · 반거리 {c.get('half_spread_ticks')} tick" if strategy not in {'join_bbo','inventory_size','flow_withdraw','no_trade'} else ''
+    if strategy=='microprice':distance+=f" · 신호 ×{c.get('signal_strength')}"
+    if strategy=='inventory_skew':distance+=f" · 이동 {c.get('inventory_skew_ticks')} tick"
     return f"{name}{distance} · {c.get('size','?')} BTC · {row['status']} · {row['run_id'][-8:]}"
 
 
@@ -267,7 +269,7 @@ def render_charts(row,r):
                 mode='markers',name='매수 체결' if side=='buy' else '매도 체결',marker=dict(symbol=symbol,size=8,color=color)),row=3,col=1)
         fig.update_layout(height=660,margin=dict(l=10,r=10,t=45,b=10),hovermode='x unified',legend=dict(orientation='h',y=-.08))
         fig.update_xaxes(title_text='UTC 시각',row=3,col=1)
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,width='stretch')
         st.caption('손익·재고는 1초 표본, 목표 호가는 결정 시점의 의도입니다. 목표 호가를 실제 활성 주문으로 해석하지 마세요. 체결 마커는 실제 시뮬레이터 체결 기록입니다.')
     st.markdown('**손익의 다른 분해 · 수수료 전**')
     st.dataframe([{'항목':'실현 매매손익 (FIFO)','USDT':number_display(r['realized_gross'])},

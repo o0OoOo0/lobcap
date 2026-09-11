@@ -1,4 +1,4 @@
-"""Four-page research workflow; navigation never runs simulations."""
+"""Side-by-side simulation workbench; navigation never runs simulations."""
 import streamlit as st
 from lobcap.backtest.research_flow.workbench import render_workbench
 from lobcap.config.backtest import load_backtest_config
