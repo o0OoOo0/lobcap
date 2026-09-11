@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections import deque
 from decimal import Decimal
+import math
 
 from lobcap.backtest.engine import MarketBook
 from lobcap.backtest.types import ZERO
@@ -134,7 +135,8 @@ class CausalFeatureEngine:
             values["trade_intensity"+suffix] = Decimal(len(trades))*Decimal(1_000_000_000)/Decimal(window)
             values["bbo_ofi"+suffix] = _sum(value for t, value in self.ofi if now_ns-window < t <= now_ns)
             anchor = next(((t, m) for t, m in reversed(self.mid_history) if t <= now_ns-window), None)
-            values["mid_return"+suffix] = ((mid/anchor[1]).ln()*Decimal(10000) if anchor and anchor[1] > 0 else None)
+            values["mid_return"+suffix] = (Decimal(str(math.log(float(mid/anchor[1]))*10000))
+                                                  if anchor and anchor[1] > 0 else None)
         values["book_age_ns"] = Decimal(now_ns-self.last_depth_client_ns)
         return values
 
@@ -150,6 +152,7 @@ class CausalFeatureEngine:
             if status != "AVAILABLE" and name != "book_age_ns":
                 value = None
             unit = "USDT" if name in {"mid", "microprice", "vamp_5"} else (
+                "bps" if name.startswith(("spread_bps", "mid_return")) else
                 "dimensionless" if "imbalance" in name else
                 "BTC" if "depth" in name or "volume" in name or name.startswith("bbo_ofi") else
                 "events_per_second" if name.startswith("trade_intensity") else
