@@ -39,10 +39,12 @@ class CausalFeatureEngine:
         self.last_trade_exchange_ns = None
         self.last_trade_receive_ns = None
         self.last_trade_client_ns = None
-        self.source_refs = deque(maxlen=64)
+        self.last_depth_refs = ()
+        self.last_trade_refs = ()
         self.trades = deque()
         self.mid_history = deque([(available, self.book.mid)])
         self.ofi = deque()
+        self._top_cache = None
 
     def observe(self, event, client_available_time_ns: int):
         if client_available_time_ns < self.last_client_ns:
@@ -68,6 +70,8 @@ class CausalFeatureEngine:
             self.last_depth_client_ns = client_available_time_ns
             self.last_depth_exchange_ns = event.time_ns
             self.last_depth_receive_ns = event.receive_ns
+            self.last_depth_refs = event.source_refs
+            self._top_cache = None
             if not self.mid_history or self.mid_history[-1][1] != self.book.mid:
                 self.mid_history.append((client_available_time_ns, self.book.mid))
         if event.trade is not None:
@@ -76,10 +80,10 @@ class CausalFeatureEngine:
             self.last_trade_client_ns = client_available_time_ns
             self.last_trade_exchange_ns = event.time_ns
             self.last_trade_receive_ns = event.receive_ns
+            self.last_trade_refs = event.source_refs
         self.last_client_ns = client_available_time_ns
         self.last_exchange_ns = event.time_ns
         self.last_receive_ns = event.receive_ns
-        self.source_refs.extend(event.source_refs)
         self._trim(client_available_time_ns)
 
     def _trim(self, now_ns):
@@ -92,9 +96,11 @@ class CausalFeatureEngine:
             self.mid_history.popleft()
 
     def _depth(self, count):
-        bids = sorted(self.book.bids.items(), reverse=True)[:count]
-        asks = sorted(self.book.asks.items())[:count]
-        return [(Decimal(p), Decimal(q)) for p, q in bids], [(Decimal(p), Decimal(q)) for p, q in asks]
+        if self._top_cache is None:
+            self._top_cache = (
+                tuple((Decimal(p), Decimal(q)) for p, q in sorted(self.book.bids.items(), reverse=True)[:10]),
+                tuple((Decimal(p), Decimal(q)) for p, q in sorted(self.book.asks.items())[:10]))
+        return self._top_cache[0][:count], self._top_cache[1][:count]
 
     def _value_map(self, now_ns):
         values = {}
@@ -152,8 +158,9 @@ class CausalFeatureEngine:
             available = self.last_trade_client_ns if trade_feature and self.last_trade_client_ns is not None else self.last_depth_client_ns
             exchange = self.last_trade_exchange_ns if trade_feature and self.last_trade_exchange_ns is not None else self.last_depth_exchange_ns
             receive = self.last_trade_receive_ns if trade_feature and self.last_trade_receive_ns is not None else self.last_depth_receive_ns
+            refs = self.last_trade_refs if trade_feature and self.last_trade_refs else self.last_depth_refs
             points.append(FeaturePoint(name, VERSION, value, unit, status, analysis_time_ns,
-                available, exchange, receive, tuple(self.source_refs)))
+                available, exchange, receive, tuple(refs)))
         return tuple(points)
 
     def observation(self, analysis_time_ns: int, acquisition_segment: str):

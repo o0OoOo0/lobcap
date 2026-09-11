@@ -186,4 +186,5 @@ keep / exclude interval / exclude day
 - The first label-age fixture expected 0/10/20 ns, while its midpoint series actually produced 10/20/30 ns target ages. Corrected the fixture expectation; the implementation already preserved the measured ages.
 - Windows pytest temporary-directory ACLs also blocked the cache fixture and session cleanup even with a workspace-local `--basetemp`. Eighteen non-temporary focused cases passed; the locked tool-created directory was removed with its verified absolute path and cache coverage was moved to authoritative Ubuntu validation.
 - The first isolated Ubuntu command referenced a guessed `.venv` inside the GLFT release. The release uses `/home/0woo/lobcap-mvp/.venv`; the corrected command ran 49 focused and related regression tests successfully.
+- The first real-sample 100 ms foundation validator exceeded the 60-second target and was interrupted. Every feature point redundantly copied 64 recent source references and every snapshot re-sorted the full book. Reduced provenance to the latest source refs for the relevant depth/trade family and cached top-10 levels between depth deliveries before rerunning.
 
