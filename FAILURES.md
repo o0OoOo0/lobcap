@@ -353,3 +353,8 @@ keep / exclude interval / exclude day
   client time. Replaced the production cache path with a lazy two-stream merge
   over independent file iterators, retaining only one lookahead per stream while
   preserving per-stream order and `(delivery time, replay index)` tie-breaking.
+- The first bounded-delivery run completed all eight caches under the memory
+  limit, then exposed redundant work in seven separate feature children: each
+  rebuilt the same eight truth series. Stopped during the first feature, kept the
+  partial run quarantined, and combined preregistered feature evaluation and
+  redundancy into one bounded child that reads each cache/truth input once.

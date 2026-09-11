@@ -24,7 +24,7 @@ from lobcap.backtest.research_flow.sample_catalogue import (
 )
 from lobcap.backtest.research_flow.signal_analysis import (
     evaluate_feature, evaluate_feature_group, fit_bucket_edges,
-    evaluate_redundancy_values, stability_summary,
+    evaluate_redundancy, stability_summary,
 )
 from lobcap.backtest.research_flow.signal_contracts import (
     CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
@@ -161,52 +161,45 @@ def _cadence_phase(config, window, cache, sample, definitions):
     return {"cadence": cadence}
 
 
-def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshness, feature):
+def _feature_phase(config, windows, cache_rows, sample_rows, definitions, freshness):
     feature_series, truth_by_window = {}, {}
     for window in windows:
         cache = cache_rows[window.window_id]
         feature_series[window.window_id] = tuple(read_feature_cache(
-            cache["path"], cache["cache_key"], (feature,)))
+            cache["path"], cache["cache_key"], FEATURES))
         sample = sample_rows[window.window_id]
         initial, _ = load_sample(sample["path"])
         truth_by_window[window.window_id] = truth_midpoint_series(initial,
             iter_events(sample["path"]), sample["segment"])
     dates = sorted({window.date for window in windows})
-    fitted = {}
-    for date in dates:
-        training = tuple(snapshot for window in windows if window.date != date
-            for snapshot in feature_series[window.window_id])
-        edges = fit_bucket_edges(training, feature)
-        fitted[date] = (edges, _bucket_id(feature, set(dates)-{date}, edges))
-    per_window, per_date = {}, {}
-    for window in windows:
-        edges, policy_id = fitted[window.date]
-        per_window[window.window_id] = evaluate_feature(feature,
-            feature_series[window.window_id], truth_by_window[window.window_id], definitions,
-            freshness, config.instrument.tick, window.end_ns, edges, policy_id)
-    for date in dates:
-        grouped = tuple((feature_series[window.window_id], truth_by_window[window.window_id],
-                         window.end_ns) for window in windows if window.date == date)
-        edges, policy_id = fitted[date]
-        per_date[date] = evaluate_feature_group(feature, grouped, definitions, freshness,
-            config.instrument.tick, edges, policy_id)
+    reports = {"per_window": {}, "per_date": {}, "pooled": {}}
     grouped = tuple((feature_series[window.window_id], truth_by_window[window.window_id],
                      window.end_ns) for window in windows)
-    pooled = evaluate_feature_group(feature, grouped, definitions, freshness,
-                                    config.instrument.tick)
-    return {"feature": feature, "per_window": per_window,
-            "per_date": per_date, "pooled": pooled}
-
-
-def _redundancy_phase(windows, cache_rows):
-    compact_rows = []
-    for window in windows:
-        cache = cache_rows[window.window_id]
-        for snapshot in read_feature_cache(cache["path"], cache["cache_key"], FEATURES):
-            points = {point.feature_name: point for point in snapshot.points}
-            compact_rows.append(tuple(points[name].value
-                if points[name].status == "AVAILABLE" else None for name in FEATURES))
-    return {"redundancy": evaluate_redundancy_values(compact_rows, FEATURES)}
+    for feature in FEATURES:
+        fitted = {}
+        for date in dates:
+            training = tuple(snapshot for window in windows if window.date != date
+                for snapshot in feature_series[window.window_id])
+            edges = fit_bucket_edges(training, feature)
+            fitted[date] = (edges, _bucket_id(feature, set(dates)-{date}, edges))
+        for window in windows:
+            edges, policy_id = fitted[window.date]
+            reports["per_window"].setdefault(window.window_id, {})[feature] = evaluate_feature(
+                feature, feature_series[window.window_id], truth_by_window[window.window_id],
+                definitions, freshness, config.instrument.tick, window.end_ns, edges, policy_id)
+        for date in dates:
+            date_group = tuple((feature_series[window.window_id],
+                truth_by_window[window.window_id], window.end_ns)
+                for window in windows if window.date == date)
+            edges, policy_id = fitted[date]
+            reports["per_date"].setdefault(date, {})[feature] = evaluate_feature_group(
+                feature, date_group, definitions, freshness, config.instrument.tick,
+                edges, policy_id)
+        reports["pooled"][feature] = evaluate_feature_group(feature, grouped, definitions,
+            freshness, config.instrument.tick)
+    snapshots = tuple(snapshot for window in windows
+                      for snapshot in feature_series[window.window_id])
+    return {"reports": reports, "redundancy": evaluate_redundancy(snapshots, FEATURES)}
 
 
 def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
@@ -244,21 +237,12 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
     development_windows = tuple(window for window, _ in selected)
     freshness, freshness_evidence = freeze_development_freshness(cadence, development_windows)
     write_json(study/"freshness_policy.json", freshness_evidence)
-    reports = {"per_window": {}, "per_date": {}, "pooled": {}}
     windows = tuple(window for window, _ in selected)
-    for feature in FEATURES:
-        result = _isolated(_feature_phase, config, windows, cache_rows, sample_rows,
-                           definitions, freshness, feature)
-        for window_id, rows in result["per_window"].items():
-            reports["per_window"].setdefault(window_id, {})[feature] = rows
-        for date, rows in result["per_date"].items():
-            reports["per_date"].setdefault(date, {})[feature] = rows
-        reports["pooled"][feature] = result["pooled"]
-        phase_metrics.append({"phase": "feature", "id": feature,
-                              "peak_rss_mib": result["peak_rss_mib"]})
-    result = _isolated(_redundancy_phase, windows, cache_rows)
+    result = _isolated(_feature_phase, config, windows, cache_rows, sample_rows,
+                       definitions, freshness)
+    reports = result["reports"]
     redundancy = result["redundancy"]
-    phase_metrics.append({"phase": "redundancy", "id": "pooled",
+    phase_metrics.append({"phase": "feature_and_redundancy", "id": "all",
                           "peak_rss_mib": result["peak_rss_mib"]})
     stability = stability_summary(reports["per_date"])
     output_row = {"status": "PASS", "study_version": "signal-development-v1",
