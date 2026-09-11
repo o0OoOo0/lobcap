@@ -1,0 +1,181 @@
+{
+  "status": "PASS",
+  "runtime_code": "36af9bb1d4dfd7b03bc26d24c2712d2578d93622",
+  "validator_code": "a480c13b6da2b633742233a740cb4dd310529863",
+  "validation_version": "study1-baselines-acceptance-v1",
+  "report_sha256": "507551aeda1e1cd33a077262d1e75f566800cd839789f86b6e74b0ce75b5934e",
+  "protocol_sha256": "43ef795a913c4e9f2b0db0d21c4cb0984680cc83204a60fa2f26c26e15fbec51",
+  "catalogue_sha256": "cc676289c752418edb37ad9adc650dd4e6c611d19bd1bf4170f15fde6a765aae",
+  "p0_report_sha256": "e68f5148ceea431b782fb75af81402e319a8c9d4673023daa58d0b0b86bd65ff",
+  "windows": 8,
+  "runs": 24,
+  "all_zero_controls_match": true,
+  "all_ledgers_reconciled": true,
+  "maximum_phase_rss_mib": 70.46484375,
+  "elapsed_seconds": 1331.99,
+  "performance": [
+    {
+      "peak_rss_mib": 69.125,
+      "wall_seconds": 161.96653564402368,
+      "window_id": "btcusdt-2026-09-07-0010-20m"
+    },
+    {
+      "peak_rss_mib": 58.41015625,
+      "wall_seconds": 135.3934964769869,
+      "window_id": "btcusdt-2026-09-07-0610-20m"
+    },
+    {
+      "peak_rss_mib": 57.3671875,
+      "wall_seconds": 118.50670104502933,
+      "window_id": "btcusdt-2026-09-07-1210-20m"
+    },
+    {
+      "peak_rss_mib": 54.9296875,
+      "wall_seconds": 142.79374681098852,
+      "window_id": "btcusdt-2026-09-07-1810-20m"
+    },
+    {
+      "peak_rss_mib": 63.7890625,
+      "wall_seconds": 189.02537483797641,
+      "window_id": "btcusdt-2026-09-08-0010-20m"
+    },
+    {
+      "peak_rss_mib": 70.46484375,
+      "wall_seconds": 241.14434375299606,
+      "window_id": "btcusdt-2026-09-08-0610-20m"
+    },
+    {
+      "peak_rss_mib": 61.828125,
+      "wall_seconds": 188.7637734489981,
+      "window_id": "btcusdt-2026-09-08-1210-20m"
+    },
+    {
+      "peak_rss_mib": 61.52734375,
+      "wall_seconds": 151.00528380298056,
+      "window_id": "btcusdt-2026-09-08-1810-20m"
+    }
+  ],
+  "per_date": {
+    "2026-09-07": {
+      "mean_window_delta": {
+        "ending_inventory": "0.00075",
+        "fees": "0.000000",
+        "gross_pnl": "0.1144625",
+        "inventory_mtm": "0.1168375",
+        "max_abs_inventory": "-0.00025",
+        "max_drawdown": "-0.1791125",
+        "net_pnl": "0.1144625",
+        "spread_capture": "-0.002375",
+        "turnover": "-1459.852925"
+      },
+      "net_pnl_delta_negative_windows": 3,
+      "net_pnl_delta_positive_windows": 1,
+      "net_pnl_delta_zero_windows": 0,
+      "paired_windows": 4,
+      "sum_reset_window_delta": {
+        "fees": "0.000000",
+        "gross_pnl": "0.457850",
+        "inventory_mtm": "0.467350",
+        "net_pnl": "0.457850",
+        "spread_capture": "-0.009500",
+        "turnover": "-5839.411700"
+      },
+      "windows": [
+        "btcusdt-2026-09-07-0010-20m",
+        "btcusdt-2026-09-07-0610-20m",
+        "btcusdt-2026-09-07-1210-20m",
+        "btcusdt-2026-09-07-1810-20m"
+      ],
+      "windows_with_sufficient_execution": 4
+    },
+    "2026-09-08": {
+      "mean_window_delta": {
+        "ending_inventory": "0.0020",
+        "fees": "0.000000",
+        "gross_pnl": "-0.132525",
+        "inventory_mtm": "-0.135450",
+        "max_abs_inventory": "0.0000",
+        "max_drawdown": "-0.023450",
+        "net_pnl": "-0.132525",
+        "spread_capture": "0.002925",
+        "turnover": "-1294.710850"
+      },
+      "net_pnl_delta_negative_windows": 3,
+      "net_pnl_delta_positive_windows": 1,
+      "net_pnl_delta_zero_windows": 0,
+      "paired_windows": 4,
+      "sum_reset_window_delta": {
+        "fees": "0.000000",
+        "gross_pnl": "-0.530100",
+        "inventory_mtm": "-0.541800",
+        "net_pnl": "-0.530100",
+        "spread_capture": "0.011700",
+        "turnover": "-5178.843400"
+      },
+      "windows": [
+        "btcusdt-2026-09-08-0010-20m",
+        "btcusdt-2026-09-08-0610-20m",
+        "btcusdt-2026-09-08-1210-20m",
+        "btcusdt-2026-09-08-1810-20m"
+      ],
+      "windows_with_sufficient_execution": 4
+    }
+  },
+  "pooled": {
+    "mean_window_delta": {
+      "ending_inventory": "0.001375",
+      "fees": "0.000000",
+      "gross_pnl": "-0.00903125",
+      "inventory_mtm": "-0.00930625",
+      "max_abs_inventory": "-0.000125",
+      "max_drawdown": "-0.10128125",
+      "net_pnl": "-0.00903125",
+      "spread_capture": "0.000275",
+      "turnover": "-1377.2818875"
+    },
+    "net_pnl_delta_negative_windows": 6,
+    "net_pnl_delta_positive_windows": 2,
+    "net_pnl_delta_zero_windows": 0,
+    "paired_windows": 8,
+    "sum_reset_window_delta": {
+      "fees": "0.000000",
+      "gross_pnl": "-0.072250",
+      "inventory_mtm": "-0.074450",
+      "net_pnl": "-0.072250",
+      "spread_capture": "0.002200",
+      "turnover": "-11018.255100"
+    },
+    "windows": [
+      "btcusdt-2026-09-07-0010-20m",
+      "btcusdt-2026-09-07-0610-20m",
+      "btcusdt-2026-09-07-1210-20m",
+      "btcusdt-2026-09-07-1810-20m",
+      "btcusdt-2026-09-08-0010-20m",
+      "btcusdt-2026-09-08-0610-20m",
+      "btcusdt-2026-09-08-1210-20m",
+      "btcusdt-2026-09-08-1810-20m"
+    ],
+    "windows_with_sufficient_execution": 8
+  },
+  "locked_roles_opened": [],
+  "scope": "reconstructed paired review and aggregation; execution itself was not rerun",
+  "paper_eligibility": "INSUFFICIENT_EVIDENCE",
+  "regression": {
+    "final": {
+      "code": "a480c13b6da2b633742233a740cb4dd310529863",
+      "seconds": 199.2,
+      "warnings": 2,
+      "passed": 434
+    },
+    "runtime": {
+      "seconds": 133.7,
+      "warnings": 2,
+      "passed": 429
+    }
+  },
+  "collector": {
+    "state": "active",
+    "pid": 517216,
+    "restarts": 0
+  }
+}

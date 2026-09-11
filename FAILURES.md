@@ -409,3 +409,9 @@ keep / exclude interval / exclude day
   fixture produces different actual orders. No simulator behavior was changed.
 - Windows rg searches with wildcard path arguments failed. Reissued searches
   against concrete files/directories; no project state was affected.
+- Runtime commit 36af9bb passed 429 Ubuntu tests and all eight DEVELOPMENT
+  window suites (24 existing-engine executions), including economic zero-control
+  parity and ledger review. The separate validator at a480c13 reconstructed all
+  pairs/aggregates, and its full Ubuntu suite passed 434 tests. Runtime maximum
+  worker RSS was 70.46484375 MiB. Evidence and the non-promotion conclusion are
+  recorded in STUDY1_BASELINES_ACCEPTANCE.md.

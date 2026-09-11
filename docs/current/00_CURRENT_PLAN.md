@@ -1,6 +1,16 @@
 # LOB Market-Making Simulation — Current Plan v4
 
-Updated: 2026-09-06
+Updated: 2026-09-12 (research branch checkpoint; older infrastructure observations retain their dates)
+
+## Research branch checkpoint — feat/signal-research-v1
+
+Signal Research P0-A now has accepted multi-day DEVELOPMENT evidence; see
+[P0 acceptance](SIGNAL_RESEARCH_P0_ACCEPTANCE.md). Study 1 MM-0/MM-1 baseline
+orchestration and paired multi-day summaries reuse the existing simulator and
+passed 24 executions over eight windows plus 434 Ubuntu regressions; see
+[Study 1 acceptance](STUDY1_BASELINES_ACCEPTANCE.md). The default inventory skew
+did not establish net-PnL superiority. BP/VPIN remain unpromoted, validation/OOS
+remain locked, and Study 2 multi-order execution is still future work.
 
 ## 1. Research identity
 
