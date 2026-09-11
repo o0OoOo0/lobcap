@@ -77,3 +77,35 @@ This command rejects a dirty checkout, verifies the catalogue hash, opens only
 two development dates, fits quintile edges on the opposite date, and emits
 per-window, per-date and pooled reports. The POST_LATENCY family records its
 fixed entry-latency scenario. Locked roles cannot enter the analysis path.
+
+## Completion acceptance
+
+The runner and validator now share `research_flow.signal_study`. They select
+exactly the sealed PASS DEVELOPMENT windows, with at least two dates, preserving
+EXCLUDED windows and reasons. Eight windows are expected when all pilot windows
+pass; legitimate quality exclusions no longer conflict with an unconditional
+eight-window validator. A recomputed catalogue hash cannot reassign a locked
+pilot window's role or change its preregistered bounds.
+
+Acceptance checks the exact seven features and twelve label/horizon/latency
+combinations, window/date populations and censored-status pooling, cache code /
+sample / segment / schedule / projection provenance, DEVELOPMENT freshness
+evidence, cross-date bucket identities, stability consistency, redundancy pairs,
+and all required measured phases below 512 MiB. The standalone validator also
+checks feature-cache file hashes. These checks establish artifact consistency,
+not independent recomputation of every predictive statistic or signal promotion.
+
+Each completed worker records wall time and RSS in `progress.json`. This is a
+checkpoint of completed work, not proof that a worker is currently alive. Feature
+group results are retained separately. `candidate_report.json` is explicitly
+PENDING_ACCEPTANCE; only a passed gate produces `development_report.json` and
+`acceptance.json`. Use a new output directory; previous partial evidence is kept.
+
+```bash
+PYTHONPATH=src python scripts/validate_signal_development.py \
+  --report artifacts/backtest/research/NEW_STUDY/development_report.json \
+  --catalogue artifacts/backtest/research/signal-catalogue-v1/catalogue_manifest.json
+```
+
+Runtime acceptance of this change must be recorded separately at its exact code
+commit. The earlier ten-minute suite/deployment evidence does not certify it.

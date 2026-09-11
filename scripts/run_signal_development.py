@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import multiprocessing
 from pathlib import Path
 import queue as queue_module
 import subprocess
 import sys
+import time
 import traceback
 
 from lobcap.backtest.replay import iter_events, load_sample, write_json
@@ -19,42 +19,22 @@ from lobcap.backtest.research_flow.feature_cache import (
 from lobcap.backtest.research_flow.labels import (
     freeze_development_freshness, raw_label_cadence, truth_midpoint_series,
 )
-from lobcap.backtest.research_flow.sample_catalogue import (
-    CATALOGUE_VERSION, DEVELOPMENT, CatalogueWindow, assert_outcomes_allowed,
-)
+from lobcap.backtest.research_flow.sample_catalogue import DEVELOPMENT
 from lobcap.backtest.research_flow.signal_analysis import (
     evaluate_feature, evaluate_feature_group, fit_bucket_edges,
     evaluate_redundancy_values, stability_summary,
 )
-from lobcap.backtest.research_flow.signal_contracts import (
-    CLIENT_FORWARD_RETURN, MARKET_TRUTH_RETURN, POST_LATENCY_RETURN,
-    AnalysisSchedule, LabelDefinition,
-)
+from lobcap.backtest.research_flow.signal_contracts import AnalysisSchedule
 from lobcap.backtest.types import jsonable
+from lobcap.backtest.research_flow.signal_study import (
+    FEATURES, CACHE_FEATURES, HORIZONS, FEATURE_GROUPS, definitions,
+    development_windows, bucket_id, validate_report,
+)
 from lobcap.config.backtest import load_backtest_config
 
 
-FEATURES = ("microprice_minus_mid_ticks", "imbalance_1", "imbalance_5",
-            "vamp_5_minus_mid_ticks", "trade_volume_imbalance_1000ms",
-            "bbo_ofi_1000ms", "mid_return_1000ms")
-CONTROL_FEATURES = ("mid", "spread_ticks", "bid_top_depth", "ask_top_depth",
-                    "total_top_depth", "book_age_ns", "feed_delay_ns")
-CACHE_FEATURES = FEATURES + CONTROL_FEATURES
-HORIZONS = (100_000_000, 500_000_000, 1_000_000_000, 5_000_000_000)
-
-
 def _definitions(entry_latency_ns):
-    rows = []
-    for horizon in HORIZONS:
-        rows.extend((LabelDefinition(MARKET_TRUTH_RETURN, horizon),
-                     LabelDefinition(CLIENT_FORWARD_RETURN, horizon),
-                     LabelDefinition(POST_LATENCY_RETURN, horizon,
-                                     entry_latency_ns=entry_latency_ns)))
-    return tuple(rows)
-
-
-def _window(row):
-    return CatalogueWindow(**row["window"])
+    return definitions(entry_latency_ns)
 
 
 def _code_fingerprint(root):
@@ -68,12 +48,7 @@ def _code_fingerprint(root):
 
 def _catalogue(path):
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
-    digest = payload.pop("catalogue_sha256", None)
-    actual = hashlib.sha256(json.dumps(payload, sort_keys=True,
-        separators=(",", ":")).encode()).hexdigest()
-    if payload.get("catalogue_version") != CATALOGUE_VERSION or digest != actual:
-        raise ValueError("catalogue fingerprint mismatch")
-    payload["catalogue_sha256"] = digest
+    development_windows(payload)
     return payload
 
 
@@ -86,10 +61,7 @@ def _cache_identity(manifest, tick, code):
 
 
 def _bucket_id(feature, fit_dates, edges):
-    payload = {"feature": feature, "fit_dates": sorted(fit_dates),
-               "edges": [str(value) for value in edges], "method": "date-crossfit-quintile-v1"}
-    return "bucket-"+hashlib.sha256(json.dumps(payload, sort_keys=True,
-        separators=(",", ":")).encode()).hexdigest()[:16]
+    return bucket_id(feature, fit_dates, edges)
 
 
 def _peak_rss_mib():
@@ -111,6 +83,8 @@ def _phase_entry(queue, target, args):
 
 
 def _isolated(target, *args):
+    started = time.monotonic()
+    print(json.dumps({"phase": target.__name__, "status": "STARTED"}), flush=True)
     context = multiprocessing.get_context("spawn")
     queue = context.Queue()
     process = context.Process(target=_phase_entry, args=(queue, target, args))
@@ -128,6 +102,9 @@ def _isolated(target, *args):
         raise RuntimeError(result)
     if result.get("peak_rss_mib") is not None and result["peak_rss_mib"] >= 512:
         raise MemoryError(f"isolated phase exceeded 512 MiB RSS: {result}")
+    result["wall_seconds"] = time.monotonic()-started
+    print(json.dumps({"phase": target.__name__, "status": "PASS",
+        "wall_seconds": result["wall_seconds"], "peak_rss_mib": result["peak_rss_mib"]}), flush=True)
     return result
 
 
@@ -136,6 +113,13 @@ def _cache_phase(config, window, seal, study, code):
     initial, manifest = load_sample(sample_path)
     if manifest["sample_sha256"] != seal["sample_sha256"]:
         raise ValueError("catalogue/sample hash mismatch")
+    expected = {"sample_id": window.window_id, "start_ns": window.start_ns,
+                "end_ns": window.end_ns, "warmup_ns": window.warmup_ns}
+    if (any(manifest["sample"].get(k) != v for k, v in expected.items())
+            or manifest["instrument"]["tick"] != str(config.instrument.tick)
+            or manifest["acquisition_segments"] != seal["acquisition_segments"]
+            or manifest["bootstrap_receive_ns"] != seal["validation"]["bootstrap_receive_ns"]):
+        raise ValueError("sealed sample timing, tick or acquisition provenance mismatch")
     schedule = AnalysisSchedule(window.start_ns, window.end_ns, 100_000_000)
     identity = _cache_identity(manifest, config.instrument.tick, code)
     cache_path = study/"feature_cache"/window.window_id
@@ -212,56 +196,51 @@ def _redundancy_phase(windows, cache_rows):
 
 
 def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
+    if type(entry_latency_ms) is not int or entry_latency_ms < 0:
+        raise ValueError("entry latency must be a nonnegative integer")
     config = load_backtest_config(config_path)
     catalogue = _catalogue(catalogue_path)
     root = Path(__file__).resolve().parents[1]
     code = _code_fingerprint(root)
     study = Path(output) if output else config.output_path/"research"/"signal-development-v1"
+    selected = development_windows(catalogue)
     study.mkdir(parents=True, exist_ok=False)
-    selected = []
-    for row in catalogue["windows"]:
-        window = _window(row)
-        if window.role != DEVELOPMENT or row["quality_status"] != "PASS":
-            continue
-        assert_outcomes_allowed(window)
-        selected.append((window, row))
-    if len({window.date for window, _ in selected}) < 2:
-        raise ValueError("two DEVELOPMENT dates with PASS windows are required")
     definitions = _definitions(entry_latency_ms*1_000_000)
     cache_rows = {}
     cadence = {}
     sample_rows = {}
     phase_metrics = []
+    def record_phase(phase, identifier, result, **extra):
+        phase_metrics.append({"phase": phase, "id": identifier,
+            "peak_rss_mib": result["peak_rss_mib"], "wall_seconds": result["wall_seconds"], **extra})
+        write_json(study/"progress.json", {"status": "RUNNING", "code_fingerprint": code,
+            "catalogue_sha256": catalogue["catalogue_sha256"], "completed_phases": phase_metrics})
     for window, seal in selected:
         result = _isolated(_cache_phase, config, window, seal, study, code)
         cache_rows[window.window_id] = result["cache"]
         sample_rows[window.window_id] = result["sample"]
-        phase_metrics.append({"phase": "cache_write", "id": window.window_id,
-                              "peak_rss_mib": result["peak_rss_mib"]})
+        record_phase("cache_write", window.window_id, result)
         measured = _isolated(_cadence_phase, config, window, result["cache"],
                              result["sample"], definitions)
         cadence[window.window_id] = measured["cadence"]
-        phase_metrics.append({"phase": "cadence", "id": window.window_id,
-                              "peak_rss_mib": measured["peak_rss_mib"]})
+        record_phase("cadence", window.window_id, measured)
     development_windows = tuple(window for window, _ in selected)
     freshness, freshness_evidence = freeze_development_freshness(cadence, development_windows)
     write_json(study/"freshness_policy.json", freshness_evidence)
     windows = tuple(window for window, _ in selected)
     reports = {"per_window": {}, "per_date": {}, "pooled": {}}
-    for group_index, features in enumerate((FEATURES[:4], FEATURES[4:]), 1):
+    for group_index, features in enumerate(FEATURE_GROUPS, 1):
         result = _isolated(_feature_phase, config, windows, cache_rows, sample_rows,
                            definitions, freshness, features)
         for scope in ("per_window", "per_date"):
             for scope_id, rows in result["reports"][scope].items():
                 reports[scope].setdefault(scope_id, {}).update(rows)
         reports["pooled"].update(result["reports"]["pooled"])
-        phase_metrics.append({"phase": "feature_group", "id": group_index,
-                              "features": features,
-                              "peak_rss_mib": result["peak_rss_mib"]})
+        record_phase("feature_group", group_index, result, features=features)
+        write_json(study/f"feature_group_{group_index}.json", result["reports"])
     result = _isolated(_redundancy_phase, windows, cache_rows)
     redundancy = result["redundancy"]
-    phase_metrics.append({"phase": "redundancy", "id": "pooled",
-                          "peak_rss_mib": result["peak_rss_mib"]})
+    record_phase("redundancy", "pooled", result)
     stability = stability_summary(reports["per_date"])
     output_row = {"status": "PASS", "study_version": "signal-development-v1",
         "code_fingerprint": code, "catalogue_sha256": catalogue["catalogue_sha256"],
@@ -273,7 +252,15 @@ def run(config_path, catalogue_path, output=None, entry_latency_ms=10):
         "phase_performance": phase_metrics,
         "statistical_significance": "NOT_CLAIMED",
         "paper_eligibility": "INSUFFICIENT_EVIDENCE"}
+    manifests = {wid: json.loads((Path(row["path"])/"feature_manifest.json").read_text())
+                 for wid, row in cache_rows.items()}
+    write_json(study/"candidate_report.json", {**output_row, "status": "PENDING_ACCEPTANCE"})
+    acceptance = validate_report(jsonable(output_row), catalogue,
+                                 jsonable(freshness_evidence), manifests)
     write_json(study/"development_report.json", output_row)
+    write_json(study/"acceptance.json", acceptance)
+    write_json(study/"progress.json", {"status": "PASS", "code_fingerprint": code,
+        "catalogue_sha256": catalogue["catalogue_sha256"], "completed_phases": phase_metrics})
     return study, output_row
 
 

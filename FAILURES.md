@@ -362,3 +362,14 @@ keep / exclude interval / exclude day
   `FeaturePoint` sets cannot coexist under the 512 MiB worker target. Stopped it
   and split evaluation into preregistered groups of four and three; redundancy
   again uses compact value tuples in its own bounded phase.
+
+# 2026-09-12 — Multi-day prerequisite completion
+
+- Read-only inspection found the 5786966 worker stopped, eight feature caches
+  and freshness evidence retained, but no development_report.json. The journal
+  records a stop at 15:43 UTC; it does not establish an OOM failure for that run.
+- Two multi-file editing attempts were rejected before applying because one
+  reused a path in delete/add operations and another used a mismatched document
+  anchor. Reissued exact patches; no runtime inputs were affected.
+- A broad initial journal query included unrelated telemetry errors. Narrowed
+  the query to the signal worker; telemetry configuration was not changed.

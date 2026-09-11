@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Fail-closed structural validation for a DEVELOPMENT signal report."""
+"""Verify DEVELOPMENT populations, provenance and cache checksums."""
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
+
+from lobcap.backtest.research_flow.signal_study import validate_report
+from lobcap.config.common import sha256_file
 
 
 def _read(path):
@@ -14,43 +16,22 @@ def _read(path):
 
 def validate(report_path, catalogue_path, memory_limit_mib=512):
     report = _read(report_path)
-    catalogue = _read(catalogue_path)
-    claimed = catalogue.pop("catalogue_sha256", None)
-    actual = hashlib.sha256(json.dumps(catalogue, sort_keys=True,
-        separators=(",", ":")).encode()).hexdigest()
-    checks = {
-        "report_pass": report.get("status") == "PASS",
-        "catalogue_hash_valid": claimed == actual,
-        "catalogue_bound": report.get("catalogue_sha256") == claimed,
-        "development_only": report.get("roles_opened") == ["DEVELOPMENT"],
-        "locked_roles_unopened": report.get("locked_roles_opened") == [],
-        "statistical_claim_withheld": report.get("statistical_significance") == "NOT_CLAIMED",
-        "paper_eligibility_withheld": report.get("paper_eligibility") == "INSUFFICIENT_EVIDENCE",
-    }
-    features = tuple(report.get("features", ()))
-    reports = report.get("reports", {})
-    checks["seven_preregistered_features"] = len(features) == 7 and len(set(features)) == 7
-    checks["eight_development_windows"] = len(reports.get("per_window", {})) == 8
-    checks["two_development_dates"] = len(reports.get("per_date", {})) == 2
-    checks["pooled_feature_set"] = set(reports.get("pooled", {})) == set(features)
-    scopes = list(reports.get("per_window", {}).values()) + list(
-        reports.get("per_date", {}).values()) + [reports.get("pooled", {})]
-    checks["all_scopes_complete"] = all(set(scope) == set(features) and
-        all(len(scope[name]) == 12 for name in features) for scope in scopes)
-    phases = report.get("phase_performance", ())
-    peaks = [row.get("peak_rss_mib") for row in phases]
-    checks["all_phase_memory_measured"] = bool(peaks) and all(
-        isinstance(value, (int, float)) for value in peaks)
-    checks["phase_memory_below_limit"] = bool(peaks) and max(peaks) < memory_limit_mib
-    checks["four_freshness_horizons"] = len(report.get("freshness_policy", {}).get(
-        "maximum_age_by_horizon_ns", ())) == 4
-    failed = sorted(name for name, passed in checks.items() if not passed)
-    result = {"status": "PASS" if not failed else "FAIL", "checks": checks,
-              "failed": failed, "phase_count": len(phases),
-              "maximum_phase_rss_mib": max(peaks) if peaks and all(
-                  isinstance(value, (int, float)) for value in peaks) else None}
-    if failed:
-        raise ValueError(json.dumps(result, sort_keys=True))
+    root = Path(report_path).resolve().parent
+    manifests = {}
+    for wid, cache in report.get("feature_caches", {}).items():
+        path = Path(cache["path"]).resolve()
+        if not path.is_relative_to(root/"feature_cache"):
+            raise ValueError("feature cache must belong to this study")
+        manifest = _read(path/"feature_manifest.json")
+        if set(manifest.get("files", {})) != {"features.jsonl.gz"}:
+            raise ValueError("unexpected feature cache artifacts")
+        for name, digest in manifest["files"].items():
+            if sha256_file(path/name) != digest:
+                raise ValueError("feature cache checksum mismatch")
+        manifests[wid] = manifest
+    result = validate_report(report, _read(catalogue_path),
+        _read(root/"freshness_policy.json"), manifests, memory_limit_mib)
+    result["cache_checksums_verified"] = True
     return result
 
 

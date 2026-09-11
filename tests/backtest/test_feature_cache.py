@@ -92,8 +92,9 @@ def test_feature_cache_key_covers_causal_provenance(field, value):
         "s", schedule, "recorded", 500, **changed)
 
 
-def test_complete_replay_prefix_is_invariant_to_future_suffix_mutation():
-    schedule = AnalysisSchedule(0, 300_000_000, 100_000_000)
+@pytest.mark.parametrize("streaming", [False, True])
+def test_complete_replay_prefix_is_invariant_to_future_suffix_mutation(streaming):
+    schedule = AnalysisSchedule(0, 400_000_000, 100_000_000)
     prefix = [ReplayEvent(1, 50_000_000, 60_000_000, "depth", ("d:1",), updates=(
         L2LevelUpdate("buy", D(100), D(3), D(4)),))]
     left = prefix + [ReplayEvent(2, 250_000_000, 260_000_000, "depth", ("d:2",), updates=(
@@ -102,5 +103,9 @@ def test_complete_replay_prefix_is_invariant_to_future_suffix_mutation():
         L2LevelUpdate("buy", D(100), D(4), D(9)),))]
     kwargs = dict(clock_mode="recorded", bootstrap_receive_ns=0,
                   acquisition_segment="sealed-segment")
-    assert list(iter_feature_snapshots(initial(), left, schedule, D(1), **kwargs)) == list(
-        iter_feature_snapshots(initial(), right, schedule, D(1), **kwargs))
+    a = list(iter_feature_snapshots(initial(), (lambda: iter(left)) if streaming else left,
+                                   schedule, D(1), **kwargs))
+    b = list(iter_feature_snapshots(initial(), (lambda: iter(right)) if streaming else right,
+                                   schedule, D(1), **kwargs))
+    assert a[:3] == b[:3]
+    assert a[3] != b[3]  # The changed suffix is actually observed by the replay.
