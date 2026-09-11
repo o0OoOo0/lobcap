@@ -299,3 +299,11 @@ keep / exclude interval / exclude day
   the newly mandatory scheduler identity (375 passed, three failed). Production
   comparison correctly failed closed. Added the identity to those fixtures and
   reran the affected tests before repeating the full suite.
+- The first catalogue worker constructed `SampleSpec` positionally, placing the
+  arrival-normalization string in `schema_version` and leaving normalization at
+  v1. Inspection caught this after one PASS window; stopped the dedicated worker,
+  quarantined its two generated sample directories and catalogue output, changed
+  construction to explicit keywords, and added a field-order regression.
+- A catalogue resource probe again let local PowerShell expand a remote Bash
+  command substitution. It printed the worker PID but gave `ps` an empty value;
+  the immediate retry used that explicit PID and changed no state.

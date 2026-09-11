@@ -30,3 +30,11 @@ def test_catalogue_retains_every_exclusion_and_reason():
     assert len(catalogue["catalogue_sha256"]) == 64
     with pytest.raises(ValueError, match="every preregistered"):
         seal_catalogue(rows[:-1])
+
+
+def test_catalogue_sample_contract_keeps_schema_and_normalization_separate():
+    from lobcap.backtest.types import ARRIVAL_NORMALIZATION_VERSION, SampleSpec
+    # Guard the exact field because SampleSpec also has schema_version before it.
+    spec = SampleSpec("x", 1, 2, normalization_version=ARRIVAL_NORMALIZATION_VERSION)
+    assert spec.schema_version == 1
+    assert spec.normalization_version == ARRIVAL_NORMALIZATION_VERSION

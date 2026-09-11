@@ -22,7 +22,8 @@ def build(base_config, destination=None):
     root.mkdir(parents=True, exist_ok=True)
     for window in fixed_pilot_windows():
         sample = SampleSpec(window.window_id, window.start_ns, window.end_ns,
-                            window.warmup_ns, ARRIVAL_NORMALIZATION_VERSION)
+                            warmup_ns=window.warmup_ns,
+                            normalization_version=ARRIVAL_NORMALIZATION_VERSION)
         config = replace(base, sample=sample)
         try:
             sample_path = prepare_sample(config)
