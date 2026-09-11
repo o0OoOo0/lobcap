@@ -99,8 +99,7 @@ class CausalFeatureEngine:
     def _depth(self, count):
         if self._top_cache is None:
             self._top_cache = (
-                tuple((Decimal(p), Decimal(q)) for p, q in sorted(self.book.bids.items(), reverse=True)[:10]),
-                tuple((Decimal(p), Decimal(q)) for p, q in sorted(self.book.asks.items())[:10]))
+                self.book.top_levels("buy",10), self.book.top_levels("sell",10))
         return self._top_cache[0][:count], self._top_cache[1][:count]
 
     def _value_map(self, now_ns):

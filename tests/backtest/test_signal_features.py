@@ -60,6 +60,19 @@ def test_bbo_ofi_is_event_driven_and_snapshot_does_not_update_state():
     assert engine.last_client_ns == 10
 
 
+def test_top_depth_cache_handles_delete_and_readd_without_duplicate_levels():
+    engine = CausalFeatureEngine(initial(), D(1))
+    engine.observe(depth(1, 10, updates=(
+        L2LevelUpdate("buy", D(100), D(3), D(0)),
+        L2LevelUpdate("buy", D(98), D(0), D(5)))), 10)
+    assert engine.book.top_levels("buy", 3) == ((D(99), D(2)), (D(98), D(5)))
+    engine.observe(depth(2, 20, updates=(
+        L2LevelUpdate("buy", D(100), D(0), D(7)),)), 20)
+    assert engine.book.top_levels("buy", 3) == (
+        (D(100), D(7)), (D(99), D(2)), (D(98), D(5)))
+    assert values(engine, 20)["bid_depth_5"].value == D(14)
+
+
 def test_future_suffix_cannot_change_past_feature_snapshot():
     prefix = [trade(1, 10, "sell", "2")]
     a = CausalFeatureEngine(initial(), D(1)); b = CausalFeatureEngine(initial(), D(1))

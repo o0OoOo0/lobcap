@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from decimal import Decimal, localcontext
+import heapq
 
 from lobcap.backtest.execution import Execution
 from lobcap.backtest.types import NS, ZERO, MarketView, PortfolioView, RunResult, jsonable
@@ -13,7 +14,46 @@ class MarketBook:
         self.bids, self.asks = dict(initial.bids), dict(initial.asks)
         self.time_ns=initial.time_ns
         self.coverage_bid,self.coverage_ask=initial.coverage_bid,initial.coverage_ask
-        self.bid=max(self.bids);self.ask=min(self.asks)
+        self._bid_versions={price:0 for price in self.bids}
+        self._ask_versions={price:0 for price in self.asks}
+        self._bid_heap=[(-price,0) for price in self.bids]
+        self._ask_heap=[(price,0) for price in self.asks]
+        heapq.heapify(self._bid_heap);heapq.heapify(self._ask_heap)
+        self.bid=self._best("buy");self.ask=self._best("sell")
+
+    def _touch(self,side,price,present):
+        versions=self._bid_versions if side=="buy" else self._ask_versions
+        version=versions.get(price,-1)+1
+        versions[price]=version
+        if present:
+            heapq.heappush(self._bid_heap if side=="buy" else self._ask_heap,
+                           (-price if side=="buy" else price,version))
+
+    def _best(self,side):
+        levels=self.bids if side=="buy" else self.asks
+        versions=self._bid_versions if side=="buy" else self._ask_versions
+        heap=self._bid_heap if side=="buy" else self._ask_heap
+        while heap:
+            key,version=heap[0]
+            price=-key if side=="buy" else key
+            if price in levels and versions.get(price)==version:return price
+            heapq.heappop(heap)
+        raise ValueError("empty replay book")
+
+    def top_levels(self,side,count):
+        """Return best aggregate levels without sorting the complete reconstructed book."""
+        if count <= 0: return ()
+        levels=self.bids if side=="buy" else self.asks
+        versions=self._bid_versions if side=="buy" else self._ask_versions
+        heap=self._bid_heap if side=="buy" else self._ask_heap
+        selected=[]; result=[]
+        while heap and len(result)<count:
+            key,version=heapq.heappop(heap)
+            price=-key if side=="buy" else key
+            if price not in levels or versions.get(price)!=version:continue
+            selected.append((key,version));result.append((price,levels[price]))
+        for row in selected:heapq.heappush(heap,row)
+        return tuple(result)
 
     def quantity(self, side, price):
         return (self.bids if side=="buy" else self.asks).get(price,ZERO)
@@ -29,12 +69,12 @@ class MarketBook:
                 raise ValueError("normalized quantity_before does not match reconstructed book")
             if update.quantity_after:
                 levels[update.price]=update.quantity_after
-                if update.side=="buy" and update.price>self.bid:self.bid=update.price
-                if update.side=="sell" and update.price<self.ask:self.ask=update.price
-            else:levels.pop(update.price,None)
+                self._touch(update.side,update.price,True)
+            else:
+                levels.pop(update.price,None)
+                self._touch(update.side,update.price,False)
         if not self.bids or not self.asks:raise ValueError("empty replay book")
-        if self.bid not in self.bids:self.bid=max(self.bids)
-        if self.ask not in self.asks:self.ask=min(self.asks)
+        self.bid=self._best("buy");self.ask=self._best("sell")
         if self.bid>=self.ask:raise ValueError("crossed replay book")
         self.time_ns=event.time_ns
 
