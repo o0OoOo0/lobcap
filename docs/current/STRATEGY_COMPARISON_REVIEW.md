@@ -43,3 +43,14 @@ the earlier nested temporary-path failures without changing research modules.
 Authoritative Ubuntu and real-sample acceptance of these review fixes require
 the previously blocked VM code transfer authorization; local tests do not
 replace that acceptance.
+
+## Validation result
+
+- Focused initial review: 60 passed, one unavailable symlink test skipped.
+- Complete local backtest suite: 301 passed, one skipped, one failure.
+- Clean code commit `e67016b`: 38 strategy-suite/workbench tests passed, including
+  actual serial runs and strict scorecard reconciliation. The remaining legacy
+  navigation test failed in Streamlit 1.37.1 AppTest while collecting widget
+  state after a page transition (`SessionState` missing widget key). This is an
+  unresolved local legacy UI validation failure, not an all-green regression.
+- No Ubuntu transfer, deployment, or profitability assertion was made.
