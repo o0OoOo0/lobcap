@@ -16,6 +16,7 @@ from .feature_cache import iter_feature_snapshots
 from .labels import apply_freshness_policy, measure_label, truth_midpoint_series
 from .signal_analysis import _quantile
 from .signal_contracts import AnalysisSchedule, CLIENT_FORWARD_RETURN, LabelDefinition, VALID
+from .signal_study import digest
 from .strategy_compare import build_scorecard
 from .study1 import run_record, sealed_config
 
@@ -26,6 +27,26 @@ GRID_NS = 100_000_000
 HORIZONS = (100_000_000, 500_000_000, 1_000_000_000, 5_000_000_000)
 QUANTILES = (Decimal(".5"), Decimal(".75"), Decimal(".9"), Decimal(".95"),
              Decimal(".97"), Decimal(".99"))
+
+
+def movement_protocol(code, input_protocol_sha256, input_report_sha256, regime_edges):
+    protocol = {"version": VERSION, "code_fingerprint": code,
+        "input_protocol_sha256": input_protocol_sha256,
+        "regime_input_report_sha256": input_report_sha256,
+        "regime_edges_bps": list(regime_edges), "grid_ns": GRID_NS,
+        "horizons_ns": list(HORIZONS), "quantiles": [str(value) for value in QUANTILES],
+        "movement_anchor": "causal client midpoint at analysis time",
+        "movement_target": "exchange-truth midpoint at or before horizon under P0 freshness",
+        "excursion_path": "exchange-truth midpoint path from decision through horizon",
+        "coverage_rule": "anchor, target, and every excursion-path state must be covered",
+        "scopes": ["overlapping", "per-window non-overlapping"],
+        "primary_spacing_statistic": "non-overlapping maximum absolute excursion",
+        "horizon_selection": "available horizon nearest pooled median active MM-1 order lifetime",
+        "roles_opened": ["DEVELOPMENT"], "locked_roles_opened": [],
+        "ladder_execution_status": "NOT_STARTED_MULTI_ORDER_PREREQUISITE_ONLY",
+        "statistical_significance": "NOT_CLAIMED", "paper_eligibility": "INSUFFICIENT_EVIDENCE"}
+    protocol["protocol_sha256"] = digest(protocol)
+    return protocol
 
 
 def _gzip_writer(path):

@@ -9,10 +9,16 @@ from lobcap.backtest.research_flow.signal_contracts import VALID
 from lobcap.backtest.research_flow.signal_contracts import FreshnessPolicy
 from lobcap.backtest.research_flow.study2_movement import (
     HORIZONS, _excursion, aggregate_lifetimes, aggregate_movement,
-    fit_regime_edges, movement_window, order_lifetime_window, regime_name,
+    fit_regime_edges, movement_protocol, movement_window, order_lifetime_window, regime_name,
     spacing_candidates,
 )
 from test_study1_bp import bp_sample
+
+
+def test_runner_freezes_json_serializable_quantiles():
+    protocol = movement_protocol('code', 'input', 'report', ('0.1', '0.2'))
+    assert json.loads(json.dumps(protocol)) == protocol
+    assert protocol['quantiles'] == ['0.5', '0.75', '0.9', '0.95', '0.97', '0.99']
 
 
 def _write_gzip(path, rows):

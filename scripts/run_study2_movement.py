@@ -12,9 +12,9 @@ from lobcap.backtest.replay import write_json
 from lobcap.backtest.research_flow.signal_study import development_windows, digest
 from lobcap.backtest.research_flow.study1 import sealed_config
 from lobcap.backtest.research_flow.study2_movement import (
-    GRID_NS, HORIZONS, QUANTILES, REGIME_VERSION, VERSION, aggregate_lifetimes,
+    GRID_NS, REGIME_VERSION, aggregate_lifetimes,
     aggregate_movement_phase, fit_regime_edges, movement_phase, regime_input_phase,
-    spacing_candidates, study1_lifetime_rows,
+    movement_protocol, spacing_candidates, study1_lifetime_rows,
 )
 from lobcap.backtest.runner import config_document
 from lobcap.config.backtest import load_backtest_config
@@ -71,22 +71,8 @@ def run(config_path, catalogue_path, p0_report, study1_report, output):
         input_report = {"status": "PASS", "protocol_sha256": input_protocol["protocol_sha256"],
             "code_fingerprint": code, "per_window": input_rows, "fit": regime_fit}
         write_json(study/"regime_input_report.json", input_report)
-        protocol = {"version": VERSION, "code_fingerprint": code,
-            "input_protocol_sha256": input_protocol["protocol_sha256"],
-            "regime_input_report_sha256": sha256_file(study/"regime_input_report.json"),
-            "regime_edges_bps": regime_fit["edges_bps"], "grid_ns": GRID_NS,
-            "horizons_ns": HORIZONS, "quantiles": QUANTILES,
-            "movement_anchor": "causal client midpoint at analysis time",
-            "movement_target": "exchange-truth midpoint at or before horizon under P0 freshness",
-            "excursion_path": "exchange-truth midpoint path from decision through horizon",
-            "coverage_rule": "anchor, target, and every excursion-path state must be covered",
-            "scopes": ["overlapping", "per-window non-overlapping"],
-            "primary_spacing_statistic": "non-overlapping maximum absolute excursion",
-            "horizon_selection": "available horizon nearest pooled median active MM-1 order lifetime",
-            "roles_opened": ["DEVELOPMENT"], "locked_roles_opened": [],
-            "ladder_execution_status": "NOT_STARTED_MULTI_ORDER_PREREQUISITE_ONLY",
-            "statistical_significance": "NOT_CLAIMED", "paper_eligibility": "INSUFFICIENT_EVIDENCE"}
-        protocol["protocol_sha256"] = digest(protocol)
+        protocol = movement_protocol(code, input_protocol["protocol_sha256"],
+            sha256_file(study/"regime_input_report.json"), regime_fit["edges_bps"])
         write_json(study/"movement_protocol.json", protocol)
         movement_rows = []
         for window, seal in selected:

@@ -473,3 +473,10 @@ temporary directories. Rerunning outside the filesystem sandbox produced 97
 passes and one pre-existing workspace-worker failure caused by a missing atomic
 state-write temporary file. Study 2's focused and signal/label tests passed;
 the workspace-worker case is rerun separately before acceptance.
+
+The first VM B1 run completed all eight causal regime-input phases, then failed
+before opening movement outcomes because the protocol passed Decimal quantile
+constants directly to its JSON digest. The runner now freezes those constants
+as explicit strings and has a regression for the serialization boundary. The
+partial create-once directory remains diagnostic evidence; the corrected run
+uses a new output directory.
