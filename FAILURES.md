@@ -459,3 +459,17 @@ Sandboxed Windows pytest could not enumerate its own temporary directories.
 The same commands were rerun outside the filesystem sandbox with no test-code
 change, and the temporary directories created by those failed attempts were
 removed after their resolved paths were checked under `E:\dev\lobcap*`.
+
+# Study 2 movement research extension tests (2026-09-12)
+
+The first movement roundtrip fixture requested all four production horizons,
+but its short synthetic sample has valid covered targets only at 100 ms. The
+fixture now limits only that roundtrip test to 100 ms; the production protocol
+still requires 100 ms, 500 ms, 1 s, and 5 s and rejects any real window without
+valid observations at every horizon.
+
+The expanded Windows test run again hit sandbox denial while pytest enumerated
+temporary directories. Rerunning outside the filesystem sandbox produced 97
+passes and one pre-existing workspace-worker failure caused by a missing atomic
+state-write temporary file. Study 2's focused and signal/label tests passed;
+the workspace-worker case is rerun separately before acceptance.

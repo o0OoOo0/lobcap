@@ -24,7 +24,10 @@ BP/VPIN remain unpromoted. The remaining Study 1 work now has a frozen
 effects, measure BP+VPIN interaction and reversed control, then run fixed fee,
 latency, and queue sensitivities. Sequential fail-closed gates keep
 validation/OOS locked unless the combined candidate retains its DEVELOPMENT
-direction. Study 2 multi-order execution is still future work.
+direction. Study 2 B1 now has a frozen
+[movement/excursion protocol](STUDY2_MOVEMENT.md) that reuses causal P0 inputs
+and accepted MM-1 order lifetimes before any multi-order work. Multi-order
+execution remains gated on reviewing those DEVELOPMENT geometry results.
 
 ## 1. Research identity
 
