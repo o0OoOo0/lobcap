@@ -1,0 +1,816 @@
+{
+  "catalogue_sha256": "cc676289c752418edb37ad9adc650dd4e6c611d19bd1bf4170f15fde6a765aae",
+  "collector_final": {
+    "active": true,
+    "pid": 517216,
+    "restarts": 0
+  },
+  "evidence_logs_sha256": {
+    "review.log": "6b5322a6f7e428fd7c89e249ca22438c1c02392efe264d0980361646a50f213c",
+    "run.log": "5bfb42d90dc5cf6e35ac24c198b9683ee5121b1f6b77a45ab487116b7d4fde47",
+    "ubuntu-tests.log": "e10d7476c807ee11ccb36ca307cc62f4b0d2e93df12f4193f966cdab1e397c97"
+  },
+  "local_focused_tests": 75,
+  "locked_roles_opened": [],
+  "maximum_phase_rss_mib": 70.83203125,
+  "net_pnl_reset_sums": {
+    "MM-1": "-7.777200",
+    "MM-2": "-8.103750",
+    "MM-2-reversed": "-8.199850",
+    "MM-2-zero": "-7.777200"
+  },
+  "p0_report_sha256": "e68f5148ceea431b782fb75af81402e319a8c9d4673023daa58d0b0b86bd65ff",
+  "paper_eligibility": "INSUFFICIENT_EVIDENCE",
+  "per_date": {
+    "2026-09-07": {
+      "mean_window_delta": {
+        "ending_inventory": "-0.00175",
+        "fees": "0.000000",
+        "gross_pnl": "-0.0332375",
+        "inventory_mtm": "-0.042975",
+        "max_abs_inventory": "0.00025",
+        "max_drawdown": "0.0701625",
+        "net_pnl": "-0.0332375",
+        "spread_capture": "0.0097375",
+        "turnover": "-2419.838000"
+      },
+      "net_pnl_delta_negative_windows": 1,
+      "net_pnl_delta_positive_windows": 3,
+      "net_pnl_delta_zero_windows": 0,
+      "paired_windows": 4,
+      "sum_reset_window_delta": {
+        "fees": "0.000000",
+        "gross_pnl": "-0.132950",
+        "inventory_mtm": "-0.171900",
+        "net_pnl": "-0.132950",
+        "spread_capture": "0.038950",
+        "turnover": "-9679.352000"
+      },
+      "windows": [
+        "btcusdt-2026-09-07-0010-20m",
+        "btcusdt-2026-09-07-0610-20m",
+        "btcusdt-2026-09-07-1210-20m",
+        "btcusdt-2026-09-07-1810-20m"
+      ],
+      "windows_with_sufficient_execution": 4
+    },
+    "2026-09-08": {
+      "mean_window_delta": {
+        "ending_inventory": "0.0010",
+        "fees": "0.000000",
+        "gross_pnl": "-0.048400",
+        "inventory_mtm": "-0.058050",
+        "max_abs_inventory": "-0.0005",
+        "max_drawdown": "-0.0206375",
+        "net_pnl": "-0.048400",
+        "spread_capture": "0.009650",
+        "turnover": "-2827.930400"
+      },
+      "net_pnl_delta_negative_windows": 2,
+      "net_pnl_delta_positive_windows": 2,
+      "net_pnl_delta_zero_windows": 0,
+      "paired_windows": 4,
+      "sum_reset_window_delta": {
+        "fees": "0.000000",
+        "gross_pnl": "-0.193600",
+        "inventory_mtm": "-0.232200",
+        "net_pnl": "-0.193600",
+        "spread_capture": "0.038600",
+        "turnover": "-11311.721600"
+      },
+      "windows": [
+        "btcusdt-2026-09-08-0010-20m",
+        "btcusdt-2026-09-08-0610-20m",
+        "btcusdt-2026-09-08-1210-20m",
+        "btcusdt-2026-09-08-1810-20m"
+      ],
+      "windows_with_sufficient_execution": 4
+    }
+  },
+  "per_window": [
+    {
+      "bp_feature_parity": {
+        "case_effects": {
+          "MM-1": {
+            "decision_reasons": {
+              "quote": 4389,
+              "unknown_depth_coverage": 411
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 104,
+              "risk": 511,
+              "tick_rounding": 4381
+            }
+          },
+          "MM-2": {
+            "decision_reasons": {
+              "quote": 4389,
+              "unknown_depth_coverage": 411
+            },
+            "quote_path_differences_from_mm1": 2301,
+            "stage_changes": {
+              "price_policy": 1224,
+              "risk": 753,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-reversed": {
+            "decision_reasons": {
+              "quote": 4389,
+              "unknown_depth_coverage": 411
+            },
+            "quote_path_differences_from_mm1": 2585,
+            "stage_changes": {
+              "price_policy": 1003,
+              "risk": 673,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-zero": {
+            "decision_reasons": {
+              "quote": 4389,
+              "unknown_depth_coverage": 411
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 104,
+              "risk": 511,
+              "tick_rounding": 4381
+            }
+          }
+        },
+        "comparison_decimal_precision": 28,
+        "coverage_policy": "no desired quotes on unknown coverage or stale exchange-age",
+        "decisions_per_case": 4800,
+        "feature": "imbalance_1",
+        "feature_statuses": {
+          "AVAILABLE": 4389,
+          "INSUFFICIENT_DEPTH": 411
+        },
+        "runtime_unusable_decisions": 411,
+        "runtime_usable_decisions": 4389,
+        "status": "PASS"
+      },
+      "net_pnl": {
+        "MM-1": "-1.712700",
+        "MM-2": "-2.221450",
+        "MM-2-reversed": "-2.271750",
+        "MM-2-zero": "-1.712700"
+      },
+      "window_id": "btcusdt-2026-09-07-0010-20m",
+      "zero_coefficient_parity": true
+    },
+    {
+      "bp_feature_parity": {
+        "case_effects": {
+          "MM-1": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 170,
+              "risk": 168,
+              "tick_rounding": 4206
+            }
+          },
+          "MM-2": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 2189,
+            "stage_changes": {
+              "price_policy": 681,
+              "risk": 167,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-reversed": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 2501,
+            "stage_changes": {
+              "price_policy": 759,
+              "risk": 387,
+              "tick_rounding": 4799
+            }
+          },
+          "MM-2-zero": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 170,
+              "risk": 168,
+              "tick_rounding": 4206
+            }
+          }
+        },
+        "comparison_decimal_precision": 28,
+        "coverage_policy": "no desired quotes on unknown coverage or stale exchange-age",
+        "decisions_per_case": 4800,
+        "feature": "imbalance_1",
+        "feature_statuses": {
+          "AVAILABLE": 4800
+        },
+        "runtime_unusable_decisions": 0,
+        "runtime_usable_decisions": 4800,
+        "status": "PASS"
+      },
+      "net_pnl": {
+        "MM-1": "-0.461450",
+        "MM-2": "-0.380950",
+        "MM-2-reversed": "-0.381300",
+        "MM-2-zero": "-0.461450"
+      },
+      "window_id": "btcusdt-2026-09-07-0610-20m",
+      "zero_coefficient_parity": true
+    },
+    {
+      "bp_feature_parity": {
+        "case_effects": {
+          "MM-1": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 1059,
+              "risk": 1055,
+              "tick_rounding": 3632
+            }
+          },
+          "MM-2": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 1485,
+            "stage_changes": {
+              "price_policy": 1796,
+              "risk": 981,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-reversed": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 1110,
+            "stage_changes": {
+              "price_policy": 695,
+              "risk": 1097,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-zero": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 1059,
+              "risk": 1055,
+              "tick_rounding": 3632
+            }
+          }
+        },
+        "comparison_decimal_precision": 28,
+        "coverage_policy": "no desired quotes on unknown coverage or stale exchange-age",
+        "decisions_per_case": 4800,
+        "feature": "imbalance_1",
+        "feature_statuses": {
+          "AVAILABLE": 4800
+        },
+        "runtime_unusable_decisions": 0,
+        "runtime_usable_decisions": 4800,
+        "status": "PASS"
+      },
+      "net_pnl": {
+        "MM-1": "-1.019650",
+        "MM-2": "-0.861350",
+        "MM-2-reversed": "-1.050650",
+        "MM-2-zero": "-1.019650"
+      },
+      "window_id": "btcusdt-2026-09-07-1210-20m",
+      "zero_coefficient_parity": true
+    },
+    {
+      "bp_feature_parity": {
+        "case_effects": {
+          "MM-1": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 0,
+              "risk": 0,
+              "tick_rounding": 4634
+            }
+          },
+          "MM-2": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 3101,
+            "stage_changes": {
+              "price_policy": 2145,
+              "risk": 561,
+              "tick_rounding": 4799
+            }
+          },
+          "MM-2-reversed": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 1945,
+            "stage_changes": {
+              "price_policy": 627,
+              "risk": 38,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-zero": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 0,
+              "risk": 0,
+              "tick_rounding": 4634
+            }
+          }
+        },
+        "comparison_decimal_precision": 28,
+        "coverage_policy": "no desired quotes on unknown coverage or stale exchange-age",
+        "decisions_per_case": 4800,
+        "feature": "imbalance_1",
+        "feature_statuses": {
+          "AVAILABLE": 4800
+        },
+        "runtime_unusable_decisions": 0,
+        "runtime_usable_decisions": 4800,
+        "status": "PASS"
+      },
+      "net_pnl": {
+        "MM-1": "-0.122000",
+        "MM-2": "0.01500",
+        "MM-2-reversed": "-0.143250",
+        "MM-2-zero": "-0.122000"
+      },
+      "window_id": "btcusdt-2026-09-07-1810-20m",
+      "zero_coefficient_parity": true
+    },
+    {
+      "bp_feature_parity": {
+        "case_effects": {
+          "MM-1": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 682,
+              "risk": 677,
+              "tick_rounding": 3949
+            }
+          },
+          "MM-2": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 2392,
+            "stage_changes": {
+              "price_policy": 1874,
+              "risk": 864,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-reversed": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 2701,
+            "stage_changes": {
+              "price_policy": 1090,
+              "risk": 1048,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-zero": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 682,
+              "risk": 677,
+              "tick_rounding": 3949
+            }
+          }
+        },
+        "comparison_decimal_precision": 28,
+        "coverage_policy": "no desired quotes on unknown coverage or stale exchange-age",
+        "decisions_per_case": 4800,
+        "feature": "imbalance_1",
+        "feature_statuses": {
+          "AVAILABLE": 4800
+        },
+        "runtime_unusable_decisions": 0,
+        "runtime_usable_decisions": 4800,
+        "status": "PASS"
+      },
+      "net_pnl": {
+        "MM-1": "-1.098200",
+        "MM-2": "-0.980100",
+        "MM-2-reversed": "-1.046700",
+        "MM-2-zero": "-1.098200"
+      },
+      "window_id": "btcusdt-2026-09-08-0010-20m",
+      "zero_coefficient_parity": true
+    },
+    {
+      "bp_feature_parity": {
+        "case_effects": {
+          "MM-1": {
+            "decision_reasons": {
+              "quote": 3808,
+              "unknown_depth_coverage": 992
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 524,
+              "risk": 1507,
+              "tick_rounding": 3825
+            }
+          },
+          "MM-2": {
+            "decision_reasons": {
+              "quote": 3808,
+              "unknown_depth_coverage": 992
+            },
+            "quote_path_differences_from_mm1": 1811,
+            "stage_changes": {
+              "price_policy": 1213,
+              "risk": 1562,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-reversed": {
+            "decision_reasons": {
+              "quote": 3808,
+              "unknown_depth_coverage": 992
+            },
+            "quote_path_differences_from_mm1": 1730,
+            "stage_changes": {
+              "price_policy": 1093,
+              "risk": 1618,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-zero": {
+            "decision_reasons": {
+              "quote": 3808,
+              "unknown_depth_coverage": 992
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 524,
+              "risk": 1507,
+              "tick_rounding": 3825
+            }
+          }
+        },
+        "comparison_decimal_precision": 28,
+        "coverage_policy": "no desired quotes on unknown coverage or stale exchange-age",
+        "decisions_per_case": 4800,
+        "feature": "imbalance_1",
+        "feature_statuses": {
+          "AVAILABLE": 3808,
+          "INSUFFICIENT_DEPTH": 992
+        },
+        "runtime_unusable_decisions": 992,
+        "runtime_usable_decisions": 3808,
+        "status": "PASS"
+      },
+      "net_pnl": {
+        "MM-1": "-1.091950",
+        "MM-2": "-1.497800",
+        "MM-2-reversed": "-1.132200",
+        "MM-2-zero": "-1.091950"
+      },
+      "window_id": "btcusdt-2026-09-08-0610-20m",
+      "zero_coefficient_parity": true
+    },
+    {
+      "bp_feature_parity": {
+        "case_effects": {
+          "MM-1": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 382,
+              "risk": 380,
+              "tick_rounding": 4281
+            }
+          },
+          "MM-2": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 2474,
+            "stage_changes": {
+              "price_policy": 1730,
+              "risk": 776,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-reversed": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 2299,
+            "stage_changes": {
+              "price_policy": 833,
+              "risk": 696,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-zero": {
+            "decision_reasons": {
+              "quote": 4800
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 382,
+              "risk": 380,
+              "tick_rounding": 4281
+            }
+          }
+        },
+        "comparison_decimal_precision": 28,
+        "coverage_policy": "no desired quotes on unknown coverage or stale exchange-age",
+        "decisions_per_case": 4800,
+        "feature": "imbalance_1",
+        "feature_statuses": {
+          "AVAILABLE": 4800
+        },
+        "runtime_unusable_decisions": 0,
+        "runtime_usable_decisions": 4800,
+        "status": "PASS"
+      },
+      "net_pnl": {
+        "MM-1": "-1.827850",
+        "MM-2": "-1.836450",
+        "MM-2-reversed": "-1.765350",
+        "MM-2-zero": "-1.827850"
+      },
+      "window_id": "btcusdt-2026-09-08-1210-20m",
+      "zero_coefficient_parity": true
+    },
+    {
+      "bp_feature_parity": {
+        "case_effects": {
+          "MM-1": {
+            "decision_reasons": {
+              "quote": 1134,
+              "unknown_depth_coverage": 3666
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 22,
+              "risk": 3686,
+              "tick_rounding": 4651
+            }
+          },
+          "MM-2": {
+            "decision_reasons": {
+              "quote": 1134,
+              "unknown_depth_coverage": 3666
+            },
+            "quote_path_differences_from_mm1": 616,
+            "stage_changes": {
+              "price_policy": 1519,
+              "risk": 3666,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-reversed": {
+            "decision_reasons": {
+              "quote": 1134,
+              "unknown_depth_coverage": 3666
+            },
+            "quote_path_differences_from_mm1": 836,
+            "stage_changes": {
+              "price_policy": 1544,
+              "risk": 3844,
+              "tick_rounding": 4800
+            }
+          },
+          "MM-2-zero": {
+            "decision_reasons": {
+              "quote": 1134,
+              "unknown_depth_coverage": 3666
+            },
+            "quote_path_differences_from_mm1": 0,
+            "stage_changes": {
+              "price_policy": 22,
+              "risk": 3686,
+              "tick_rounding": 4651
+            }
+          }
+        },
+        "comparison_decimal_precision": 28,
+        "coverage_policy": "no desired quotes on unknown coverage or stale exchange-age",
+        "decisions_per_case": 4800,
+        "feature": "imbalance_1",
+        "feature_statuses": {
+          "AVAILABLE": 1134,
+          "INSUFFICIENT_DEPTH": 3666
+        },
+        "runtime_unusable_decisions": 3666,
+        "runtime_usable_decisions": 1134,
+        "status": "PASS"
+      },
+      "net_pnl": {
+        "MM-1": "-0.443400",
+        "MM-2": "-0.340650",
+        "MM-2-reversed": "-0.408650",
+        "MM-2-zero": "-0.443400"
+      },
+      "window_id": "btcusdt-2026-09-08-1810-20m",
+      "zero_coefficient_parity": true
+    }
+  ],
+  "pooled": {
+    "mean_window_delta": {
+      "ending_inventory": "-0.000375",
+      "fees": "0.000000",
+      "gross_pnl": "-0.04081875",
+      "inventory_mtm": "-0.0505125",
+      "max_abs_inventory": "-0.000125",
+      "max_drawdown": "0.0247625",
+      "net_pnl": "-0.04081875",
+      "spread_capture": "0.00969375",
+      "turnover": "-2623.884200"
+    },
+    "net_pnl_delta_negative_windows": 3,
+    "net_pnl_delta_positive_windows": 5,
+    "net_pnl_delta_zero_windows": 0,
+    "paired_windows": 8,
+    "sum_reset_window_delta": {
+      "fees": "0.000000",
+      "gross_pnl": "-0.326550",
+      "inventory_mtm": "-0.404100",
+      "net_pnl": "-0.326550",
+      "spread_capture": "0.077550",
+      "turnover": "-20991.073600"
+    },
+    "windows": [
+      "btcusdt-2026-09-07-0010-20m",
+      "btcusdt-2026-09-07-0610-20m",
+      "btcusdt-2026-09-07-1210-20m",
+      "btcusdt-2026-09-07-1810-20m",
+      "btcusdt-2026-09-08-0010-20m",
+      "btcusdt-2026-09-08-0610-20m",
+      "btcusdt-2026-09-08-1210-20m",
+      "btcusdt-2026-09-08-1810-20m"
+    ],
+    "windows_with_sufficient_execution": 8
+  },
+  "promotion_decision": "RESEARCH_ONLY",
+  "protocol_sha256": "d7af09357e0f6d2d74a5871d5621f2d9b9930d8989503c8e869f0a0b004c3c96",
+  "report_sha256": "fc919f53ef12aa76181244f391d06f009bd95f5a0bafba31863a59a9eca99ac0",
+  "reversed_control": {
+    "per_date": {
+      "2026-09-07": {
+        "mean_window_delta": {
+          "ending_inventory": "-0.00175",
+          "fees": "0.000000",
+          "gross_pnl": "-0.1327875",
+          "inventory_mtm": "-0.1348375",
+          "max_abs_inventory": "0.00025",
+          "max_drawdown": "0.1825625",
+          "net_pnl": "-0.1327875",
+          "spread_capture": "0.002050",
+          "turnover": "858.855650"
+        },
+        "net_pnl_delta_negative_windows": 3,
+        "net_pnl_delta_positive_windows": 1,
+        "net_pnl_delta_zero_windows": 0,
+        "paired_windows": 4,
+        "sum_reset_window_delta": {
+          "fees": "0.000000",
+          "gross_pnl": "-0.531150",
+          "inventory_mtm": "-0.539350",
+          "net_pnl": "-0.531150",
+          "spread_capture": "0.008200",
+          "turnover": "3435.422600"
+        },
+        "windows": [
+          "btcusdt-2026-09-07-0010-20m",
+          "btcusdt-2026-09-07-0610-20m",
+          "btcusdt-2026-09-07-1210-20m",
+          "btcusdt-2026-09-07-1810-20m"
+        ],
+        "windows_with_sufficient_execution": 4
+      },
+      "2026-09-08": {
+        "mean_window_delta": {
+          "ending_inventory": "-0.0005",
+          "fees": "0.000000",
+          "gross_pnl": "0.027125",
+          "inventory_mtm": "0.028625",
+          "max_abs_inventory": "0.0000",
+          "max_drawdown": "-0.0041375",
+          "net_pnl": "0.027125",
+          "spread_capture": "-0.001500",
+          "turnover": "314.333700"
+        },
+        "net_pnl_delta_negative_windows": 1,
+        "net_pnl_delta_positive_windows": 3,
+        "net_pnl_delta_zero_windows": 0,
+        "paired_windows": 4,
+        "sum_reset_window_delta": {
+          "fees": "0.000000",
+          "gross_pnl": "0.108500",
+          "inventory_mtm": "0.114500",
+          "net_pnl": "0.108500",
+          "spread_capture": "-0.006000",
+          "turnover": "1257.334800"
+        },
+        "windows": [
+          "btcusdt-2026-09-08-0010-20m",
+          "btcusdt-2026-09-08-0610-20m",
+          "btcusdt-2026-09-08-1210-20m",
+          "btcusdt-2026-09-08-1810-20m"
+        ],
+        "windows_with_sufficient_execution": 4
+      }
+    },
+    "pooled": {
+      "mean_window_delta": {
+        "ending_inventory": "-0.001125",
+        "fees": "0.000000",
+        "gross_pnl": "-0.05283125",
+        "inventory_mtm": "-0.05310625",
+        "max_abs_inventory": "0.000125",
+        "max_drawdown": "0.0892125",
+        "net_pnl": "-0.05283125",
+        "spread_capture": "0.000275",
+        "turnover": "586.594675"
+      },
+      "net_pnl_delta_negative_windows": 4,
+      "net_pnl_delta_positive_windows": 4,
+      "net_pnl_delta_zero_windows": 0,
+      "paired_windows": 8,
+      "sum_reset_window_delta": {
+        "fees": "0.000000",
+        "gross_pnl": "-0.422650",
+        "inventory_mtm": "-0.424850",
+        "net_pnl": "-0.422650",
+        "spread_capture": "0.002200",
+        "turnover": "4692.757400"
+      },
+      "windows": [
+        "btcusdt-2026-09-07-0010-20m",
+        "btcusdt-2026-09-07-0610-20m",
+        "btcusdt-2026-09-07-1210-20m",
+        "btcusdt-2026-09-07-1810-20m",
+        "btcusdt-2026-09-08-0010-20m",
+        "btcusdt-2026-09-08-0610-20m",
+        "btcusdt-2026-09-08-1210-20m",
+        "btcusdt-2026-09-08-1810-20m"
+      ],
+      "windows_with_sufficient_execution": 8
+    }
+  },
+  "runs": 32,
+  "runtime_code": "5113a8fce39b60516e473f2129f68ad40df5351e",
+  "runtime_wall_seconds": 2286.77,
+  "standalone_acceptance": {
+    "all_ledgers_reconciled": true,
+    "all_zero_controls_match": true,
+    "locked_roles_opened": [],
+    "maximum_phase_rss_mib": 70.83203125,
+    "protocol_sha256": "d7af09357e0f6d2d74a5871d5621f2d9b9930d8989503c8e869f0a0b004c3c96",
+    "report_sha256": "fc919f53ef12aa76181244f391d06f009bd95f5a0bafba31863a59a9eca99ac0",
+    "runs": 32,
+    "runtime_code": "5113a8fce39b60516e473f2129f68ad40df5351e",
+    "scope": "reconstructed paired review and aggregation; execution itself was not rerun",
+    "status": "PASS",
+    "validation_version": "study1-bp-acceptance-v1",
+    "windows": 8
+  },
+  "standalone_validator_code": "5113a8fce39b60516e473f2129f68ad40df5351e",
+  "status": "PASS",
+  "ubuntu_existing_warnings": 2,
+  "ubuntu_full_tests": 441,
+  "windows": 8
+}

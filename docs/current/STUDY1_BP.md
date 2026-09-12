@@ -89,3 +89,8 @@ as rebuilding paired metrics from original run artifacts. All 32 runs and eight
 window workers must pass before final acceptance. Runtime evidence must be
 recorded separately at the exact execution commit. Paper eligibility remains
 INSUFFICIENT_EVIDENCE regardless of the diagnostic ranking.
+
+Completed evidence at runtime commit `5113a8f` is recorded in
+[BP DEVELOPMENT acceptance](STUDY1_BP_ACCEPTANCE.md). All 32 runs and standalone
+checks passed; BP +1 did not improve aggregate net PnL over MM-1 in the frozen
+zero-fee diagnostic. The experiment remains available for component comparison.

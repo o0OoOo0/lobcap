@@ -9,8 +9,14 @@ Signal Research P0-A now has accepted multi-day DEVELOPMENT evidence; see
 orchestration and paired multi-day summaries reuse the existing simulator and
 passed 24 executions over eight windows plus 434 Ubuntu regressions; see
 [Study 1 acceptance](STUDY1_BASELINES_ACCEPTANCE.md). The default inventory skew
-did not establish net-PnL superiority. BP/VPIN remain unpromoted, validation/OOS
-remain locked, and Study 2 multi-order execution is still future work.
+did not establish net-PnL superiority. The research-only BP extension now reuses
+the existing expression policy and has completed 32 executions with causal
+input and zero-control checks, plus 441 Ubuntu regressions; standalone
+artifact and causal revalidation also passed. See [BP evidence](STUDY1_BP_ACCEPTANCE.md). BP +1 reduced
+aggregate reset-window net PnL by 0.326550 USDT versus MM-1 under the frozen
+zero-fee scenario. BP remains unpromoted; VPIN causal feature construction and
+paired execution comparison are next. Validation/OOS remain locked, and Study 2
+multi-order execution is still future work.
 
 ## 1. Research identity
 
