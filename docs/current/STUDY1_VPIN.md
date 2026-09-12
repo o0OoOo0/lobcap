@@ -121,3 +121,10 @@ toxicity diagnostics, and verifies its compressed artifact checksum before
 accepting execution results. Validation/OOS remain locked; default strategy and
 paper eligibility are not promoted by diagnostic rankings. Runtime evidence
 must identify the exact code commit separately from later documentation commits.
+
+Completed runtime evidence at `abad814` is recorded in
+[VPIN DEVELOPMENT acceptance](STUDY1_VPIN_ACCEPTANCE.md): all eight input
+prerequisites, 32 executions and standalone source/artifact validation passed.
+VPIN reduced aggregate diagnostic losses versus MM-1 but underperformed the
+constant-width control and did not improve conditional fill drift. This enables
+further component comparison without promoting a new default strategy.

@@ -14,9 +14,14 @@ the existing expression policy and has completed 32 executions with causal
 input and zero-control checks, plus 441 Ubuntu regressions; standalone
 artifact and causal revalidation also passed. See [BP evidence](STUDY1_BP_ACCEPTANCE.md). BP +1 reduced
 aggregate reset-window net PnL by 0.326550 USDT versus MM-1 under the frozen
-zero-fee scenario. BP remains unpromoted; VPIN causal feature construction and
-paired execution comparison are next. Validation/OOS remain locked, and Study 2
-multi-order execution is still future work.
+zero-fee scenario. VPIN now has eight causal prerequisite windows and 32 paired
+executions, all separately source/artifact revalidated, plus 453 Ubuntu tests;
+see [VPIN evidence](STUDY1_VPIN_ACCEPTANCE.md). VPIN improved reset-window net PnL
+by 0.254850 USDT versus MM-1, but a constant-width control improved it by
+0.489500 USDT, and VPIN's conditional midpoint drift became more negative.
+BP/VPIN remain unpromoted. Next isolate availability-gate and mean-width effects
+before the MM-4 interaction comparison. Validation/OOS remain locked, and Study
+2 multi-order execution is still future work.
 
 ## 1. Research identity
 

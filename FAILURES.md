@@ -429,3 +429,18 @@ The first local VPIN test collection imported `MemorySink` from `engine` instead
 of the existing `artifacts` module. No tests or experiments ran in that attempt.
 Corrected the test import; 53 focused VPIN/Study 1/GLFT tests then passed. The
 simulator implementation was not changed to accommodate the test.
+
+The optional full Windows run could not collect two existing test modules that
+import Linux `resource`. A second Windows run excluding those two files ended
+with 429 passed, 1 skipped, 2 failed and 5 errors: another `resource` import,
+Tardis fixture hash/missing-file errors, and a Streamlit session-state KeyError.
+These are not recorded as a full-suite pass. The same VPIN commit `abad814` then
+passed all 453 tests on the authorized Ubuntu VM (141.98 seconds, two existing
+Streamlit/NumPy warnings). No fixture hash, UI implementation or platform module
+was changed to hide the Windows failures. Both environment logs are retained.
+
+Automatic approval review initially rejected transfer of the VPIN bundle
+because the older user approval named commit `b62fea2`. The user explicitly
+approved `abad814965658da42bc69511d9104c60d1f55e4b` transfer and the Ubuntu /
+DEVELOPMENT prerequisite / 32-run comparison sequence. Only then was that exact
+bundle transferred to the existing VM verification checkout.
