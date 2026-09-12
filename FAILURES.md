@@ -362,6 +362,9 @@ keep / exclude interval / exclude day
   `FeaturePoint` sets cannot coexist under the 512 MiB worker target. Stopped it
   and split evaluation into preregistered groups of four and three; redundancy
   again uses compact value tuples in its own bounded phase.
+- The SSH reconnect preflight could query the local listener but Windows denied
+  `Win32_Process` enumeration. No listener was present, so the tunnel was safely
+  recreated without relying on process enumeration.
 
 # 2026-09-12 — Multi-day prerequisite completion
 
