@@ -31,6 +31,11 @@ class StrategyParameters:
     glft_min_trades: int = 30
     glft_min_r2: Decimal = Decimal('.5')
     glft_max_half_ticks: Decimal = Decimal(500)
+    vpin_bucket_volume: Decimal = Decimal(1)
+    vpin_bucket_count: int = 20
+    vpin_max_age_ms: int = 5000
+    vpin_width_ticks: Decimal = Decimal(1)
+    vpin_mode: str = 'signal'
 
     @classmethod
     def from_config(cls, config):
@@ -39,7 +44,9 @@ class StrategyParameters:
                    config.flow_threshold,config.flow_min_volume,config.volatility_spread_multiplier,
                    config.signal_expression,config.expression_parameters,config.max_signal_ticks,config.instrument.lot,
                    config.glft_gamma,config.glft_window_seconds,config.glft_min_seconds,config.glft_min_trades,
-                   config.glft_min_r2,config.glft_max_half_ticks)
+                   config.glft_min_r2,config.glft_max_half_ticks,
+                   config.vpin_bucket_volume,config.vpin_bucket_count,config.vpin_max_age_ms,
+                   config.vpin_width_ticks,config.vpin_mode)
 
 
 class StrategyPolicy:
@@ -47,12 +54,19 @@ class StrategyPolicy:
     def __init__(self,parameters=None):
         self.withdraw_side=None
         self.glft=None;self.glft_trace={}
+        self.vpin=None;self.vpin_trace={}
+        if parameters is not None and parameters.strategy == 'vpin_inventory':
+            from lobcap.backtest.vpin import VolumeBuckets, VpinSettings
+            self.vpin=VolumeBuckets(VpinSettings(parameters.vpin_bucket_volume,
+                parameters.vpin_bucket_count,parameters.vpin_max_age_ms*1_000_000))
         if parameters is not None and parameters.strategy in {'glft','glft_microprice'}:
             from lobcap.backtest.glft import Calibration
             self.glft=Calibration(parameters)
 
-    def observe_trade(self,now,exchange_ns,price,side,quantity,mid,fresh):
+    def observe_trade(self,now,exchange_ns,price,side,quantity,mid,fresh,receive_ns=None,source_refs=()):
         if self.glft is not None:self.glft.trade(now,exchange_ns,price,side,quantity,mid,fresh)
+        if self.vpin is not None:
+            self.vpin.observe(quantity,side,exchange_ns,now if receive_ns is None else receive_ns,now,source_refs)
 
     def on_second(self,now,mid,fresh):
         if self.glft is not None:self.glft.on_second(now,mid,fresh)
@@ -60,6 +74,7 @@ class StrategyPolicy:
     def diagnostics(self):
         result={'withdraw_side':self.withdraw_side}
         if self.glft is not None:result['glft']=self.glft_trace
+        if self.vpin is not None:result['vpin']=self.vpin_trace
         return result
 
     def decide(self, config, market, portfolio, trace=None):
@@ -170,11 +185,21 @@ def decide(config, market, portfolio, trace=None, state=None):
         bounded=min(max(signal,-config.max_signal_ticks),config.max_signal_ticks)
         center+=config.tick*bounded
         if bounded!=signal:reason="signal_clipped"
-    if config.strategy=="inventory_skew":
+    if config.strategy in {"inventory_skew", "vpin_inventory"}:
         center-=config.inventory_skew_ticks*config.tick*portfolio.inventory/config.max_inventory
     elif config.strategy=="microprice":
         center+=config.signal_strength*(market.microprice-market.mid)
     half=config.half_spread_ticks*config.tick
+    if config.strategy == 'vpin_inventory':
+        if state is None or state.vpin is None:
+            raise ValueError('VPIN requires delivered-trade policy state')
+        state.vpin_trace=state.vpin.snapshot(market.time_ns)
+        # A zero coefficient is exactly the reference, including during warmup.
+        if config.vpin_width_ticks:
+            if state.vpin_trace['status'] != 'AVAILABLE':
+                return targets(None,None,'vpin_'+state.vpin_trace['status'].lower())
+            value=state.vpin_trace['value'] if config.vpin_mode == 'signal' else Decimal('.5')
+            half+=config.vpin_width_ticks*value*config.tick
     if config.strategy=="volatility_adaptive":
         if market.volatility_bps is None:return targets(None,None,"volatility_warmup")
         half=max(half,market.mid*Decimal(str(market.volatility_bps))*config.volatility_spread_multiplier/10000)

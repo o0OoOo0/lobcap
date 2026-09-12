@@ -22,6 +22,9 @@ BP_EXPRESSION = "bp_beta * imbalance - inventory_skew_ticks * inventory / max_in
 
 
 def stage_cases(stage):
+    if stage == 'vpin':
+        from .study1_vpin import CASES as vpin_cases
+        return vpin_cases
     if stage not in {"baselines", "bp"}:
         raise ValueError("unknown Study 1 stage")
     return CASES if stage == "baselines" else BP_CASES
@@ -40,6 +43,14 @@ def case_configs(config, stage="baselines"):
     if config.signal_expression or config.expression_parameters:
         raise ValueError("baseline study cannot use a signal expression")
     stage_cases(stage)
+    if stage == 'vpin':
+        if config.clock_mode != 'recorded' or config.vpin_width_ticks <= 0:
+            raise ValueError('VPIN study requires recorded clock and positive width')
+        base = variant(config, strategy='inventory_skew', signal_strength='0')
+        return {'MM-1':base,
+            'MM-3-zero':variant(base,strategy='vpin_inventory',vpin_width_ticks='0',vpin_mode='signal'),
+            'MM-3':variant(base,strategy='vpin_inventory',vpin_mode='signal'),
+            'MM-3-constant':variant(base,strategy='vpin_inventory',vpin_mode='constant')}
     if stage == "bp":
         if config.clock_mode != "recorded" or config.signal_strength <= 0:
             raise ValueError("BP requires recorded clock and a positive coefficient")
@@ -152,10 +163,12 @@ def review_window(window, seal, configs, paths, stage="baselines"):
         "code_version": records[0]["manifest"]["code_version"],
         "scheduler_identity": records[0]["scheduler_identity"],
         "zero_coefficient_parity": zero,
-        ("delta_mm1_minus_mm0" if stage == "baselines" else "delta_mm2_minus_mm1"): deltas[labels[2]],
+        ("delta_mm1_minus_mm0" if stage == "baselines" else "delta_mm2_minus_mm1" if stage == 'bp' else 'delta_mm3_minus_mm1'): deltas[labels[2]],
         "execution_evidence_sufficient": all(cards[r["run_id"]]["comparable"] for r in records)}
     if stage == "bp":
         row["delta_reversed_minus_mm1"] = deltas[labels[3]]
+    if stage == 'vpin':
+        row['delta_constant_minus_mm1'] = deltas[labels[3]]
     return jsonable(row)
 
 
@@ -166,19 +179,25 @@ def run_window(config, window, seal, sample_path, output, stage="baselines"):
     changes = [{"strategy": c.strategy, "inventory_skew_ticks": c.inventory_skew_ticks,
                 "signal_expression": c.signal_expression, "expression_parameters": c.expression_parameters}
                for c in configs.values()]
+    if stage == 'vpin':
+        for change, c in zip(changes,configs.values()):
+            change.update(vpin_width_ticks=c.vpin_width_ticks,vpin_mode=c.vpin_mode)
     comparison, _ = run_sweep(baseline, changes, sample_path)
     paths = json.loads((comparison/"comparison_manifest.json").read_text())["runs"]
     row = review_window(window, seal, configs, paths, stage)
     if stage == "bp":
         from .study1_bp import audit_feature_parity
         row["bp_feature_parity"] = audit_feature_parity(config, sample_path, paths)
+    if stage == 'vpin':
+        from .study1_vpin import audit_feature_parity
+        row['vpin_feature_parity'] = audit_feature_parity(config,sample_path,paths)
     return {"window": row}
 
 
 def summarize(catalogue, rows, stage="baselines"):
     """Paired reset-window diagnostics. Never synthesize a continuous equity curve."""
     labels = stage_cases(stage)
-    delta_key = "delta_mm1_minus_mm0" if stage == "baselines" else "delta_mm2_minus_mm1"
+    delta_key = "delta_mm1_minus_mm0" if stage == "baselines" else "delta_mm2_minus_mm1" if stage == 'bp' else 'delta_mm3_minus_mm1'
     selected = development_windows(catalogue)
     expected = {w.window_id: (w, seal) for w, seal in selected}
     if len(rows) != len(expected) or {r["window_id"] for r in rows} != set(expected):
@@ -193,8 +212,17 @@ def summarize(catalogue, rows, stage="baselines"):
         if stage == "bp":
             from .study1_bp import validate_bp_cases
             validate_bp_cases(row)
+        if stage == 'vpin':
+            from .study1_vpin import validate_cases
+            validate_cases(row)
+            with localcontext() as ctx:
+                ctx.prec=50
+                for k in DELTA_METRICS:
+                    a,b=(Decimal(str(row['cases'][label]['metrics'][k])) for label in ('MM-1','MM-3-constant'))
+                    if not a.is_finite() or not b.is_finite() or b-a!=Decimal(row['delta_constant_minus_mm1'][k]):
+                        raise ValueError('invalid VPIN constant control delta')
         baseline = row["cases"][labels[0]]["config"]
-        for label, strategy in (() if stage == "bp" else zip(CASES, ("fixed_spread", "inventory_skew", "inventory_skew"))):
+        for label, strategy in (() if stage != "baselines" else zip(CASES, ("fixed_spread", "inventory_skew", "inventory_skew"))):
             cfg = row["cases"][label]["config"]
             if (cfg["strategy"] != strategy or
                 any(cfg.get(k) != baseline.get(k) for k in set(cfg)|set(baseline)
@@ -238,4 +266,8 @@ def summarize(catalogue, rows, stage="baselines"):
         result["reversed_control"] = {"pooled": aggregate(ordered, "delta_reversed_minus_mm1"),
             "per_date": {date: aggregate([r for r in ordered if r["date"] == date], "delta_reversed_minus_mm1")
                          for date in sorted({r["date"] for r in rows})}}
+    if stage == 'vpin':
+        result['constant_control']={'pooled':aggregate(ordered,'delta_constant_minus_mm1'),
+            'per_date':{date:aggregate([r for r in ordered if r['date']==date],'delta_constant_minus_mm1')
+                        for date in sorted({r['date'] for r in rows})}}
     return jsonable(result)

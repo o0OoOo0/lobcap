@@ -177,7 +177,8 @@ def run_arrival(config,initial,events,sink,strategy=None,bootstrap_receive_ns=No
                     features.observe_trade(incoming,delivered)
                     if incoming.trade is not None:
                         policy.observe_trade(delivered,incoming.time_ns,incoming.trade.price,incoming.trade.maker_side,
-                            incoming.trade.size,observed.mid,delivered-observed.time_ns<=config.stale_book_ms*1_000_000)
+                            incoming.trade.size,observed.mid,delivered-observed.time_ns<=config.stale_book_ms*1_000_000,
+                            receive_ns=incoming.receive_ns,source_refs=incoming.source_refs)
                     last_source=incoming
                     if incoming.kind=="depth":last_observed_receive=delivered
                     stats["observed_"+incoming.kind]+=1

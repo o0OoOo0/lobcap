@@ -423,3 +423,9 @@ keep / exclude interval / exclude day
   the same ticks as the inventory reference. Increased only the synthetic test
   coefficient to exercise visible reversed orders; the real-data protocol keeps
   the existing coefficient 1 and reports actual quote-path differences.
+# VPIN research extension test collection (2026-09-12)
+
+The first local VPIN test collection imported `MemorySink` from `engine` instead
+of the existing `artifacts` module. No tests or experiments ran in that attempt.
+Corrected the test import; 53 focused VPIN/Study 1/GLFT tests then passed. The
+simulator implementation was not changed to accommodate the test.

@@ -17,7 +17,7 @@ def validate(report_path, catalogue_path, p0_report):
     report = json.loads(Path(report_path).read_text(encoding="utf-8"))
     catalogue = json.loads(Path(catalogue_path).read_text(encoding="utf-8"))
     protocol = report["protocol"]
-    stage = {"study1-baselines-v1": "baselines", "study1-bp-v1": "bp"}.get(protocol.get("version"))
+    stage = {"study1-baselines-v1": "baselines", "study1-bp-v1": "bp", 'study1-vpin-v1':'vpin'}.get(protocol.get("version"))
     if (report["status"] != "PASS" or stage is None
         or protocol["protocol_sha256"] != digest({k: v for k, v in protocol.items() if k != "protocol_sha256"})
         or protocol != json.loads((root/"protocol.json").read_text(encoding="utf-8"))
@@ -33,6 +33,18 @@ def validate(report_path, catalogue_path, p0_report):
     if protocol["window_ids"] != expected:
         raise ValueError("Study 1 protocol window selection changed")
     config = config_from_document(protocol["base_config"])
+    if stage == 'vpin':
+        prerequisite_path=root/'vpin_prerequisite.json'
+        vp=json.loads(prerequisite_path.read_text())
+        if (sha256_file(prerequisite_path)!=report['vpin_prerequisite_sha256'] or vp['status']!='PASS'
+            or vp['protocol_sha256']!=protocol['protocol_sha256'] or vp['code_fingerprint']!=protocol['code_fingerprint']
+            or [r['window_id'] for r in vp['per_window']]!=expected):
+            raise ValueError('VPIN prerequisite provenance mismatch')
+        feature_rows={r['window_id']:r for r in vp['per_window']}
+        from lobcap.backtest.research_flow.study1_vpin import summarize_prerequisite
+        if vp['summary']!=summarize_prerequisite(vp['per_window']):
+            raise ValueError('VPIN prerequisite aggregation mismatch')
+        freshness=json.loads(Path(p0_report).read_text())['freshness_policy']
     if config.clock_mode != "recorded" or protocol["cases"] != {k: c.resolved() for k, c in case_configs(config, stage).items()}:
         raise ValueError("Study 1 protocol case settings changed")
     reported = report["results"]["per_window"]
@@ -51,6 +63,13 @@ def validate(report_path, catalogue_path, p0_report):
         if stage == "bp":
             from lobcap.backtest.research_flow.study1_bp import audit_feature_parity
             checked["bp_feature_parity"] = audit_feature_parity(c, config.output_path/"samples"/window.window_id, paths)
+        if stage == 'vpin':
+            from lobcap.backtest.research_flow.study1_vpin import feature_window, audit_feature_parity
+            sample=config.output_path/'samples'/window.window_id
+            feature=feature_window(c,sample,freshness,root/'vpin_features'/f'{window.window_id}.jsonl.gz',False)
+            feature.update(window_id=window.window_id,date=window.date)
+            if feature!=feature_rows[window.window_id]:raise ValueError('VPIN prerequisite differs from source replay')
+            checked['vpin_feature_parity']=audit_feature_parity(c,sample,paths)
         if checked != row or checked["code_version"] != protocol["code_fingerprint"]:
             raise ValueError("Study 1 report differs from reviewed run artifacts")
         rebuilt.append(checked)
@@ -65,6 +84,13 @@ def validate(report_path, catalogue_path, p0_report):
     if summarize(catalogue, rebuilt, *stage_args) != report["results"]:
         raise ValueError("Study 1 aggregation differs from original pairs")
     phases = report["performance"]
+    if stage == 'vpin':
+        extra=vp['performance']
+        if (len(extra)!=len(expected) or {r['window_id'] for r in extra}!=set(expected)
+            or any(type(r.get(k)) not in (int,float) or not math.isfinite(r[k]) or r[k]<=0
+                   for r in extra for k in ('wall_seconds','peak_rss_mib'))
+            or max(r['peak_rss_mib'] for r in extra)>=512):
+            raise ValueError('invalid VPIN prerequisite performance evidence')
     if (len(phases) != len(expected) or {r["window_id"] for r in phases} != set(expected)
         or any(not isinstance(r.get(k), (int, float)) or isinstance(r[k], bool)
                or not math.isfinite(r[k]) or r[k] <= 0 for r in phases for k in ("wall_seconds", "peak_rss_mib"))

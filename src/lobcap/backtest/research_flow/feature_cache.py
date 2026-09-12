@@ -35,14 +35,14 @@ def _recorded_delivery_stream(event_source_factory, bootstrap_receive_ns):
 def iter_feature_snapshots(initial, events, schedule: AnalysisSchedule, tick,
                            clock_mode="recorded", bootstrap_receive_ns=None,
                            stale_after_ns=500_000_000, acquisition_segment="segment-1",
-                           feature_names=None):
+                           feature_names=None, engine_factory=CausalFeatureEngine):
     """Replay exchange events, delivering only information available by each grid time."""
     if clock_mode not in {"exchange", "recorded"}:
         raise ValueError("unknown clock mode")
     available = initial.time_ns if clock_mode == "exchange" else bootstrap_receive_ns
     if available is None or available < initial.time_ns:
         raise ValueError("valid bootstrap receive time is required")
-    engine = CausalFeatureEngine(initial, tick, stale_after_ns, available)
+    engine = engine_factory(initial, tick, stale_after_ns, available)
     if clock_mode == "recorded" and callable(events):
         deliveries = iter(_recorded_delivery_stream(events, available))
         delivery = next(deliveries, None)

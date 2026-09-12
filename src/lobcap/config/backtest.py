@@ -67,6 +67,11 @@ class BacktestConfig:
     glft_min_r2: Decimal = Decimal('0.5')
     glft_max_half_ticks: Decimal = Decimal(500)
     quote_start_seconds: int = 0
+    vpin_bucket_volume: Decimal = Decimal(1)
+    vpin_bucket_count: int = 20
+    vpin_max_age_ms: int = 5000
+    vpin_width_ticks: Decimal = Decimal(1)
+    vpin_mode: str = "signal"
 
     @property
     def model(self) -> ModelSpec:
@@ -82,6 +87,11 @@ class BacktestConfig:
         row["quote_policy_version"] = "quote-policy-v1"
         row["decision_trace_version"] = "decision-trace-v1"
         if self.quote_start_seconds==0:row.pop('quote_start_seconds')
+        if self.strategy == 'vpin_inventory':
+            row['vpin_version'] = 'normal-volume-vpin-v1'
+        else:
+            for key in tuple(row):
+                if key.startswith('vpin_'):row.pop(key)
         if self.strategy in {'glft','glft_microprice'}:
             row['glft_version']='glft-crossing-v1'
         else:
@@ -105,18 +115,22 @@ DECIMALS |= {"max_trade_participation","impact_stress_bps","flow_threshold","flo
 DECIMALS.add("max_signal_ticks")
 DECIMALS.add("reprice_threshold_ticks")
 DECIMALS |= {'glft_gamma','glft_min_r2','glft_max_half_ticks'}
+DECIMALS |= {'vpin_bucket_volume','vpin_width_ticks'}
 OPTIONAL = {"alpha", "volatility_widen_bps", "volatility_reduce_bps", "volatility_stop_bps"}
 INTS = {"decision_ms", "max_age_ms", "stale_book_ms", "entry_ms", "cancel_ms", "report_ms"}
 INTS.add("min_hold_ms")
 INTS |= {'glft_window_seconds','glft_min_seconds','glft_min_trades'}
 INTS.add('quote_start_seconds')
+INTS |= {'vpin_bucket_count','vpin_max_age_ms'}
 STRINGS = {"strategy","clock_mode", "signal_expression", "expression_version"}
 STRINGS.add("partial_fill_policy")
+STRINGS.add('vpin_mode')
 STRUCTURED = {"expression_parameters"}
 BASELINE_STRATEGIES = ("fixed_spread", "inventory_skew", "microprice")
 STRATEGIES = BASELINE_STRATEGIES + ("flow_guard", "volatility_adaptive", "expression")
 STRATEGIES += ("no_trade", "join_bbo", "inventory_size", "flow_withdraw")
 STRATEGIES += ('glft','glft_microprice')
+STRATEGIES += ('vpin_inventory',)
 
 
 def validate(config: BacktestConfig) -> BacktestConfig:
@@ -150,6 +164,11 @@ def validate(config: BacktestConfig) -> BacktestConfig:
             raise ConfigError(f"{name} must be nonnegative")
     if config.alpha is not None and not 0 <= config.alpha <= 1:
         raise ConfigError("alpha must be in [0,1]")
+    if (config.vpin_bucket_volume <= 0 or not 1 <= config.vpin_bucket_count <= 1000
+        or config.vpin_width_ticks < 0 or config.vpin_mode not in {'signal','constant'}):
+        raise ConfigError('invalid VPIN configuration')
+    if config.strategy == 'vpin_inventory' and config.clock_mode != 'recorded':
+        raise ConfigError('VPIN v1 requires recorded delivery')
     if config.glft_gamma<=0 or config.glft_gamma>10 or config.glft_max_half_ticks<=0:
         raise ConfigError('GLFT gamma must be in (0,10], maximum half width positive')
     if not 0<=config.glft_min_r2<=1:
