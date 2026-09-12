@@ -24,16 +24,19 @@ class VpinFeatureEngine(CausalFeatureEngine):
                 event.receive_ns, client_available_time_ns, event.source_refs)
 
     def observation(self, analysis_time_ns, acquisition_segment, feature_names=None):
-        if feature_names not in (None, (NAME,)):
-            raise ValueError("VPIN provider requires its explicit projection")
-        base = super().observation(analysis_time_ns, acquisition_segment, ("mid",))
+        requested = (NAME,) if feature_names is None else tuple(feature_names)
+        if NAME not in requested:
+            raise ValueError("VPIN provider requires the VPIN projection")
+        core = tuple(name for name in requested if name != NAME)
+        base = super().observation(analysis_time_ns, acquisition_segment, core or ("mid",))
         state = self.vpin.snapshot(analysis_time_ns)
         point = FeaturePoint(NAME, VERSION, state["value"], "dimensionless", state["status"],
             analysis_time_ns, state["available_ns"] if state["available_ns"] is not None else self.start_client_ns,
             state["source_exchange_ns"], state["source_receive_ns"], state["source_refs"],
             state["oldest_retained_completion_ns"],
             analysis_time_ns-state["oldest_retained_completion_ns"] if state["oldest_retained_completion_ns"] is not None else None)
-        return replace(base, points=(point,))
+        points = (() if not core else base.points) + (point,)
+        return replace(base, points=points)
 
 
 def provider(config):

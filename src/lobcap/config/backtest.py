@@ -72,6 +72,8 @@ class BacktestConfig:
     vpin_max_age_ms: int = 5000
     vpin_width_ticks: Decimal = Decimal(1)
     vpin_mode: str = "signal"
+    vpin_constant_value: Decimal = Decimal("0.5")
+    book_pressure_ticks: Decimal = Decimal(0)
 
     @property
     def model(self) -> ModelSpec:
@@ -89,9 +91,16 @@ class BacktestConfig:
         if self.quote_start_seconds==0:row.pop('quote_start_seconds')
         if self.strategy == 'vpin_inventory':
             row['vpin_version'] = 'normal-volume-vpin-v1'
+            if self.vpin_mode != 'constant' or self.vpin_constant_value == Decimal('.5'):
+                row.pop('vpin_constant_value')
+            if self.book_pressure_ticks:
+                row['book_pressure_version'] = 'imbalance-1-center-shift-v1'
+            else:
+                row.pop('book_pressure_ticks')
         else:
             for key in tuple(row):
                 if key.startswith('vpin_'):row.pop(key)
+            row.pop('book_pressure_ticks')
         if self.strategy in {'glft','glft_microprice'}:
             row['glft_version']='glft-crossing-v1'
         else:
@@ -115,7 +124,7 @@ DECIMALS |= {"max_trade_participation","impact_stress_bps","flow_threshold","flo
 DECIMALS.add("max_signal_ticks")
 DECIMALS.add("reprice_threshold_ticks")
 DECIMALS |= {'glft_gamma','glft_min_r2','glft_max_half_ticks'}
-DECIMALS |= {'vpin_bucket_volume','vpin_width_ticks'}
+DECIMALS |= {'vpin_bucket_volume','vpin_width_ticks','vpin_constant_value','book_pressure_ticks'}
 OPTIONAL = {"alpha", "volatility_widen_bps", "volatility_reduce_bps", "volatility_stop_bps"}
 INTS = {"decision_ms", "max_age_ms", "stale_book_ms", "entry_ms", "cancel_ms", "report_ms"}
 INTS.add("min_hold_ms")
@@ -165,10 +174,13 @@ def validate(config: BacktestConfig) -> BacktestConfig:
     if config.alpha is not None and not 0 <= config.alpha <= 1:
         raise ConfigError("alpha must be in [0,1]")
     if (config.vpin_bucket_volume <= 0 or not 1 <= config.vpin_bucket_count <= 1000
-        or config.vpin_width_ticks < 0 or config.vpin_mode not in {'signal','constant'}):
+        or config.vpin_width_ticks < 0 or not 0 <= config.vpin_constant_value <= 1
+        or config.vpin_mode not in {'signal','constant','gate'}):
         raise ConfigError('invalid VPIN configuration')
     if config.strategy == 'vpin_inventory' and config.clock_mode != 'recorded':
         raise ConfigError('VPIN v1 requires recorded delivery')
+    if abs(config.book_pressure_ticks) > config.max_signal_ticks:
+        raise ConfigError('book pressure coefficient exceeds signal bound')
     if config.glft_gamma<=0 or config.glft_gamma>10 or config.glft_max_half_ticks<=0:
         raise ConfigError('GLFT gamma must be in (0,10], maximum half width positive')
     if not 0<=config.glft_min_r2<=1:

@@ -444,3 +444,18 @@ because the older user approval named commit `b62fea2`. The user explicitly
 approved `abad814965658da42bc69511d9104c60d1f55e4b` transfer and the Ubuntu /
 DEVELOPMENT prerequisite / 32-run comparison sequence. Only then was that exact
 bundle transferred to the existing VM verification checkout.
+
+# Study 1 completion extension tests (2026-09-12)
+
+The first expanded completion test attempted to certify a scorecard while the
+implementation checkout was intentionally dirty. The production comparison
+guard correctly rejected the unknown `HEAD+dirty` code identity. The fixture now
+replaces only its recorded code-version metadata with a stable synthetic commit,
+as the established Study 1 tests do; it does not weaken the production guard.
+The repaired completion module passed four focused tests, and the expanded
+Study 1/execution/configuration suite passed 78 tests.
+
+Sandboxed Windows pytest could not enumerate its own temporary directories.
+The same commands were rerun outside the filesystem sandbox with no test-code
+change, and the temporary directories created by those failed attempts were
+removed after their resolved paths were checked under `E:\dev\lobcap*`.

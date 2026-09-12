@@ -36,6 +36,8 @@ class StrategyParameters:
     vpin_max_age_ms: int = 5000
     vpin_width_ticks: Decimal = Decimal(1)
     vpin_mode: str = 'signal'
+    vpin_constant_value: Decimal = Decimal('.5')
+    book_pressure_ticks: Decimal = ZERO
 
     @classmethod
     def from_config(cls, config):
@@ -46,7 +48,8 @@ class StrategyParameters:
                    config.glft_gamma,config.glft_window_seconds,config.glft_min_seconds,config.glft_min_trades,
                    config.glft_min_r2,config.glft_max_half_ticks,
                    config.vpin_bucket_volume,config.vpin_bucket_count,config.vpin_max_age_ms,
-                   config.vpin_width_ticks,config.vpin_mode)
+                   config.vpin_width_ticks,config.vpin_mode,config.vpin_constant_value,
+                   config.book_pressure_ticks)
 
 
 class StrategyPolicy:
@@ -194,11 +197,18 @@ def decide(config, market, portfolio, trace=None, state=None):
         if state is None or state.vpin is None:
             raise ValueError('VPIN requires delivered-trade policy state')
         state.vpin_trace=state.vpin.snapshot(market.time_ns)
-        # A zero coefficient is exactly the reference, including during warmup.
-        if config.vpin_width_ticks:
+        if config.book_pressure_ticks:
+            if market.imbalance is None:
+                return targets(None,None,'feature_unavailable')
+            center+=config.book_pressure_ticks*market.imbalance*config.tick
+        # Signal/constant zero stays an exact reference. Gate mode isolates only
+        # the quote-availability effect while keeping width at zero.
+        if config.vpin_width_ticks or config.vpin_mode == 'gate':
             if state.vpin_trace['status'] != 'AVAILABLE':
                 return targets(None,None,'vpin_'+state.vpin_trace['status'].lower())
-            value=state.vpin_trace['value'] if config.vpin_mode == 'signal' else Decimal('.5')
+            value=(state.vpin_trace['value'] if config.vpin_mode == 'signal'
+                   else config.vpin_constant_value if config.vpin_mode == 'constant'
+                   else ZERO)
             half+=config.vpin_width_ticks*value*config.tick
     if config.strategy=="volatility_adaptive":
         if market.volatility_bps is None:return targets(None,None,"volatility_warmup")

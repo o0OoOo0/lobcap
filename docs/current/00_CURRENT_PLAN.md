@@ -19,9 +19,12 @@ executions, all separately source/artifact revalidated, plus 453 Ubuntu tests;
 see [VPIN evidence](STUDY1_VPIN_ACCEPTANCE.md). VPIN improved reset-window net PnL
 by 0.254850 USDT versus MM-1, but a constant-width control improved it by
 0.489500 USDT, and VPIN's conditional midpoint drift became more negative.
-BP/VPIN remain unpromoted. Next isolate availability-gate and mean-width effects
-before the MM-4 interaction comparison. Validation/OOS remain locked, and Study
-2 multi-order execution is still future work.
+BP/VPIN remain unpromoted. The remaining Study 1 work now has a frozen
+[completion protocol](STUDY1_COMPLETION.md): isolate availability and mean-width
+effects, measure BP+VPIN interaction and reversed control, then run fixed fee,
+latency, and queue sensitivities. Sequential fail-closed gates keep
+validation/OOS locked unless the combined candidate retains its DEVELOPMENT
+direction. Study 2 multi-order execution is still future work.
 
 ## 1. Research identity
 
