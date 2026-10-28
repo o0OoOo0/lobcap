@@ -365,6 +365,10 @@ keep / exclude interval / exclude day
 - The SSH reconnect preflight could query the local listener but Windows denied
   `Win32_Process` enumeration. No listener was present, so the tunnel was safely
   recreated without relying on process enumeration.
+- A pre-publication GitHub secret-scanning API probe could not run because the
+  current host has no `gh` executable. The repository remained private; the
+  audit instead scanned every reachable Git blob and commit message locally,
+  without printing candidate secret values.
 
 # 2026-09-12 — Multi-day prerequisite completion
 
