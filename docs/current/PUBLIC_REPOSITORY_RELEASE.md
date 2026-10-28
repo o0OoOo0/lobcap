@@ -7,6 +7,10 @@ accounting, strategy, signal-research, and UI layers. Development prompts,
 workflow notes, the remote bootstrap, and the failure journal moved from the
 repository root to `docs/internal/`.
 
+The landing page also includes two bounded workbench captures: the strategy and
+execution editor beside reconciled result metrics, and the order/fill/inventory/
+PnL timeline used to audit a run.
+
 ## Current-tree privacy and size checks
 
 - Replaced the current VM project ID, hostname, zone, user, and absolute home
@@ -33,6 +37,11 @@ approved coordinated history rewrite.
 - Ubuntu isolated-worktree focused checks: 27 passed.
 - Ubuntu full regression suite: 466 passed, 2 existing Streamlit/NumPy warnings,
   124.88 seconds.
+- A second Ubuntu checkout containing only tracked public files passed 459 tests
+  and explicitly skipped the 7 tests that require the excluded Tardis raw slice.
+- Linking the retained runtime slice into that isolated checkout made the four
+  affected modules pass all 37 tests, confirming the skips do not mask a
+  regression when the optional data is available.
 - The BTCUSDT collector remained active with zero restarts before and after the
   Linux suite.
 - Public-repository audit, Python compilation, JSON parsing, Markdown-link checks,
