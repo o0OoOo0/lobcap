@@ -25,6 +25,9 @@ Nothing is silently excluded.
   in a form that `gcloud` parsed as extra arguments; it made no remote change.
   A read-only path/worktree check confirmed the exact `/tmp` target, after which
   the worktree was removed successfully with a PowerShell command variable.
+- 2026-10-28 a final status display passed three revisions to `git rev-parse
+  --short`, which accepts a single revision in this form. No repository state
+  changed; each revision was then checked separately.
 
 ## 2026-09-10 — Bounded research implementation
 
