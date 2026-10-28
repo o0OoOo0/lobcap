@@ -527,3 +527,14 @@ directory from `PYTHONPATH`, so pytest stopped during collection with three
 The command was corrected to use the same source-path setup as the repository's
 documented development environment; the implementation was not changed to hide
 an environment setup error.
+
+The first raw-free Ubuntu full-suite run found one additional integration test
+in `tests/test_experiment_config.py` that opened the same excluded Tardis slice
+without a presence check. It completed with 459 passed, 6 skipped, and 1 failed.
+That test now uses the same explicit raw-fixture skip contract as the other six
+dependent cases. The collector remained active with zero restarts.
+
+A direct Windows rerun of that module stopped during collection at the known
+Unix-only `resource` import in `l2.multidate`; the raw-fixture test itself did
+not execute. Per the repository's runtime policy, no unrelated portability
+change was made. Its acceptance rerun is performed on Ubuntu.

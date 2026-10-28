@@ -98,6 +98,11 @@ def test_5c_intents_use_config_values():
 
 def test_5d_comparison_uses_only_configured_alpha_models():
     config = load_five_d_config(CONFIGS / "5d_fill_comparison.yaml")
+    if not config.raw_input_path.is_file():
+        pytest.skip(
+            "requires excluded raw Tardis slice: "
+            "artifacts/validation/tardis_coinbase/raw_http_slice.txt"
+        )
     custom = replace(config, alpha_grid=(Decimal("0.13"), Decimal("0.61")), touch_fill_enabled=False, model_names=("alpha=0.13", "alpha=0.61"))
     result = build_comparison(config.raw_input_path, config.truth_input_path, custom)
     assert {prediction.model for prediction in result["predictions"]} == {"alpha=0.13", "alpha=0.61"}
