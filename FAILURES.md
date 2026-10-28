@@ -369,6 +369,10 @@ keep / exclude interval / exclude day
   current host has no `gh` executable. The repository remained private; the
   audit instead scanned every reachable Git blob and commit message locally,
   without printing candidate secret values.
+- After GitHub returned `visibility=public`, the generic web fetcher briefly
+  returned a 404 for the repository URL. An independent unauthenticated `curl`
+  request returned HTTP 200, and the GitHub repository API reconfirmed public
+  visibility; no rollback was required.
 
 # 2026-09-12 — Multi-day prerequisite completion
 
