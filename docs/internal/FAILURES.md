@@ -17,6 +17,10 @@ Nothing is silently excluded.
   cleanup after its absolute path was verified inside the workspace. This is an
   existing Windows ACL condition rather than a product-code failure; authoritative
   acceptance remains Linux.
+- 2026-10-28 the Ubuntu validation checkout still referenced a temporary Git
+  bundle that no longer existed, so its first `git fetch origin` failed. The
+  checkout itself was left unchanged; the exact public branch was fetched by
+  HTTPS into `FETCH_HEAD`, then tested in a detached `/tmp` worktree.
 
 ## 2026-09-10 — Bounded research implementation
 

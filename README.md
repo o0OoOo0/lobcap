@@ -122,6 +122,7 @@ Detailed evidence and interpretation:
 - [Backtest semantics and reproduction](docs/current/BACKTEST_MVP.md)
 - [Execution realism and limitations](docs/current/BACKTEST_REALISM.md)
 - [Multi-day research protocol](docs/current/SIGNAL_RESEARCH_P0.md)
+- [Public repository release audit](docs/current/PUBLIC_REPOSITORY_RELEASE.md)
 
 ## Important limitations
 
