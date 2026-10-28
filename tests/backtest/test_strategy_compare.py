@@ -88,6 +88,7 @@ def test_scorecard_ranks_executed_policies_and_keeps_no_trade_as_control(monkeyp
 
 def test_workbench_previews_standard_strategy_suite_without_submitting(sample):
     pytest.importorskip("streamlit")
+    from lobcap.backtest.research_flow.workbench import DEFAULT_STRATEGY_SUITE
     from lobcap.backtest.workspace.store import WorkspaceStore
     from test_workbench import app_for, widget
     config,path=sample
@@ -97,7 +98,8 @@ def test_workbench_previews_standard_strategy_suite_without_submitting(sample):
     widget(app.selectbox,'실행 종류').set_value('strategy_suite').run(timeout=30)
     widget(app.button,'Simulate · 실행 설정 확인').click().run(timeout=30)
     assert not app.exception and not app.error
-    assert any('확인할 실행 6개' in item.value for item in app.success)
+    expected = f"확인할 실행 {len(DEFAULT_STRATEGY_SUITE)}개"
+    assert any(expected in item.value for item in app.success)
     assert not WorkspaceStore(config.output_path/'workspace').list_jobs()
 
 

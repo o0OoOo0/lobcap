@@ -8,6 +8,19 @@ order lifecycles, fills, portfolio accounting, and the next experiment.
 The repository is a research simulator. It does not place live orders and its
 bounded results are not evidence of production profitability.
 
+## Workbench preview
+
+The left panel defines the strategy and execution assumptions. The right panel
+keeps the selected run immutable and shows reconciled PnL, fills, inventory, and
+the time path that produced the result.
+
+![Strategy configuration and run results](docs/images/workbench-overview.png)
+
+Desired quote prices and simulated fills are shown separately so order intent,
+execution, inventory, and PnL can be inspected on the same timeline.
+
+![Order, fill, inventory, and PnL timeline](docs/images/workbench-order-timeline.png)
+
 ## What is implemented
 
 - Deterministic L2 replay with snapshot bootstrap, Binance Futures sequence checks,
@@ -77,6 +90,9 @@ python -m pytest -q
 
 Native Windows collection of the complete legacy suite is not supported. Focused
 backtest modules can still be developed on Windows; final acceptance runs on Linux.
+The repository excludes one runtime Tardis sample. Tests that require that exact
+raw slice report an explicit skip when it is unavailable; all synthetic and
+checked-in-fixture tests continue to run.
 
 ## Run the workbench
 

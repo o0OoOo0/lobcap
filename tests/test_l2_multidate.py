@@ -2,6 +2,8 @@ import json
 from decimal import Decimal
 from pathlib import Path
 
+import pytest
+
 from lobcap.l2.multidate import (
     MultiDateReconstructor,
     aggregate_alpha,
@@ -107,6 +109,11 @@ def test_hidden_share_denominator_includes_trade_ahead_reduction():
 
 
 def test_streaming_multidate_adapter_reproduces_frozen_first_minute_truth():
+    if not RAW.is_file():
+        pytest.skip(
+            "requires excluded raw Tardis slice: "
+            "artifacts/validation/tardis_coinbase/raw_http_slice.txt"
+        )
     reconstructor = MultiDateReconstructor()
     reconstructor.start_window("2026-09-01", 0, model_specs(None))
     for message in iter_tardis_lines(RAW):

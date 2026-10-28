@@ -518,3 +518,12 @@ constants directly to its JSON digest. The runner now freezes those constants
 as explicit strings and has a regression for the serialization boundary. The
 partial create-once directory remains diagnostic evidence; the corrected run
 uses a new output directory.
+
+# Public-clone self-containment verification (2026-10-28)
+
+The first focused Windows verification command omitted the repository's `src`
+directory from `PYTHONPATH`, so pytest stopped during collection with three
+`ModuleNotFoundError: lobcap` errors. No product test executed in that attempt.
+The command was corrected to use the same source-path setup as the repository's
+documented development environment; the implementation was not changed to hide
+an environment setup error.

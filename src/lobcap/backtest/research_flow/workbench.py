@@ -16,6 +16,12 @@ from .ui_results import compact_timeline,representative_table,utc_display,number
 from .workbench_model import STRATEGIES,METRICS,economics,reviewed_metrics,policy_examples
 
 
+DEFAULT_STRATEGY_SUITE = (
+    'fixed_spread', 'inventory_skew', 'microprice',
+    'glft', 'glft_microprice', 'no_trade',
+)
+
+
 def run_label(row):
     c=row['config'];strategy=c.get('strategy','')
     name=STRATEGIES.get(strategy,(row['name'],))[0]
@@ -129,7 +135,7 @@ def render_editor(store,draft,base):
                 format_func=lambda x:{'single':'현재 설정 1회','strategy_suite':'표준 전략 동시 비교','strategy_compare':'전략 설정 한 요소 비교','assumption_sensitivity':'체결·비용 가정 한 요소 비교','baseline_suite':'E0–E4 행동 기준선 5회'}[x])
             suite_strategies=st.multiselect('비교 전략',
                 ['fixed_spread','inventory_skew','microprice','glft','glft_microprice','join_bbo','inventory_size','flow_withdraw','volatility_adaptive','no_trade'],
-                default=['fixed_spread','inventory_skew','microprice','glft','glft_microprice','no_trade'],
+                default=list(DEFAULT_STRATEGY_SUITE),
                 format_func=lambda x:STRATEGIES[x][0],
                 help='GLFT가 포함되면 모든 전략의 거래 시작 시각을 GLFT 준비시간에 맞춥니다.')
             fields=['half_spread_ticks','size','inventory_skew_ticks','signal_strength','partial_fill_policy','reprice_threshold_ticks','min_hold_ms',

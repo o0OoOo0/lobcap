@@ -33,6 +33,11 @@ MODELS = {model.name: model for model in MODEL_SPECS}
 
 @pytest.fixture(scope="module")
 def real_comparison():
+    if not RAW.is_file():
+        pytest.skip(
+            "requires excluded raw Tardis slice: "
+            "artifacts/validation/tardis_coinbase/raw_http_slice.txt"
+        )
     return build_comparison(RAW, TRUTH)
 
 

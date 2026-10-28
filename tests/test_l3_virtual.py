@@ -26,6 +26,11 @@ RAW_MINUTE = (
 
 @pytest.fixture(scope="module")
 def actual_minute_outputs():
+    if not RAW_MINUTE.is_file():
+        pytest.skip(
+            "requires excluded raw Tardis slice: "
+            "artifacts/validation/tardis_coinbase/raw_http_slice.txt"
+        )
     engine, reconstruction = run_virtual_file(RAW_MINUTE)
     return engine, build_outputs(engine, reconstruction)
 
