@@ -21,6 +21,10 @@ Nothing is silently excluded.
   bundle that no longer existed, so its first `git fetch origin` failed. The
   checkout itself was left unchanged; the exact public branch was fetched by
   HTTPS into `FETCH_HEAD`, then tested in a detached `/tmp` worktree.
+- 2026-10-28 the first validation-worktree cleanup command nested remote quotes
+  in a form that `gcloud` parsed as extra arguments; it made no remote change.
+  A read-only path/worktree check confirmed the exact `/tmp` target, after which
+  the worktree was removed successfully with a PowerShell command variable.
 
 ## 2026-09-10 — Bounded research implementation
 
