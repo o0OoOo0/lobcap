@@ -286,7 +286,7 @@
   "raw_payload_preservation_pass": true,
   "quality": {
     "exit_code": 0,
-    "artifact": "/home/0woo/lobcap/artifacts/integration/binance_10min_quality.txt"
+    "artifact": "/home/<vm-user>/lobcap/artifacts/integration/binance_10min_quality.txt"
   },
   "performance": {
     "timeout_wrapper_exit_code": 124,

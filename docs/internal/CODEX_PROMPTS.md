@@ -10,21 +10,21 @@ Run one prompt at a time.
 You are on the existing remote GCP Tokyo VM.
 
 Project root:
-  /home/0woo/lobcap
+  /home/<vm-user>/lobcap
 Data root:
   /data
 User:
-  0woo
+  <vm-user>
 
 Read these first:
-- README_FIRST.md
+- docs/internal/REMOTE_BOOTSTRAP.md
 - docs/current/00_CURRENT_PLAN.md
 - docs/current/01_DATA_SOURCE_VALIDATION.md
 - docs/current/02_BINANCE_PHASE0_SPEC.md
 - docs/current/03_GCP_DEPLOY_CURRENT.md
 - docs/current/04_L3_PHASE05_SPEC.md
 - docs/current/05_LOBMSG_SPEC.md
-- CODEX_WORKFLOW.md
+- docs/internal/CODEX_WORKFLOW.md
 
 Then inspect:
 - src/
@@ -46,7 +46,7 @@ Explicitly verify that the active/current design has fixed or addressed these kn
 8. snapshot reconciliation is real shadow-book comparison, not a placeholder counter.
 9. LOBMSG starts with a snapshot and is self-contained for L2 book reconstruction.
 10. L3 legacy code is not treated as production.
-11. current infrastructure is GCP Tokyo / 0woo / /home/0woo, not Oracle / ubuntu.
+11. current infrastructure is GCP Tokyo / <vm-user> / /home/<vm-user>, not Oracle / ubuntu.
 12. cloud rule means no NEW resource/billing changes, not that the existing Tokyo VM is free.
 13. clock/NTP state is checked before interpreting latency.
 14. target-day rebuild supports/clearly handles previous-day warmup.
@@ -89,7 +89,7 @@ Rules:
 - no full-day L3 download yet
 - no long-running service
 - no private trading API
-- exact runtime errors go to FAILURES.md
+- exact runtime errors go to docs/internal/FAILURES.md
 
 Binance blocking checks:
 - Tokyo region is not assumed safe; explicitly test for 451/403
@@ -176,9 +176,9 @@ Measure:
 
 If and only if the hour is clean:
 - create /etc/systemd/system/lobcap@.service using docs/current/03_GCP_DEPLOY_CURRENT.md
-- use user 0woo
+- use user <vm-user>
 - RequireMountsFor=/data
-- use /home/0woo/lobcap/.venv
+- use /home/<vm-user>/lobcap/.venv
 - enable only lobcap@btcusdt
 - reboot once
 - verify /data remount
@@ -251,7 +251,7 @@ After BTCUSDT has been collecting across a full UTC day:
    - crossed books
    - snapshot checks/pass/mismatch/skipped
    - compressed bytes/day
-7. record any invalid interval/day in FAILURES.md
+7. record any invalid interval/day in docs/internal/FAILURES.md
 
 Only if the day passes:
 - project 30/90-day storage

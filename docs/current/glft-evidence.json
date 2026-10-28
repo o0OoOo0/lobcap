@@ -6,7 +6,7 @@
     {
       "label": "join_bbo",
       "run_id": "559a57e2933c-749d5710",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/559a57e2933c-749d5710",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/559a57e2933c-749d5710",
       "digest": "be88a7b196e7466710c1f87665d082f1a275cdb631bb8ec5edca13ee09415531",
       "settings": {
         "strategy": "join_bbo"
@@ -205,7 +205,7 @@
     {
       "label": "fixed_20",
       "run_id": "b401980516c7-748cb111",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/b401980516c7-748cb111",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/b401980516c7-748cb111",
       "digest": "a41763de62508d2b267dd0498a82286318d1ddb822f8261c16b87b68bed24c9b",
       "settings": {
         "strategy": "fixed_spread",
@@ -407,7 +407,7 @@
     {
       "label": "glft_gamma_.03",
       "run_id": "8e5beb96cefb-12226a80",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/8e5beb96cefb-12226a80",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/8e5beb96cefb-12226a80",
       "digest": "dc18bb64de69415cd0f5dd515be9a5d1c81032ae31e6c46b775c0dfe93cd4f71",
       "settings": {
         "strategy": "glft",
@@ -654,7 +654,7 @@
     {
       "label": "glft_gamma_.1",
       "run_id": "6c61f7933946-74e467ef",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/6c61f7933946-74e467ef",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/6c61f7933946-74e467ef",
       "digest": "aab8b7ae29ed498643fe125ff2f4dffbe9197cefbd6f3ec3977474ed63783d54",
       "settings": {
         "strategy": "glft",
@@ -900,7 +900,7 @@
     {
       "label": "glft_gamma_.3",
       "run_id": "f7f9e2290153-abcf6a58",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/f7f9e2290153-abcf6a58",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/f7f9e2290153-abcf6a58",
       "digest": "3e3f21ec588c9d17b52178352e536c4742d782108768b672071ebfd0708244f9",
       "settings": {
         "strategy": "glft",
@@ -1146,7 +1146,7 @@
     {
       "label": "glft_signal_0",
       "run_id": "f2ed906669e2-b884d5a4",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/f2ed906669e2-b884d5a4",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/f2ed906669e2-b884d5a4",
       "digest": "b7b92354ca868c5c0d141b0f1c6df73a7f5077257dd297fb0243f81b4011e1b2",
       "settings": {
         "strategy": "glft_microprice",
@@ -1392,7 +1392,7 @@
     {
       "label": "glft_signal_1",
       "run_id": "0a2bb9b759b1-8fdd081d",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/0a2bb9b759b1-8fdd081d",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/0a2bb9b759b1-8fdd081d",
       "digest": "f0442f2a2a363fc409ef5849ce9dab0b8507afcedb53eb56db19116fbd4c7d93",
       "settings": {
         "strategy": "glft_microprice",
@@ -1638,7 +1638,7 @@
     {
       "label": "glft_signal_10",
       "run_id": "49e5bfca4a36-3dce8368",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/49e5bfca4a36-3dce8368",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/49e5bfca4a36-3dce8368",
       "digest": "25911994234c5e009caccd3a3a3fc61763076cfa30bf7018dfef186b60d348e6",
       "settings": {
         "strategy": "glft_microprice",
@@ -1884,7 +1884,7 @@
     {
       "label": "glft_repeat",
       "run_id": "6c61f7933946-47bdfe98",
-      "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/6c61f7933946-47bdfe98",
+      "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/6c61f7933946-47bdfe98",
       "digest": "aab8b7ae29ed498643fe125ff2f4dffbe9197cefbd6f3ec3977474ed63783d54",
       "settings": {
         "strategy": "glft"
@@ -2154,13 +2154,13 @@
       "route": "\uc2e4\ud5d8",
       "run_id": "2f4108500f98-eb837cce"
     },
-    "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/6c61f7933946-c0332a5a"
+    "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/6c61f7933946-c0332a5a"
   },
   "deployment": {
     "status": "PASS",
     "new_pid": 486876,
     "old_pid": 480443,
-    "release": "/home/0woo/lobcap-glft-v1",
+    "release": "/home/<vm-user>/lobcap-glft-v1",
     "health": true,
     "collector_before": "MainPID=608\nNRestarts=0\nActiveState=active",
     "collector_after": "MainPID=608\nNRestarts=0\nActiveState=active",
@@ -2170,6 +2170,6 @@
   "legacy_parity": {
     "status": "PASS",
     "digest": "5e4b838d0fd267157df265ea4862c0dc76f4bcbf225fdd6d29145282c5d72436",
-    "output_dir": "/home/0woo/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/5a5e55edc843-5950676f"
+    "output_dir": "/home/<vm-user>/lobcap-glft-v1/artifacts/backtest/glft-validation/runs/5a5e55edc843-5950676f"
   }
 }

@@ -6,10 +6,10 @@ RequiresMountsFor=/data
 
 [Service]
 Type=simple
-User=0woo
-WorkingDirectory=/home/0woo/lobcap
+User=lobcap
+WorkingDirectory=/opt/lobcap
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/home/0woo/lobcap/.venv/bin/python -m lobcap.collectors.binance --symbol %i --out /data --snap-interval 300 --depth-speed 100ms
+ExecStart=/opt/lobcap/.venv/bin/python -m lobcap.collectors.binance --symbol %i --out /data --snap-interval 300 --depth-speed 100ms
 Restart=always
 RestartSec=5
 KillSignal=SIGTERM

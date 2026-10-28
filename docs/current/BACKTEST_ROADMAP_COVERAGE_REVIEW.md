@@ -98,7 +98,7 @@
 
 ## Task completion report
 
-- Files changed: 이 검토 문서와 `FAILURES.md`의 검색 명령 오류 기록만. 실행 코드 변경 없음.
+- Files changed: 이 검토 문서와 `docs/internal/FAILURES.md`의 검색 명령 오류 기록만. 실행 코드 변경 없음.
 - Commands run: `git status --short`, `git log -1 --oneline`, `git branch --show-current`, `rg`, `Get-Content`로 첨부 문서/코드/테스트/기존 검증 기록 조회; `git diff --check`.
 - Official docs checked: 없음. 외부 기술 사실이나 최신 거래소 규칙의 감사가 아닌 저장소와 제공 문서 대조.
 - Tests passed: 이번 재실행 없음. 과거 기록 132 Linux PASS를 구분해 인용.

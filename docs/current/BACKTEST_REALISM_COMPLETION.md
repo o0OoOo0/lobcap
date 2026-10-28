@@ -75,7 +75,7 @@ retain their exact commits rather than being rewritten to claim later provenance
 ## Tests failed
 
 No unresolved test or acceptance failures. Development fixture corrections and
-the stale Streamlit module reload incident are recorded in [FAILURES.md](../../FAILURES.md).
+the stale Streamlit module reload incident are recorded in [docs/internal/FAILURES.md](../../docs/internal/FAILURES.md).
 Native Windows full research collection still encounters Unix-only `resource`;
 no unrelated portability patch was made. Ubuntu is authoritative.
 

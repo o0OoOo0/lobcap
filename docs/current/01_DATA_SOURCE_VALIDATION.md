@@ -44,13 +44,13 @@ Record:
 - whether 451/403/other regional restriction occurs
 - response fields
 
-Runtime evidence (GCP Tokyo VM `lob-collector-01`):
+Runtime evidence (GCP Tokyo VM `<collector-vm>`):
 
 ```text
 TEST: A1 — Tokyo REST reachability
 STATUS: RUNTIME_VERIFIED
 UTC_TIME: 2026-09-06T13:38:35.761213Z to 2026-09-06T13:38:35.800328Z
-HOST: lob-collector-01 (asia-northeast1-a)
+HOST: <collector-vm> (<gcp-zone>)
 COMMAND_OR_SCRIPT: .venv/bin/python scripts/validate_binance_runtime.py
 OFFICIAL_DOC_CLAIM: public USDⓈ-M REST ping and depth snapshot endpoints
 RUNTIME_RESULT: ping HTTP 200 with {}; depth HTTP 200 with lastUpdateId, E, T, bids, asks; bid/ask levels are two-element arrays; neither response was 451 or 403
@@ -77,7 +77,7 @@ Runtime evidence:
 TEST: A2 — Public depth WebSocket
 STATUS: RUNTIME_VERIFIED
 UTC_TIME: connected 2026-09-06T13:38:35.932021Z; completed 2026-09-06T13:40:16.302517Z
-HOST: lob-collector-01 (asia-northeast1-a)
+HOST: <collector-vm> (<gcp-zone>)
 COMMAND_OR_SCRIPT: .venv/bin/python scripts/validate_binance_runtime.py
 OFFICIAL_DOC_CLAIM: diff depth is routed through /public; @100ms is supported; Futures continuity is current.pu == previous.u
 RUNTIME_RESULT: /public connected with websockets 16.1.1; received 932 depthUpdate payloads; all contained e,E,T,s,U,u,pu,b,a; observed extra ps,st fields were preserved; 931 consecutive pairs, 0 pu mismatches; one server PING and the matching automatic client PONG were observed; no unexpected close/error
@@ -104,7 +104,7 @@ Runtime evidence:
 TEST: A3 — Market aggTrade WebSocket
 STATUS: RUNTIME_VERIFIED
 UTC_TIME: connected 2026-09-06T13:38:35.936744Z; completed 2026-09-06T13:39:18.688973Z
-HOST: lob-collector-01 (asia-northeast1-a)
+HOST: <collector-vm> (<gcp-zone>)
 COMMAND_OR_SCRIPT: .venv/bin/python scripts/validate_binance_runtime.py
 OFFICIAL_DOC_CLAIM: aggTrade is routed through /market
 RUNTIME_RESULT: /market connected with websockets 16.1.1; received 150 aggTrade payloads; all contained e,E,a,s,p,q,f,l,T,m; observed extra nq,st fields were preserved; one server PING and the matching automatic client PONG were observed; no unexpected close/error
@@ -154,7 +154,7 @@ Runtime test on the Tokyo VM:
 TEST: unauthenticated Tardis Coinbase exchange-native raw L3, one-minute slice
 STATUS: RUNTIME_VERIFIED
 UTC_TIME: 2026-09-06T16:28:12Z
-HOST: lob-collector-01
+HOST: <collector-vm>
 COMMAND_OR_SCRIPT: raw HTTP API plus scripts/analyze_tardis_coinbase_raw.py
 OFFICIAL_DOC_CLAIM: first day of each month is available without an API key
 RUNTIME_RESULT: HTTP 200 for coinbase BTC-USD, 2026-09-01 00:00:00Z through 00:01:00Z; no Authorization header; 43,696 exchange-native messages; 4,416,936 compressed response bytes and 17,910,927 decompressed bytes

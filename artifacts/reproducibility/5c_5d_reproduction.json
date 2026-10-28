@@ -2,7 +2,7 @@
   "verified_at": "2026-09-07T14:37:07Z",
   "status": "PASS",
   "environment": {
-    "python": "/home/0woo/lobcap/.venv/bin/python",
+    "python": "/home/<vm-user>/lobcap/.venv/bin/python",
     "git_commit": "UNKNOWN"
   },
   "input_sha256": {

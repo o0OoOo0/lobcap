@@ -20,8 +20,8 @@ backtest engine; it does not certify a profitable strategy or paper eligibility.
 ## Commands run
 
 Authoritative runtime: existing GCP Ubuntu VM, Python 3.12, source directory
-`/home/0woo/lobcap-workspace-v1`, Python executable
-`/home/0woo/lobcap-mvp/.venv/bin/python`, `PYTHONPATH=src`.
+`/home/<vm-user>/lobcap-workspace-v1`, Python executable
+`/home/<vm-user>/lobcap-mvp/.venv/bin/python`, `PYTHONPATH=src`.
 
 ```bash
 python -m pytest -q
@@ -75,7 +75,7 @@ the matrix and final browser submission have different source fingerprints.
 ## Tests failed
 
 No final Ubuntu test failed. Intermediate setup/test failures and their fixes
-are recorded in `FAILURES.md`. A warmup-only cancellation trial was strengthened
+are recorded in `docs/internal/FAILURES.md`. A warmup-only cancellation trial was strengthened
 and rerun during the trading window. An earlier validation matrix was stopped
 before final resolver guards were installed; only the later complete 20-run
 PASS report is claimed above.
@@ -90,7 +90,7 @@ PASS report is claimed above.
   and app transition.
 - Existing app process 350898 was gracefully replaced by the validated app
   process **381801**, loopback **127.0.0.1:8501**, health endpoint returned `ok`.
-  Original `/home/0woo/lobcap-mvp` source was preserved for rollback.
+  Original `/home/<vm-user>/lobcap-mvp` source was preserved for rollback.
 - Local access uses SSH forwarding. It is not a public deployment and the
   tunnel must remain running; a lost tunnel caused the earlier connection issue.
 - VM source was staged in a separate clone and retains honest dirty/source-hash

@@ -72,11 +72,11 @@ Validation labels:
 
 Actual environment:
 - GCP Tokyo
-- VM `lob-collector-01`
-- zone `asia-northeast1-a`
+- VM `<collector-vm>`
+- zone `<gcp-zone>`
 - Ubuntu 24.04
-- user `0woo`
-- project `/home/0woo/lobcap`
+- user `<vm-user>`
+- project `/home/<vm-user>/lobcap`
 - raw data `/data`
 
 The existing VM may be billable. Do not create new cloud resources or modify billing/configuration without explicit approval.

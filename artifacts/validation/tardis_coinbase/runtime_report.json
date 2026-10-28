@@ -254,5 +254,5 @@
     "fifo_caveat": "Open sequence establishes arrival order after the snapshot, but orders already present in full_snapshot have price, size, and order_id without a per-order arrival timestamp or sequence; the official REST L3 page does not explicitly guarantee same-price array ordering.",
     "snapshot_replay_rule_observed": "Initialize at full_snapshot.sequence, then replay already-buffered lifecycle events with sequence greater than the snapshot sequence before continuing with later capture-order events."
   },
-  "raw_sample": "/home/0woo/lobcap/artifacts/validation/tardis_coinbase/raw_sample.jsonl"
+  "raw_sample": "/home/<vm-user>/lobcap/artifacts/validation/tardis_coinbase/raw_sample.jsonl"
 }

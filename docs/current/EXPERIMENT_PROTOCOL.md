@@ -72,7 +72,7 @@ timestamp.
 Use the project environment:
 
 ```bash
-cd /home/0woo/lobcap
+cd /home/<vm-user>/lobcap
 . .venv/bin/activate
 python -m compileall -q src scripts tests
 pytest -q

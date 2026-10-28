@@ -10,7 +10,7 @@
     "source": "/dev/sdb",
     "filesystem": "ext4",
     "options_include_rw": true,
-    "owner_group": "0woo:0woo",
+    "owner_group": "<vm-user>:<vm-user>",
     "mode": "0755",
     "available": "93G"
   },

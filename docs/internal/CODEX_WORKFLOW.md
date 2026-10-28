@@ -19,7 +19,7 @@
 - Never delete raw data.
 - Never silently ignore a sequence gap, reconnect, queue overflow, corrupted file, or excluded interval.
 - Do not enable long-running systemd service until short tests pass.
-- Every failure goes to `FAILURES.md`.
+- Every failure goes to `docs/internal/FAILURES.md`.
 
 ## Legacy policy
 

@@ -19,7 +19,7 @@ paired multi-day infrastructure, not signal promotion or Study 2 execution.
 - Catalogue SHA256:
   `cc676289c752418edb37ad9adc650dd4e6c611d19bd1bf4170f15fde6a765aae`.
 - Data-host output:
-  `/home/0woo/lobcap-signal-p0-acceptance/artifacts/backtest/research/study1-baselines-v1`.
+  `/home/<vm-user>/lobcap-signal-p0-acceptance/artifacts/backtest/research/study1-baselines-v1`.
 - Runtime 22 min 11.99 s, exit 0, no swap; largest worker **70.46484375 MiB**.
   Unit peak 159.0 MiB includes the parent and workers. Limits were MemoryMax=768M,
   CPUQuota=100%, Nice=10, RuntimeMaxSec=14400.

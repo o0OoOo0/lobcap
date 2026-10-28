@@ -42,9 +42,9 @@ Sharpe, Fitness, annualization, or claims of out-of-sample quality.
 On the existing Ubuntu VM, from a clean checkout with the existing prepared sample:
 
 ```sh
-PYTHONPATH=src /home/0woo/lobcap-mvp/.venv/bin/python -m pytest -q
-PYTHONPATH=src /home/0woo/lobcap-mvp/.venv/bin/python scripts/validate_strategy_response.py --output artifacts/backtest/strategy-response
-PYTHONPATH=src /home/0woo/lobcap-mvp/.venv/bin/python -m streamlit run apps/backtest_lab.py --server.address 127.0.0.1 --server.port 8501
+PYTHONPATH=src /home/<vm-user>/lobcap-mvp/.venv/bin/python -m pytest -q
+PYTHONPATH=src /home/<vm-user>/lobcap-mvp/.venv/bin/python scripts/validate_strategy_response.py --output artifacts/backtest/strategy-response
+PYTHONPATH=src /home/<vm-user>/lobcap-mvp/.venv/bin/python -m streamlit run apps/backtest_lab.py --server.address 127.0.0.1 --server.port 8501
 ```
 
 The diagnostic script holds the 2026-09-06 14:10–14:20 UTC sample, recorded clock,
@@ -117,7 +117,7 @@ Machine-readable run IDs, digests, sample hash, performance and markouts:
 - Tests passed: full 312; final affected 44; 11 real-sample reconciliations;
   positive and negative actual result displays and numerical policy examples.
 - Tests failed: no unresolved failures. Initial ratio-precision and display-format
-  test expectations corrected as recorded in FAILURES.md.
+  test expectations corrected as recorded in docs/internal/FAILURES.md.
 - Runtime observations: app PID 480443, loopback 8501; collector PID 608,
   restart count 0 before and after app replacement. Local hidden tunnel PID 32120.
 - Data written: separate strategy-response run artifacts and evidence summaries;

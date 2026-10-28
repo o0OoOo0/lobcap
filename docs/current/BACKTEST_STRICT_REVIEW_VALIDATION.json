@@ -9,8 +9,8 @@
     "sample_preparation_seconds": 0.2372690030024387,
     "wall_seconds": 7.6563323689915705
   },
-  "legacy_run": "/home/0woo/lobcap-mvp/artifacts/backtest/runs/14f2baf21aa0-0d7b3e13",
-  "recorded_cli_run": "/home/0woo/lobcap-mvp/artifacts/backtest/runs/03059d33c2d7-479f6ea2",
+  "legacy_run": "/home/<vm-user>/lobcap-mvp/artifacts/backtest/runs/14f2baf21aa0-0d7b3e13",
+  "recorded_cli_run": "/home/<vm-user>/lobcap-mvp/artifacts/backtest/runs/03059d33c2d7-479f6ea2",
   "recorded_digest": "fe87ef329ae21dca8ea8d2efff655db5a07877b28e7d333aa7b3cf556389ef2a",
   "recorded_performance": {
     "cpu_seconds": 9.617693247,

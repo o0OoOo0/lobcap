@@ -148,11 +148,11 @@ Censoring is a simulation boundary, not a fictitious exchange report.
 
 ## Ubuntu reproduction
 
-Use the existing isolated checkout `/home/0woo/lobcap-mvp`, not the collector's
+Use the existing isolated checkout `/home/<vm-user>/lobcap-mvp`, not the collector's
 checkout. The optional web dependencies and CLI setup are in the v1 guide.
 
 ```bash
-cd /home/0woo/lobcap-mvp
+cd /home/<vm-user>/lobcap-mvp
 .venv/bin/python -m pytest -q
 .venv/bin/python -m lobcap.backtest prepare --config configs/backtest/binance_recorded.yaml
 .venv/bin/python -m lobcap.backtest run --config configs/backtest/binance_recorded.yaml
@@ -173,7 +173,7 @@ completion evidence.
 Windows access uses the existing loopback SSH tunnel:
 
 ```powershell
-ssh -N -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -L 127.0.0.1:8501:127.0.0.1:8501 0woo@lob-collector-01.asia-northeast1-a.project-2878cd89-af59-4d8a-aef
+ssh -N -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -L 127.0.0.1:8501:127.0.0.1:8501 <vm-user>@<collector-vm>.<gcp-zone>.<gcp-project-id>
 ```
 
 Open <http://127.0.0.1:8501/> while the SSH process is running. The workstation's

@@ -15,8 +15,8 @@ Implemented on `feat/backtest-mvp-v1`, implementation commit `5ea375a`. This is 
 Experiments are stored on Ubuntu at:
 
 ```text
-/home/0woo/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d68a8194
-/home/0woo/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d7f311bb
+/home/<vm-user>/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d68a8194
+/home/<vm-user>/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d7f311bb
 ```
 
 | Baseline strategy | Net PnL USDT | Maker fills | Hedge executions |
@@ -42,7 +42,7 @@ Funding/mark price/margin tiers/minimum-notional history, real liquidity impact,
 - Commands run: source inspection; targeted and full Ubuntu pytest; `validate_backtest_research.py`; `verify_backtest_research_ui.py`; source-content comparison; HTTP health and collector status; feature-branch commit.
 - Official docs checked: none newly required during this implementation; no new exchange API or order endpoint was called.
 - Tests passed: final 144 Linux tests; 48 real runs; source audit; UI and legacy goldens.
-- Tests failed: intermediate Windows temp/cache ACL errors and a synthetic guard fixture were resolved as documented in FAILURES.md. Final Linux checks passed.
+- Tests failed: intermediate Windows temp/cache ACL errors and a synthetic guard fixture were resolved as documented in docs/internal/FAILURES.md. Final Linux checks passed.
 - Runtime observations: loopback Streamlit healthy, collector active, risk kill and conditional hedge exercised on the original sample.
 - Data written: new research/run artifacts, local validation records, implementation files. No raw data or accepted research artifacts overwritten.
 - Open risks: fixed-path simulation assumptions; missing real futures/long-period evidence; Ubuntu Git metadata not advanced; native browser automation unavailable.

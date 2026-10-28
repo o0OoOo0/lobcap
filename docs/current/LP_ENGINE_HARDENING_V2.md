@@ -93,11 +93,11 @@ HftBacktest fill/API/constants/initialization documentation, pinned package rele
 ### Tests failed
 
 - External HftBacktest 2.4.4 portfolio reconciliation: **four failures** (buy/sell partial and partial-then-full). Overall external report remains `ACCOUNTING_DISCREPANCY`; independent PnL parity is not approved.
-- No final project pytest failures. Intermediate missing fixture/mock issues, Windows test tooling failures and connection problems are recorded in `FAILURES.md`.
+- No final project pytest failures. Intermediate missing fixture/mock issues, Windows test tooling failures and connection problems are recorded in `docs/internal/FAILURES.md`.
 
 ### Runtime observations
 
-- [Deployment](LP_DEPLOYMENT_V2.json): app PID 381801 replaced by **409096**, cwd `/home/0woo/lobcap-lp-release-v2`, commit `c7c4ee7`, loopback `127.0.0.1:8501`.
+- [Deployment](LP_DEPLOYMENT_V2.json): app PID 381801 replaced by **409096**, cwd `/home/<vm-user>/lobcap-lp-release-v2`, commit `c7c4ee7`, loopback `127.0.0.1:8501`.
 - Staging PID 409034 was stopped after release health passed.
 - Collector remained active, **PID 608, NRestarts 0** at final inspection. No collector configuration or service restart.
 - Local SSH forwarding restored after a transport reset; local health endpoint returned `ok`. Tunnel is a live session and must remain running. No public endpoint or reboot autostart was added.

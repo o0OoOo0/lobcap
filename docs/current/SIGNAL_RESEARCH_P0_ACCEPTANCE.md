@@ -13,7 +13,7 @@ accounting, queue/fill models, GLFT and strategy comparison are unchanged.
 No main changes, collector changes, app deployment or paper promotion occurred.
 
 Runtime code: `4f309dfdb3b95d76c4d4400297d9ef5dd3436b93`.
-The new validation checkout is `/home/0woo/lobcap-signal-p0-acceptance` on the
+The new validation checkout is `/home/<vm-user>/lobcap-signal-p0-acceptance` on the
 existing data host, with read-only use of existing prepared samples. The user
 explicitly approved this transfer and DEVELOPMENT validation.
 
@@ -59,7 +59,7 @@ lookback or forward-path coverage.
 ## Runtime evidence and descriptive results
 
 Output on the data host:
-`/home/0woo/lobcap-signal-p0-acceptance/artifacts/backtest/research/development-coverage-v3`.
+`/home/<vm-user>/lobcap-signal-p0-acceptance/artifacts/backtest/research/development-coverage-v3`.
 The report SHA256 is
 `e68f5148ceea431b782fb75af81402e319a8c9d4673023daa58d0b0b86bd65ff`.
 The adjacent acceptance, progress and freshness artifacts preserve the full

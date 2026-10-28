@@ -7,13 +7,13 @@ This supersedes `docs/legacy/04_DEPLOY_ORACLE.md`.
 ## Existing environment
 
 - Cloud: Google Cloud
-- project: `project-2878cd89-af59-4d8a-aef`
-- VM: `lob-collector-01`
-- zone: `asia-northeast1-a`
+- project: `<gcp-project-id>`
+- VM: `<collector-vm>`
+- zone: `<gcp-zone>`
 - machine: `e2-medium`
 - OS: Ubuntu 24.04 LTS
-- user: `0woo`
-- project root: `/home/0woo/lobcap`
+- user: `<vm-user>`
+- project root: `/home/<vm-user>/lobcap`
 - data root: `/data`
 - boot disk: ~30 GB
 - data disk: ~100 GB Standard Persistent Disk
@@ -23,10 +23,10 @@ The VM already exists. Do not recreate it.
 ## Observed operational state
 
 Prompt 3 preflight on 2026-09-06 found that the mounted `/data` root was owned
-by the previous VM user `funheo0:funheo0` with mode `0755`, so user `0woo`
+by the previous VM user `<previous-vm-user>:<previous-vm-user>` with mode `0755`, so user `<vm-user>`
 could not write collector output. The data root contained no market data at
 that point. Ownership of the `/data` mount root only was corrected to
-`0woo:0woo`; a create/remove write probe passed afterward. The filesystem
+`<vm-user>:<vm-user>`; a create/remove write probe passed afterward. The filesystem
 mount and ownership must both be checked before every deployment or reboot
 validation. Existing captured data must not be deleted when correcting mount
 ownership.
@@ -46,7 +46,7 @@ with new depth, trade, snapshot, and connection lifecycle records.
 The reboot test changed the boot ID from
 `5ee85ccb-ad35-427b-b493-338730283f31` to
 `5d8ce5e5-b8d2-427f-a2f5-63b396e3c2ad`. After boot, `/dev/sdb` remounted on
-`/data` as ext4 with owner/group `0woo:0woo`, and the enabled BTCUSDT unit
+`/data` as ext4 with owner/group `<vm-user>:<vm-user>`, and the enabled BTCUSDT unit
 started automatically at `2026-09-06T15:21:02Z`. The shutdown recorded the
 old process's `process_stop`; the new process recorded a distinct
 `process_start`, depth/trade connection IDs, and connected events. The reboot
@@ -84,8 +84,8 @@ python3 --version
 ```
 
 Expected:
-- hostname `lob-collector-01`
-- user `0woo`
+- hostname `<collector-vm>`
+- user `<vm-user>`
 - `/data` mounted
 
 ## Python environment
@@ -93,7 +93,7 @@ Expected:
 Recommended:
 
 ```bash
-cd /home/0woo/lobcap
+cd /home/<vm-user>/lobcap
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
@@ -119,9 +119,9 @@ RequiresMountsFor=/data
 
 [Service]
 Type=simple
-User=0woo
-WorkingDirectory=/home/0woo/lobcap
-ExecStart=/home/0woo/lobcap/.venv/bin/python -m lobcap.collectors.binance --symbol %i --out /data
+User=<vm-user>
+WorkingDirectory=/home/<vm-user>/lobcap
+ExecStart=/home/<vm-user>/lobcap/.venv/bin/python -m lobcap.collectors.binance --symbol %i --out /data
 Restart=always
 RestartSec=5
 KillSignal=SIGTERM

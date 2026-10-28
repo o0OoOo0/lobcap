@@ -8,7 +8,7 @@
         "strategy": "no_trade"
       },
       "run_id": "87f44e11f723-989f205c",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/87f44e11f723-989f205c",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/87f44e11f723-989f205c",
       "digest": "ea3e5093a57fc7cc5e0718ba076b14f28a51e881149939f5d429e8d7ec7c9bd5",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -85,7 +85,7 @@
         "strategy": "join_bbo"
       },
       "run_id": "5a5e55edc843-ce10651b",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/5a5e55edc843-ce10651b",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/5a5e55edc843-ce10651b",
       "digest": "5e4b838d0fd267157df265ea4862c0dc76f4bcbf225fdd6d29145282c5d72436",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -168,7 +168,7 @@
         "half_spread_ticks": "0.5"
       },
       "run_id": "16de0134115a-fd579375",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/16de0134115a-fd579375",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/16de0134115a-fd579375",
       "digest": "127591999e7313c973db1253f62bbf4988a8a611570b7c91fe22bc3073f47689",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -253,7 +253,7 @@
         "half_spread_ticks": "5"
       },
       "run_id": "95cd06b3c49c-f6882150",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/95cd06b3c49c-f6882150",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/95cd06b3c49c-f6882150",
       "digest": "849aa15cc464210b22d7b26b42df56d17ffcf67e41dd64167f9e5e13ecaa3d61",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -338,7 +338,7 @@
         "half_spread_ticks": "20"
       },
       "run_id": "f2747a990e91-027de4b4",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/f2747a990e91-027de4b4",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/f2747a990e91-027de4b4",
       "digest": "870a08a1c1d1a7574868fd564ff5ded6f092ae124f32075a0414ee65145d53d7",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -423,7 +423,7 @@
         "half_spread_ticks": "100"
       },
       "run_id": "7656b63091c8-dded90a9",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/7656b63091c8-dded90a9",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/7656b63091c8-dded90a9",
       "digest": "f7fec9cf265c6620558c83016b361a2f589b5b4d6bc84d9702d42692c4291ffe",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -508,7 +508,7 @@
         "inventory_skew_ticks": "5"
       },
       "run_id": "a6a529d8c502-5e36d436",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/a6a529d8c502-5e36d436",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/a6a529d8c502-5e36d436",
       "digest": "c81ff2e84a78293ab55d7c75bd6c675a16450da6ab84fd325c745e58aa0622d8",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -594,7 +594,7 @@
         "inventory_skew_ticks": "50"
       },
       "run_id": "c3fc54134990-3f633579",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/c3fc54134990-3f633579",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/c3fc54134990-3f633579",
       "digest": "31ce685a0cc9d08bd2d3a5960885cfff87e9a3fe9f684150b3b6e081499caa40",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -680,7 +680,7 @@
         "signal_strength": "1"
       },
       "run_id": "73f6ea09559b-23bc90cb",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/73f6ea09559b-23bc90cb",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/73f6ea09559b-23bc90cb",
       "digest": "82398068cca2cd3adf5f80ce0ee6ef68aa1a241a1c9becbbd1a6a0e0d09e20f8",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -766,7 +766,7 @@
         "signal_strength": "10"
       },
       "run_id": "54f1453cd4c0-8c500054",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/54f1453cd4c0-8c500054",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/54f1453cd4c0-8c500054",
       "digest": "5735e4a6f96405f81e09dad95cd1aa55b552efc2e4b73e16db3a3d62c66f5009",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -850,7 +850,7 @@
         "strategy": "flow_withdraw"
       },
       "run_id": "2ac93b144dd9-e7c86c28",
-      "output_dir": "/home/0woo/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/2ac93b144dd9-e7c86c28",
+      "output_dir": "/home/<vm-user>/lobcap-workbench-v1/artifacts/backtest/strategy-response/runs/2ac93b144dd9-e7c86c28",
       "digest": "979dda4deb76e4f8515810fe3bec6bed0dcb787b32f4bcfe889a9f89fb4d933d",
       "sample_sha256": "43fb3fb4cfe6ca9e1ef28b1540146117c67f46381460469fce627ad27427366f",
       "code_version": "9d60d4798c12ed8defad284211e29bc5d38e9dce",
@@ -941,7 +941,7 @@
     "status": "PASS",
     "new_pid": 480443,
     "old_pid": 445838,
-    "release": "/home/0woo/lobcap-workbench-v1",
+    "release": "/home/<vm-user>/lobcap-workbench-v1",
     "health": true,
     "collector_before": "MainPID=608\nNRestarts=0\nActiveState=active",
     "collector_after": "MainPID=608\nNRestarts=0\nActiveState=active",

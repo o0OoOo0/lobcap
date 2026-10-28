@@ -1,7 +1,7 @@
 {
   "status": "PASS",
-  "baseline": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-e8c381ee",
-  "new_run": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-515e081a",
+  "baseline": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-e8c381ee",
+  "new_run": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-515e081a",
   "job_id": "dc980301bb34453e8cb861685c4a6c8d",
   "same_digest": true,
   "comparison": {

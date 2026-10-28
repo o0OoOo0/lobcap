@@ -1,6 +1,6 @@
 {
   "validation": "Prompt 2A — Binance runtime validation only",
-  "host": "lob-collector-01",
+  "host": "<collector-vm>",
   "utc_started": "2026-09-06T13:38:35.637230Z",
   "clock": {
     "timedatectl": "Local time: Sun 2026-09-06 13:38:35 UTC\n           Universal time: Sun 2026-09-06 13:38:35 UTC\n                 RTC time: Sun 2026-09-06 13:38:35\n                Time zone: Etc/UTC (UTC, +0000)\nSystem clock synchronized: yes\n              NTP service: active\n          RTC in local TZ: no",
@@ -253,8 +253,8 @@
   },
   "connection_24h_disconnect": "DOC_VERIFIED, NOT_RUNTIME_TESTED",
   "artifacts": {
-    "depth_samples": "/home/0woo/lobcap/artifacts/validation/binance_depth_samples.jsonl",
-    "aggtrade_samples": "/home/0woo/lobcap/artifacts/validation/binance_aggtrade_samples.jsonl"
+    "depth_samples": "/home/<vm-user>/lobcap/artifacts/validation/binance_depth_samples.jsonl",
+    "aggtrade_samples": "/home/<vm-user>/lobcap/artifacts/validation/binance_aggtrade_samples.jsonl"
   },
   "utc_completed": "2026-09-06T13:40:16.304165Z",
   "status": "RUNTIME_VERIFIED"

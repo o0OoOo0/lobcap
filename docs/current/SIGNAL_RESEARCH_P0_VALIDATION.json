@@ -3,7 +3,7 @@
   "code_fingerprint": "4f309dfdb3b95d76c4d4400297d9ef5dd3436b93",
   "catalogue_sha256": "cc676289c752418edb37ad9adc650dd4e6c611d19bd1bf4170f15fde6a765aae",
   "report_sha256": "e68f5148ceea431b782fb75af81402e319a8c9d4673023daa58d0b0b86bd65ff",
-  "remote_study_path": "/home/0woo/lobcap-signal-p0-acceptance/artifacts/backtest/research/development-coverage-v3",
+  "remote_study_path": "/home/<vm-user>/lobcap-signal-p0-acceptance/artifacts/backtest/research/development-coverage-v3",
   "regression": {
     "warnings": 2,
     "passed": 410,

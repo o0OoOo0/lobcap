@@ -8,8 +8,8 @@ policy; see [protocol and acceptance rules](STUDY1_BP.md). Runtime commit was
 The original MM-1 inventory coefficient is 1 tick; BP coefficients are 0, +1
 and -1. No search or outcome-based replacement was performed.
 
-- Runtime host: existing `lob-collector-01` Ubuntu VM.
-- Checkout: `/home/0woo/lobcap-signal-p0-acceptance`.
+- Runtime host: existing `<collector-vm>` Ubuntu VM.
+- Checkout: `/home/<vm-user>/lobcap-signal-p0-acceptance`.
 - Output: `artifacts/backtest/research/study1-bp-v1` under that checkout.
 - Report SHA256: `fc919f53ef12aa76181244f391d06f009bd95f5a0bafba31863a59a9eca99ac0`.
 - Protocol digest: `d7af09357e0f6d2d74a5871d5621f2d9b9930d8989503c8e869f0a0b004c3c96`.

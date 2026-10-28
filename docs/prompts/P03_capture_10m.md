@@ -18,5 +18,5 @@ No systemd creation, one-hour test, additional symbols, strategies, or L3 work.
 
 ## Retained evidence
 
-`artifacts/integration/`, `FAILURES.md`, and the deployment notes describing
+`artifacts/integration/`, `docs/internal/FAILURES.md`, and the deployment notes describing
 the corrected `/data` ownership.

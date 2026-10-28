@@ -11,8 +11,8 @@
   "browser_automation": "Unavailable: kernel asset initialization OS error 3; no manual browser walkthrough claimed",
   "deterministic_digest": "0af1747f524a65105a0c789f85ffecf36ef033a3505a9af54da86f4265787b6d",
   "experiments": [
-    "/home/0woo/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d68a8194",
-    "/home/0woo/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d7f311bb"
+    "/home/<vm-user>/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d68a8194",
+    "/home/<vm-user>/lobcap-mvp/artifacts/backtest/research/485e447f02c7-d7f311bb"
   ],
   "max_process_rss_mib": 43.6640625,
   "max_wall_seconds": 33.95065398799488,

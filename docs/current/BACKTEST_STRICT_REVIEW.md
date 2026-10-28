@@ -83,7 +83,7 @@ The earlier 41-run source audit was not represented as newly rerun; its
 accepted artifacts and provenance are retained separately.
 
 ```bash
-cd /home/0woo/lobcap-mvp
+cd /home/<vm-user>/lobcap-mvp
 .venv/bin/python -m pytest -q
 .venv/bin/python -m lobcap.backtest run --config configs/backtest/binance_recorded.yaml
 .venv/bin/python -m lobcap.backtest run --config configs/backtest/binance_demo.yaml
@@ -100,7 +100,7 @@ cd /home/0woo/lobcap-mvp
 - **Tests passed:** full suite and bounded parity checks described above;
   exact final counts are in the adjacent compact evidence.
 - **Tests failed:** no unresolved failures; development duplicate-value,
-  selection-state and connection findings are retained in `FAILURES.md`.
+  selection-state and connection findings are retained in `docs/internal/FAILURES.md`.
 - **Runtime observations:** existing Ubuntu worktree and loopback Streamlit app;
   only the lab process was restarted. Local SSH helper had exited and was
   restarted. It must remain running; it is not a newly installed service.

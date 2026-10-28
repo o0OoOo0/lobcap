@@ -51,7 +51,7 @@ The 10 core repetitions passed deterministic digest equality, independent source
 
 Initial actual-history AppTest preserved **299 executions**. Final AppTest preserved **300** (269 legacy and 31 workspace), checked all four pages, persisted a separate terminal reference, restored a fresh session and produced **zero navigation-triggered submissions**. The additional same-condition E1 run produced the exact original deterministic digest. Actual Git objects verified the four display/catalog/test-only changed paths; no execution, accounting or analysis implementation changed. A fresh browser also displayed the four menus, E1 decomposition, readable inventory precision and collapsed raw-order evidence.
 
-Final process: PID **445838**, `/home/0woo/lobcap-research-flow-v1-ui`, code `292301e`, loopback port 8501. Collector PID **608**, restart count **0**, active before and after both app switches. Local access health returned `ok` through hidden SSH PID **41440**. The tunnel is a process, not reboot autostart.
+Final process: PID **445838**, `/home/<vm-user>/lobcap-research-flow-v1-ui`, code `292301e`, loopback port 8501. Collector PID **608**, restart count **0**, active before and after both app switches. Local access health returned `ok` through hidden SSH PID **41440**. The tunnel is a process, not reboot autostart.
 
 ## Known limits
 
@@ -74,7 +74,7 @@ Official docs checked: no new external documentation fetched during implementati
 
 Tests passed: final full 292 tests; repeated E0–E4 source/ledger/trace/digest checks; 3-lot policy pair; final display-only digest parity; four-page real-history tests.
 
-Tests failed: zero in the final full suite. Earlier tooling, Windows environment and two staging/test-fixture failures are preserved in `FAILURES.md`; two existing deprecation warnings remain.
+Tests failed: zero in the final full suite. Earlier tooling, Windows environment and two staging/test-fixture failures are preserved in `docs/internal/FAILURES.md`; two existing deprecation warnings remain.
 
 Runtime observations: measured core run maxima 38.604 s / 438.786 MiB; collector unchanged; local and VM health verified.
 

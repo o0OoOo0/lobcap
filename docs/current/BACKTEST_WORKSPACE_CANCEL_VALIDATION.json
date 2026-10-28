@@ -42,7 +42,7 @@
     "timeline.jsonl.gz",
     "timeseries.csv.gz"
   ],
-  "interrupted_output": "/home/0woo/lobcap-workspace-v1/artifacts/backtest/runs/c2f8a6114a69-4e3fb5d1",
+  "interrupted_output": "/home/<vm-user>/lobcap-workspace-v1/artifacts/backtest/runs/c2f8a6114a69-4e3fb5d1",
   "interruption": {
     "cash": "100318.90160",
     "full_window": false,
@@ -70,5 +70,5 @@
   "job_id": "499b5ca3a0b245ea9f392ad9d94594ea",
   "resumed_attempt": 2,
   "status": "PASS",
-  "workspace": "/home/0woo/lobcap-workspace-v1/artifacts/backtest/workspace-trading-cancel"
+  "workspace": "/home/<vm-user>/lobcap-workspace-v1/artifacts/backtest/workspace-trading-cancel"
 }

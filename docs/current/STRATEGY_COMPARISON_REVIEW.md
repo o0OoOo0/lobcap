@@ -41,7 +41,7 @@ explicit horizon-specific freshness policy.
 The test runner uses a short, dedicated `--basetemp` on Windows. This avoids
 the earlier nested temporary-path failures without changing research modules.
 Authoritative Ubuntu and real-sample acceptance was completed on the isolated
-`/home/0woo/lobcap-signal-v1` checkout at commit `5da0244`.
+`/home/<vm-user>/lobcap-signal-v1` checkout at commit `5da0244`.
 
 ## Validation result
 

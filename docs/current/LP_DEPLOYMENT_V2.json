@@ -3,7 +3,7 @@
   "old_pid": 381801,
   "new_pid": 409096,
   "staging_pid": 409034,
-  "release": "/home/0woo/lobcap-lp-release-v2",
+  "release": "/home/<vm-user>/lobcap-lp-release-v2",
   "health": true,
   "collector": "active",
   "collector_modified": false,

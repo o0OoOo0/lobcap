@@ -21,7 +21,7 @@
       "digest": "f74a69a236e390761917ba6fcfe1ac6754d310e4b7352aa0df6b0075d70174aa",
       "effective_hash": "ad420f5dfbc528c772f762550b13d7fbc8f245a874ccbd8437f67780eec0dc62",
       "model": "alpha=0",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/ad420f5dfbc5-893e7772",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/ad420f5dfbc5-893e7772",
       "repeat": 1,
       "strategy": "fixed_spread"
     },
@@ -41,7 +41,7 @@
       "digest": "88c24aeaaa9a09026c2f7f3e6342ecb2ef6fd320fd1f67203475bece4e6677dc",
       "effective_hash": "84492d6093a99b30e799bb98c8d8337580886beb1ced727eab480bf1ffebd77d",
       "model": "alpha=0.5",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/84492d6093a9-805fe52c",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/84492d6093a9-805fe52c",
       "repeat": 1,
       "strategy": "fixed_spread"
     },
@@ -61,7 +61,7 @@
       "digest": "045e2c47c27e1f50ca877644ecb4a2d4146b4efd7997bc62685dd85c1ba367ae",
       "effective_hash": "7ad536f636a323688f61d329943b233dc4f355fd6f31c566d7861e134e67f015",
       "model": "alpha=1",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/7ad536f636a3-ea3fffbb",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/7ad536f636a3-ea3fffbb",
       "repeat": 1,
       "strategy": "fixed_spread"
     },
@@ -81,7 +81,7 @@
       "digest": "707a9bc76110e41278dd0147e89259e77be77cdcadce3c1b15094d4ccb51fb79",
       "effective_hash": "85bbaa45b2bc8c454b6a287d300208fa24d0d307bbb59e64003499848e02ff85",
       "model": "TOUCH_FILL",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/85bbaa45b2bc-1f234549",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/85bbaa45b2bc-1f234549",
       "repeat": 1,
       "strategy": "fixed_spread"
     },
@@ -101,7 +101,7 @@
       "digest": "319d134d70131179d9c451605a58702ca9b5e329c63545915e2da04adb0c27cc",
       "effective_hash": "11cd50731c2fe83f1b6ab623de7d58a9211fafe67e252238ceb38d17a2576fdd",
       "model": "alpha=0",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/11cd50731c2f-9e449f49",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/11cd50731c2f-9e449f49",
       "repeat": 1,
       "strategy": "inventory_skew"
     },
@@ -121,7 +121,7 @@
       "digest": "9117a2de19b40225e9cb4d4be1a4091f0bb584af372ad5597c99006553c800c9",
       "effective_hash": "f53c57e4e5364af2b344d4080db16ae59e086f9d0f38204edc0ca36deed6338a",
       "model": "alpha=0.5",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/f53c57e4e536-108b5f35",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/f53c57e4e536-108b5f35",
       "repeat": 1,
       "strategy": "inventory_skew"
     },
@@ -141,7 +141,7 @@
       "digest": "390d97f123fdc64ffd9ecd4ade7de44dd1867d360fd309a2f4ab43088492d00b",
       "effective_hash": "fd39c6f29278e3affeafebcc90921914078f29bc140262270c97f7e7467ae6fd",
       "model": "alpha=1",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/fd39c6f29278-e65c1fca",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/fd39c6f29278-e65c1fca",
       "repeat": 1,
       "strategy": "inventory_skew"
     },
@@ -161,7 +161,7 @@
       "digest": "4528e1b93413f2317354b371efe43db04f1c4fad86801535795fe4d61cc74f66",
       "effective_hash": "5944a9cabb02a6cb25c7eb9745fa5e661280d3fee3ab8369cecab61d148768c3",
       "model": "TOUCH_FILL",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/5944a9cabb02-ac7ba1de",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/5944a9cabb02-ac7ba1de",
       "repeat": 1,
       "strategy": "inventory_skew"
     },
@@ -181,7 +181,7 @@
       "digest": "2089d458860a49d3a43eb6bb82b8b43183170a00de8575dac88767679ad54172",
       "effective_hash": "0bd1bb3903b7171d42870c3fa17c87ba95618998bf4a4f39d1c847ed73b1ef53",
       "model": "alpha=0",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/0bd1bb3903b7-ed524d6e",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/0bd1bb3903b7-ed524d6e",
       "repeat": 1,
       "strategy": "microprice"
     },
@@ -201,7 +201,7 @@
       "digest": "739f8b4c29c03118c97029940f3f408f7a00ca60e721d13803d6f98c9e8f02b7",
       "effective_hash": "6d741f9dfb4f27784af250190c854f0cecb6f4a9749eb39b1b5c83315576005b",
       "model": "alpha=0.5",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/6d741f9dfb4f-f95f1339",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/6d741f9dfb4f-f95f1339",
       "repeat": 1,
       "strategy": "microprice"
     },
@@ -221,7 +221,7 @@
       "digest": "473c5bbc820756706c9af496a3c914498f632f6f73ef5391325162902f18aa6e",
       "effective_hash": "03997af3838d28b28167af8c196518d2582d17df55d84a9486aca8f0ad664473",
       "model": "alpha=1",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/03997af3838d-dfda7c43",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/03997af3838d-dfda7c43",
       "repeat": 1,
       "strategy": "microprice"
     },
@@ -241,7 +241,7 @@
       "digest": "adecbbf3cfd9114c7dc3eb7181a790b2d2732775b4c0849a6b1bab89cac5a83c",
       "effective_hash": "0fc90372862346b0ae21a4145da03f28a5002320749bf82ecb2f3e9840ad5b67",
       "model": "TOUCH_FILL",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/0fc903728623-3df10fa4",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/0fc903728623-3df10fa4",
       "repeat": 1,
       "strategy": "microprice"
     },
@@ -261,7 +261,7 @@
       "digest": "adecbbf3cfd9114c7dc3eb7181a790b2d2732775b4c0849a6b1bab89cac5a83c",
       "effective_hash": "0fc90372862346b0ae21a4145da03f28a5002320749bf82ecb2f3e9840ad5b67",
       "model": "TOUCH_FILL",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/0fc903728623-15f34e70",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/0fc903728623-15f34e70",
       "repeat": 2,
       "strategy": "microprice"
     },
@@ -281,7 +281,7 @@
       "digest": "473c5bbc820756706c9af496a3c914498f632f6f73ef5391325162902f18aa6e",
       "effective_hash": "03997af3838d28b28167af8c196518d2582d17df55d84a9486aca8f0ad664473",
       "model": "alpha=1",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/03997af3838d-af0fd7f3",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/03997af3838d-af0fd7f3",
       "repeat": 2,
       "strategy": "microprice"
     },
@@ -301,7 +301,7 @@
       "digest": "739f8b4c29c03118c97029940f3f408f7a00ca60e721d13803d6f98c9e8f02b7",
       "effective_hash": "6d741f9dfb4f27784af250190c854f0cecb6f4a9749eb39b1b5c83315576005b",
       "model": "alpha=0.5",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/6d741f9dfb4f-072882fd",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/6d741f9dfb4f-072882fd",
       "repeat": 2,
       "strategy": "microprice"
     },
@@ -321,7 +321,7 @@
       "digest": "2089d458860a49d3a43eb6bb82b8b43183170a00de8575dac88767679ad54172",
       "effective_hash": "0bd1bb3903b7171d42870c3fa17c87ba95618998bf4a4f39d1c847ed73b1ef53",
       "model": "alpha=0",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/0bd1bb3903b7-1205d47e",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/0bd1bb3903b7-1205d47e",
       "repeat": 2,
       "strategy": "microprice"
     },
@@ -341,7 +341,7 @@
       "digest": "4528e1b93413f2317354b371efe43db04f1c4fad86801535795fe4d61cc74f66",
       "effective_hash": "5944a9cabb02a6cb25c7eb9745fa5e661280d3fee3ab8369cecab61d148768c3",
       "model": "TOUCH_FILL",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/5944a9cabb02-caddf6ce",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/5944a9cabb02-caddf6ce",
       "repeat": 2,
       "strategy": "inventory_skew"
     },
@@ -361,7 +361,7 @@
       "digest": "390d97f123fdc64ffd9ecd4ade7de44dd1867d360fd309a2f4ab43088492d00b",
       "effective_hash": "fd39c6f29278e3affeafebcc90921914078f29bc140262270c97f7e7467ae6fd",
       "model": "alpha=1",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/fd39c6f29278-5e6e0941",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/fd39c6f29278-5e6e0941",
       "repeat": 2,
       "strategy": "inventory_skew"
     },
@@ -381,7 +381,7 @@
       "digest": "9117a2de19b40225e9cb4d4be1a4091f0bb584af372ad5597c99006553c800c9",
       "effective_hash": "f53c57e4e5364af2b344d4080db16ae59e086f9d0f38204edc0ca36deed6338a",
       "model": "alpha=0.5",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/f53c57e4e536-13ebaaec",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/f53c57e4e536-13ebaaec",
       "repeat": 2,
       "strategy": "inventory_skew"
     },
@@ -401,7 +401,7 @@
       "digest": "319d134d70131179d9c451605a58702ca9b5e329c63545915e2da04adb0c27cc",
       "effective_hash": "11cd50731c2fe83f1b6ab623de7d58a9211fafe67e252238ceb38d17a2576fdd",
       "model": "alpha=0",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/11cd50731c2f-4406a159",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/11cd50731c2f-4406a159",
       "repeat": 2,
       "strategy": "inventory_skew"
     },
@@ -421,7 +421,7 @@
       "digest": "707a9bc76110e41278dd0147e89259e77be77cdcadce3c1b15094d4ccb51fb79",
       "effective_hash": "85bbaa45b2bc8c454b6a287d300208fa24d0d307bbb59e64003499848e02ff85",
       "model": "TOUCH_FILL",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/85bbaa45b2bc-34b21f7d",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/85bbaa45b2bc-34b21f7d",
       "repeat": 2,
       "strategy": "fixed_spread"
     },
@@ -441,7 +441,7 @@
       "digest": "045e2c47c27e1f50ca877644ecb4a2d4146b4efd7997bc62685dd85c1ba367ae",
       "effective_hash": "7ad536f636a323688f61d329943b233dc4f355fd6f31c566d7861e134e67f015",
       "model": "alpha=1",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/7ad536f636a3-38baa783",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/7ad536f636a3-38baa783",
       "repeat": 2,
       "strategy": "fixed_spread"
     },
@@ -461,7 +461,7 @@
       "digest": "88c24aeaaa9a09026c2f7f3e6342ecb2ef6fd320fd1f67203475bece4e6677dc",
       "effective_hash": "84492d6093a99b30e799bb98c8d8337580886beb1ced727eab480bf1ffebd77d",
       "model": "alpha=0.5",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/84492d6093a9-be8bdcf1",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/84492d6093a9-be8bdcf1",
       "repeat": 2,
       "strategy": "fixed_spread"
     },
@@ -481,7 +481,7 @@
       "digest": "f74a69a236e390761917ba6fcfe1ac6754d310e4b7352aa0df6b0075d70174aa",
       "effective_hash": "ad420f5dfbc528c772f762550b13d7fbc8f245a874ccbd8437f67780eec0dc62",
       "model": "alpha=0",
-      "output_dir": "/home/0woo/lobcap-lp-engine-v2/artifacts/backtest/runs/ad420f5dfbc5-1d7b4158",
+      "output_dir": "/home/<vm-user>/lobcap-lp-engine-v2/artifacts/backtest/runs/ad420f5dfbc5-1d7b4158",
       "repeat": 2,
       "strategy": "fixed_spread"
     }

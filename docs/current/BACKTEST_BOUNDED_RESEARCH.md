@@ -19,7 +19,7 @@
 
 수수료와 주문 latency는 연구 가정이며 계정 요율·측정값이 아니다. 시장정보는 캡처 수신 시각을 사용한다. α는 미보정이다.
 
-Ubuntu `/home/0woo/lobcap-mvp`에서:
+Ubuntu `/home/<vm-user>/lobcap-mvp`에서:
 
 ```bash
 .venv/bin/python -m lobcap.backtest.research --preview

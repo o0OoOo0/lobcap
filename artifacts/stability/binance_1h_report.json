@@ -319,6 +319,6 @@
   },
   "quality": {
     "exit_code": 0,
-    "artifact": "/home/0woo/lobcap/artifacts/stability/binance_1h_quality.txt"
+    "artifact": "/home/<vm-user>/lobcap/artifacts/stability/binance_1h_quality.txt"
   }
 }

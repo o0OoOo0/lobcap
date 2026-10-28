@@ -4,8 +4,8 @@
 
 Runtime commit: `abad814965658da42bc69511d9104c60d1f55e4b` on
 `feat/signal-research-v1`, explicitly approved by the user for transfer and
-validation on the existing `lob-collector-01` VM. Checkout:
-`/home/0woo/lobcap-signal-p0-acceptance`; output under that checkout:
+validation on the existing `<collector-vm>` VM. Checkout:
+`/home/<vm-user>/lobcap-signal-p0-acceptance`; output under that checkout:
 `artifacts/backtest/research/study1-vpin-v1`.
 
 See [the frozen VPIN protocol](STUDY1_VPIN.md) for source semantics, bucket

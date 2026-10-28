@@ -58,7 +58,7 @@ status. The operational commands are in [BACKTEST_MVP.md](BACKTEST_MVP.md).
 ## Tests failed
 
 No unresolved final regression or acceptance failures. Development failures
-and interrupted attempts are recorded in [FAILURES.md](../../FAILURES.md).
+and interrupted attempts are recorded in [docs/internal/FAILURES.md](../../docs/internal/FAILURES.md).
 The first attempt exceeded the speed target; profiling and replay changes
 fixed it. An SSH disconnect interrupted another attempt with BrokenPipeError.
 The final resumed gate revalidated complete groups and reran incomplete ones;

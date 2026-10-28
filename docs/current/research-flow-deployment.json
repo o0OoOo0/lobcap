@@ -3,7 +3,7 @@
   "old_pid": 443936,
   "new_pid": 445838,
   "staging_pid": 445778,
-  "release": "/home/0woo/lobcap-research-flow-v1-ui",
+  "release": "/home/<vm-user>/lobcap-research-flow-v1-ui",
   "health": true,
   "collector_before": "MainPID=608\nNRestarts=0\nActiveState=active",
   "collector_after": "MainPID=608\nNRestarts=0\nActiveState=active",

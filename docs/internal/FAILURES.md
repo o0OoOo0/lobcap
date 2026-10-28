@@ -1,6 +1,22 @@
-# FAILURES.md
+# Failure history
 
 Nothing is silently excluded.
+
+- 2026-10-28 public-repository cleanup preflight used the unavailable Windows
+  `python` alias and exposed one stale README link. The first audit then correctly
+  caught its synthetic test literal and a frozen legacy script; the test fixture
+  was made nonliteral and frozen legacy runtime homes were explicitly scoped out.
+  Validation resumed with the installed Python launcher; no runtime code or
+  research artifact was affected.
+- 2026-10-28 the first modified-JSON check used PowerShell `ConvertFrom-Json`,
+  which rejects valid JSON objects containing case-distinct Binance fields such
+  as `U` and `u`. Validation was rerun with Python's case-sensitive JSON parser.
+- 2026-10-28 focused Windows pytest reached 4 passes but 23 fixture setup errors
+  because the user's global pytest temp directory denied directory listing. The
+  repository-local `--basetemp` had the same ACL failure and required elevated
+  cleanup after its absolute path was verified inside the workspace. This is an
+  existing Windows ACL condition rather than a product-code failure; authoritative
+  acceptance remains Linux.
 
 ## 2026-09-10 — Bounded research implementation
 
@@ -185,14 +201,14 @@ keep / exclude interval / exclude day
 - The first focused Windows test command omitted `PYTHONPATH=src`, so collection stopped before loading project code. Repeated with the repository source path.
 - The first label-age fixture expected 0/10/20 ns, while its midpoint series actually produced 10/20/30 ns target ages. Corrected the fixture expectation; the implementation already preserved the measured ages.
 - Windows pytest temporary-directory ACLs also blocked the cache fixture and session cleanup even with a workspace-local `--basetemp`. Eighteen non-temporary focused cases passed; the locked tool-created directory was removed with its verified absolute path and cache coverage was moved to authoritative Ubuntu validation.
-- The first isolated Ubuntu command referenced a guessed `.venv` inside the GLFT release. The release uses `/home/0woo/lobcap-mvp/.venv`; the corrected command ran 49 focused and related regression tests successfully.
+- The first isolated Ubuntu command referenced a guessed `.venv` inside the GLFT release. The release uses `/home/<vm-user>/lobcap-mvp/.venv`; the corrected command ran 49 focused and related regression tests successfully.
 - The first real-sample 100 ms foundation validator exceeded the 60-second target and was interrupted. Every feature point redundantly copied 64 recent source references and every snapshot re-sorted the full book. Reduced provenance to the latest source refs for the relevant depth/trade family and cached top-10 levels between depth deliveries before rerunning.
 - Interrupting the SSH sessions did not initially terminate their remote validator children; two exact tool-started PIDs remained and contended for CPU. Sent TERM only to PIDs 496348 and 496659, verified both exited, and confirmed the collector remained active and Streamlit health returned `ok`. Replaced slow high-precision Decimal logarithms on every 100 ms return snapshot with the repository's established float-log/Decimal-output convention.
 - A clean single-process full-window rerun still reached the explicit 90-second timeout and produced no evidence file. Added a diagnostic prefix limit and separate feature/truth/label timings so the next optimization is based on measured stage cost rather than another guessed change.
 - After the streaming cadence change, the default Windows Store `python.exe` alias printed only `Python` and exited before pytest started. Kept Windows portability out of scope and used the installed Python launcher/authoritative Ubuntu runtime for validation.
 - Windows reruns through `py -3.12` passed all non-temporary Signal/engine cases (19, then 32) but the known locked pytest temp root blocked one cache setup and two artifact setups. No product assertion failed; authoritative temporary-file coverage remained on Ubuntu.
 - The first complete streaming validation passed but took 126.3 seconds at 43.8 MiB peak RSS. Stage evidence isolated 119.2 seconds in feature/label replay; inspection found full-book sorting for every invalidated top-depth snapshot, so `MarketBook` received indexed best/top-level access before the acceptance rerun.
-- The first full-suite run in the isolated Signal checkout reached 338 passes, then reported two failures and five setup errors because its untracked `raw_http_slice.txt` fixture link had never been created. Linked that single path to the existing immutable `/home/0woo/lobcap` fixture and reran; no research artifact content was modified.
+- The first full-suite run in the isolated Signal checkout reached 338 passes, then reported two failures and five setup errors because its untracked `raw_http_slice.txt` fixture link had never been created. Linked that single path to the existing immutable `/home/<vm-user>/lobcap` fixture and reran; no research artifact content was modified.
 - Two direct full-suite reruns lost their SSH connection near the one-minute mark, so their final summaries were unavailable and no pytest child remained. Ran the same suite as a one-shot user transient unit and read its exit status/journal separately: 345 passed with two pre-existing Streamlit/NumPy deprecation warnings.
 - The first requested Git push tool invocation had a malformed local output-token argument and never launched Git. Corrected the tool call; no repository or remote state changed in the failed attempt.
 - The first strategy-comparison test selection assumed another module's local `sample` fixture was globally available; two new setups failed before product code ran. Imported the established fixture explicitly. The remaining selected setups hit the already documented Windows pytest temp-root ACL and were moved to Ubuntu.
@@ -203,7 +219,7 @@ keep / exclude interval / exclude day
 
 ### 2026-09-11 strategy comparison review
 - Found scorecard provenance/capital guard bypass, summary-versus-ledger mismatch acceptance, missing values silently becoming zero, random-ID tie ranks, unrelated-job grouping, sensitivity routed through strategy ranking, and form-dependent disabled strategy selection. Added focused adversarial regressions and corrected these paths.
-- A sandbox read of elevated pytest artifacts hit ACL denial; read-only elevated inspection succeeded. A combined patch with an incorrect FAILURES.md anchor failed before edits; reapplied with actual context.
+- A sandbox read of elevated pytest artifacts hit ACL denial; read-only elevated inspection succeeded. A combined patch with an incorrect docs/internal/FAILURES.md anchor failed before edits; reapplied with actual context.
 - First short-path complete backtest regression: 301 passed, one symlink-permission skip, one legacy navigation failure while running with dirty-code provenance. Five previous long-path job failures did not recur. Clean-checkout rerun is recorded separately after committing the reviewed implementation.
 - Clean commit e67016b rerun: 38 passed; the legacy navigation test failed in local Streamlit 1.37.1 AppTest with a missing widget SessionState key at the page transition. It remains unresolved; the initial dirty-code explanation did not fully account for it. No full-pass claim is made. A subsequent rg Windows wildcard-path inspection failed; it did not change files.
 
@@ -293,7 +309,7 @@ keep / exclude interval / exclude day
 - The sandboxed GitHub push could not reach the configured local proxy. The
   approved network retry pushed the same commit successfully.
 - The first Ubuntu focused-test command assumed a checkout-local `.venv`; the
-  deployed unit uses `/home/0woo/lobcap-mvp/.venv`. The Git fast-forward had
+  deployed unit uses `/home/<vm-user>/lobcap-mvp/.venv`. The Git fast-forward had
   completed, and rerunning with the inspected interpreter passed 93 tests.
 - The first full Ubuntu suite found three synthetic scorecard fixtures without
   the newly mandatory scheduler identity (375 passed, three failed). Production

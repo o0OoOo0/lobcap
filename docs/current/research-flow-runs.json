@@ -694,8 +694,8 @@
     },
     "job_id": "f387c5048a10497e91dffd04ecc872b1",
     "paths": [
-      "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/673aeb982ace-20089f14",
-      "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/2176d3014922-65c21cae"
+      "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/673aeb982ace-20089f14",
+      "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/2176d3014922-65c21cae"
     ]
   },
   "runs": [
@@ -864,7 +864,7 @@
         "warnings": []
       },
       "label": "E0",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/87f44e11f723-263a9104",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/87f44e11f723-263a9104",
       "performance": {
         "cpu_seconds": 8.840462248,
         "output_bytes": 495244,
@@ -1151,7 +1151,7 @@
         "warnings": []
       },
       "label": "E1",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-e8c381ee",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-e8c381ee",
       "performance": {
         "cpu_seconds": 10.520741804,
         "output_bytes": 818291,
@@ -1443,7 +1443,7 @@
         "warnings": []
       },
       "label": "E2",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/f0c3976a252b-76fd87a7",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/f0c3976a252b-76fd87a7",
       "performance": {
         "cpu_seconds": 11.054204209000002,
         "output_bytes": 818287,
@@ -1735,7 +1735,7 @@
         "warnings": []
       },
       "label": "E3",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/f97e4a4eb2d5-180dedec",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/f97e4a4eb2d5-180dedec",
       "performance": {
         "cpu_seconds": 11.072689154999996,
         "output_bytes": 805083,
@@ -2011,7 +2011,7 @@
         "warnings": []
       },
       "label": "E4",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/2ac93b144dd9-88006414",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/2ac93b144dd9-88006414",
       "performance": {
         "cpu_seconds": 10.245376783999994,
         "output_bytes": 781531,
@@ -2287,7 +2287,7 @@
         "warnings": []
       },
       "label": "E4",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/2ac93b144dd9-a21eaa7c",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/2ac93b144dd9-a21eaa7c",
       "performance": {
         "cpu_seconds": 37.334393086999995,
         "output_bytes": 781531,
@@ -2579,7 +2579,7 @@
         "warnings": []
       },
       "label": "E3",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/f97e4a4eb2d5-d1f95bc5",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/f97e4a4eb2d5-d1f95bc5",
       "performance": {
         "cpu_seconds": 23.374393335000008,
         "output_bytes": 805083,
@@ -2871,7 +2871,7 @@
         "warnings": []
       },
       "label": "E2",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/f0c3976a252b-39d8c15f",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/f0c3976a252b-39d8c15f",
       "performance": {
         "cpu_seconds": 24.201172966,
         "output_bytes": 818287,
@@ -3163,7 +3163,7 @@
         "warnings": []
       },
       "label": "E1",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-21e0b886",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/5a5e55edc843-21e0b886",
       "performance": {
         "cpu_seconds": 25.609291654999993,
         "output_bytes": 818291,
@@ -3361,7 +3361,7 @@
         "warnings": []
       },
       "label": "E0",
-      "output_dir": "/home/0woo/lobcap-research-flow-v1/artifacts/backtest/runs/87f44e11f723-2015343e",
+      "output_dir": "/home/<vm-user>/lobcap-research-flow-v1/artifacts/backtest/runs/87f44e11f723-2015343e",
       "performance": {
         "cpu_seconds": 20.325387218999964,
         "output_bytes": 495244,

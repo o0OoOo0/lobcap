@@ -60,7 +60,7 @@
   },
   "ui_cli": {
     "ui_run": "artifacts/backtest/runs/03059d33c2d7-86521a9e",
-    "cli_run": "/home/0woo/lobcap-mvp/artifacts/backtest/runs/03059d33c2d7-099c6a9e",
+    "cli_run": "/home/<vm-user>/lobcap-mvp/artifacts/backtest/runs/03059d33c2d7-099c6a9e",
     "digest": "fe87ef329ae21dca8ea8d2efff655db5a07877b28e7d333aa7b3cf556389ef2a",
     "ui_performance": {
       "cpu_seconds": 10.543846297,

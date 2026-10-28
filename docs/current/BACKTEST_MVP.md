@@ -15,11 +15,11 @@ live trading system or evidence of ETF LP profitability.
 ## Runtime and quick start
 
 Ubuntu is authoritative. The isolated feature checkout is
-`/home/0woo/lobcap-mvp`; the collector continues using `/home/0woo/lobcap`.
+`/home/<vm-user>/lobcap-mvp`; the collector continues using `/home/<vm-user>/lobcap`.
 No collector, systemd, firewall or cloud changes are required.
 
 ```bash
-cd /home/0woo/lobcap-mvp
+cd /home/<vm-user>/lobcap-mvp
 python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[web]' 'pytest>=8,<9'
 .venv/bin/python -m lobcap.backtest prepare --config configs/backtest/binance_demo.yaml
@@ -32,7 +32,7 @@ python3 -m venv .venv
 From Windows, forward the existing SSH connection and open localhost:
 
 ```powershell
-ssh -N -L 8501:127.0.0.1:8501 0woo@lob-collector-01.asia-northeast1-a.project-2878cd89-af59-4d8a-aef
+ssh -N -L 8501:127.0.0.1:8501 <vm-user>@<collector-vm>.<gcp-zone>.<gcp-project-id>
 ```
 
 Open `http://127.0.0.1:8501`. Streamlit executes simulations only on explicit

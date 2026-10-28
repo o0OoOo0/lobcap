@@ -92,8 +92,8 @@ and rate summaries still use their documented full-window denominators. A separa
 control without this delay checks the previous BBO deterministic digest.
 
 ```sh
-PYTHONPATH=src /home/0woo/lobcap-mvp/.venv/bin/python -m pytest -q
-PYTHONPATH=src /home/0woo/lobcap-mvp/.venv/bin/python scripts/validate_glft_bounded.py --output artifacts/backtest/glft-validation
+PYTHONPATH=src /home/<vm-user>/lobcap-mvp/.venv/bin/python -m pytest -q
+PYTHONPATH=src /home/<vm-user>/lobcap-mvp/.venv/bin/python scripts/validate_glft_bounded.py --output artifacts/backtest/glft-validation
 ```
 
 ## References and limits
@@ -167,10 +167,10 @@ performance and deployment record: [glft-evidence.json](glft-evidence.json).
 - Tests passed: full 324, final focused 32, repeat/legacy/UI parity, and all
   bounded comparison ledger identities. No unresolved test failures.
 - Tests failed: an intermediate indentation error was caught by compileall and
-  fixed before transfer. See FAILURES.md for the tooling record.
+  fixed before transfer. See docs/internal/FAILURES.md for the tooling record.
 - Runtime observations: app PID 486876 at loopback 8501; collector PID 608,
   NRestarts 0 before and after activation. Previous app remains available at
-  /home/0woo/lobcap-workbench-v1 for rollback.
+  /home/<vm-user>/lobcap-workbench-v1 for rollback.
 - Data written: separate GLFT validation runs, one saved GLFT draft/job and UI
   evidence. Existing raw captures and accepted outputs preserved.
 - Open risks: crossing-rate proxy, symmetric exponential fit, limited history,

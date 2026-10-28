@@ -1,7 +1,7 @@
 {
   "status": "PASS",
   "deployed_at_utc": "2026-09-11T06:13:17Z",
-  "release": "/home/0woo/lobcap-signal-v1",
+  "release": "/home/<vm-user>/lobcap-signal-v1",
   "git_commit": "5da0244bacc3695df21c239ddfcec96a9b3706cb",
   "bind": "127.0.0.1:8501",
   "app_pid": 512390,
@@ -41,7 +41,7 @@
     "reason": "CUA initialization failed twice because its kernel-assets path was missing",
     "substitute_evidence": "Streamlit staging and final health checks plus Ubuntu UI tests"
   },
-  "rollback_release": "/home/0woo/lobcap-glft-v1",
+  "rollback_release": "/home/<vm-user>/lobcap-glft-v1",
   "collector_reconfigured": false,
   "firewall_changed": false
 }

@@ -1,6 +1,6 @@
 # Baseline Commit and Push Plan
 
-Current state: `/home/0woo/lobcap` is not a Git repository. There is no branch,
+Current state: `/home/<vm-user>/lobcap` is not a Git repository. There is no branch,
 remote, commit, or tag. This plan does not authorize creating any of them.
 
 ## Baseline contents

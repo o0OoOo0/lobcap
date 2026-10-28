@@ -177,11 +177,11 @@ GLFT는 거래 도착 강도와 변동성에 따라 spread/skew를 정하는 참
 
 ## 작업 완료 기록
 
-- Files changed: 이 검토 보고서, 문서 inventory, `FAILURES.md`의 도구 재시도 기록.
+- Files changed: 이 검토 보고서, 문서 inventory, `docs/internal/FAILURES.md`의 도구 재시도 기록.
 - Commands run: Git 상태/HEAD 확인, `rg`와 PowerShell 소스·테스트 읽기, stdlib 문서 crawler, inventory 무결성·목록 확인. 문서 다운로드는 읽기 전용 요청.
 - Official docs checked: 위 HftBacktest 최신 문서 전체 목록 및 Binance 공개 stream 문서. 외부 라이브러리 소스 전체 검증은 아님.
 - Tests passed: 이번 검토에서 테스트를 실행하지 않음.
-- Tests failed: 이번 검토에서 테스트를 실행하지 않음. 도구 실패는 `FAILURES.md` 기록.
+- Tests failed: 이번 검토에서 테스트를 실행하지 않음. 도구 실패는 `docs/internal/FAILURES.md` 기록.
 - Runtime observations: VM 및 collector 상태를 이번에는 재확인하거나 변경하지 않음.
 - Data written: 보고서·출처 inventory와 `E:/dev/hft-docs-review/`의 검토용 문서 캐시. 시장 원시 데이터·연구 run 아티팩트 변경 없음.
 - Open risks: 실제 체결 calibration 부재, 10분 재사용의 선택 편향, 문서 버전 혼재, 위 체결 계약 차이.
